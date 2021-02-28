@@ -1,2 +1,7 @@
-# AID-Master
-Helping Dungeon Masters in every decision you make 
+## Structure
+
+| Codebase |      Description      |
+| :------- | :-------------------: |
+| Fate     |    React frontend     |
+| Bleach   |     Game Server       |
+| Amensia  |    Prediction model   |
