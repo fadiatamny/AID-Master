@@ -2,6 +2,6 @@
 
 | Codebase |      Description      |
 | :------- | :-------------------: |
-| Fate     |    React frontend     |
-| Bleach   |     Game Server       |
-| Amensia  |    Prediction model   |
+| [Fate](./fate)     |    React frontend     |
+| [Bleach](./bleach)   |     Game Service      |
+| [Amensia](./amnesia)  |    Prediction model   |
