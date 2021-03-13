@@ -19,5 +19,5 @@ io.sockets.on('connection', (socket: Socket) => {
 })
 
 server.listen(app.get('port'), () => {
-    console.log(`Server Listening on port ${port}`);
+    console.log(`Server Listening on port ${port}`)
 })
