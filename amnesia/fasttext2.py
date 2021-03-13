@@ -4,10 +4,6 @@ import fasttext
 
 
 
-def predict(fastmodule,text,k):
-    #retuern the labels with the pracntege
-    return fastmodule.predict(text, k=k)
-
 
 class fasttextmodle(filename):
     def __init__(self,filename):
