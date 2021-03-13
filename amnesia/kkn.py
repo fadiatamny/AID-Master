@@ -1,13 +1,17 @@
 from sklearn.neighbors import NearestNeighbors
+import joblib 
 import pandas as pd
 
 
-def initandtruin(data,k):
-    notext = pd.DataFrame()
-    notext = data
-    notext = notext.drop(['TEXT'], axis = 1)
-    knn = NearestNeighbors(n_neighbors=k, algorithm='auto').fit(notext)
-    return knn
 
-def knnfit(knn,text):
-    return knn.kneighbors(text,return_distance=False)
+class knnmodle(filename,k):
+    def __init__(self,filename,k):
+        createmodle(filename,k)
+    
+    def createmodle(self,filename,k):
+        raw_data = pd.read_excel("text_dnd.xls")
+        notext = pd.DataFrame()
+        notext = raw_data
+        notext = notext.drop(['TEXT'], axis = 1)
+        knn = NearestNeighbors(n_neighbors=k, algorithm='auto').fit(notext)
+        joblib.dump(knn, "knnmodle.pkl")
