@@ -1,20 +1,13 @@
 from flask import Flask
 import os
-from model.modelRunner import ModelRunner
-
-modelPath = './model'
-fastTextName = 'fasttextmodel.bin'
-knnName = 'knnmodel.pkl'
-model = ModelRunner(f'{modelPath}/build/{fastTextName}', f'{modelPath}/build/{knnName}', f'{modelPath}/data/data.xls')
 
 app = Flask('AIDMaster')
 
-import api
-app.register_blueprint(api.bp)
+from api import router
+app.register_blueprint(router)
 
 @app.route('/', methods = ['GET'])
 def index():
-    model.predict("Which baking dish is best to bake a banana bread ?")
     return 'Welcome To AID Master Prediction Service'
 
 if __name__ == '__main__':
