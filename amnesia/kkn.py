@@ -14,4 +14,4 @@ class knnmodle(filename,k):
         notext = raw_data
         notext = notext.drop(['TEXT'], axis = 1)
         knn = NearestNeighbors(n_neighbors=k, algorithm='auto').fit(notext)
-        joblib.dump(knn, "knnmodle.pkl")
+        joblib.dump(knn, "knnmodel.pkl")

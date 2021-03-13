@@ -6,7 +6,7 @@ import fasttext
 
 def getres(text):
     fasttextmodel = fasttext.load_model("fasttextmodel.bin")
-    knnmodel = joblib.load("knnmodle.pkl")
+    knnmodel = joblib.load("knnmodel.pkl")
     raw_data = pd.read_excel("text_dnd.xls")
     temp = pd.DataFrame()
     fasttextres = fasttextmodel.predict(text)
