@@ -3,7 +3,7 @@ import cors from 'cors'
 import api from './router/api'
 
 interface ResponseError extends Error {
-    status?: number;
+    status?: number
 }
 
 // Boot express
