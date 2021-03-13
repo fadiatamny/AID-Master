@@ -1,5 +1,5 @@
 from flask import Blueprint, request, abort
-from pprint import pprint
+from apiException import ApiException
 from model.modelRunner import ModelRunner
 
 modelPath = './model'
@@ -15,5 +15,20 @@ def predict():
         text = request.json['text']
         res = model.predict(text)
         return res
+    except ApiException as e:
+        abort(e.errorCode, {'message': str(e.message)})
     except Exception as e:
-        abort(404, {'message': str(e)})
+        abort(500, {'message': str(e)})
+
+
+@router.route('/model', methods=['POST'])
+def switchModels():
+    try:
+        fasttextPath = request.json['fasttext']
+        knnPath = request.json['knn']
+        model.changeInstance(fasttextPath, knnPath)
+        return 'Successfully swapped'
+    except ApiException as e:
+        abort(e.errorCode, {'message': str(e.message)})
+    except Exception as e:
+        abort(500, {'message': str(e)})
