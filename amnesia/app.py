@@ -3,6 +3,9 @@ import os
 
 app = Flask('AIDMaster')
 
+from api import router
+app.register_blueprint(router)
+
 @app.route('/', methods = ['GET'])
 def index():
     return 'Welcome To AID Master Prediction Service'
