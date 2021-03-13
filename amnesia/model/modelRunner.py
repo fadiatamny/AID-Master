@@ -28,7 +28,7 @@ class ModelRunner():
         self._loadModels()
 
     def _dfToText(self, df: DataFrame) -> str: 
-        return ''
+        return df.to_json()
 
     def predict(self, text: str):
         if self.fastTextModel is None or self.knnModel is None:
