@@ -12,6 +12,7 @@ onsHandler['createRoom'] = function () {
     const id = uniqid()
     this.join(id.toString())
     this.emit('roomCreated', {id: id.toString()})
+    this.emit('message', {user: 'admin', text: `room id: ${id}`});
 }
 onsHandler['joinRoom'] = function (id: string, username: string) { 
     try {

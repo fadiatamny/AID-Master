@@ -18,6 +18,11 @@ const Join = () => {
                     onChange={(event) => setName(event.target.value)}
                     />
                 </div>
+                <Link onClick={event => (!name) ? event.preventDefault() : null} to={`/chat?name=${name}&room=dm&player=dm`}>
+                    <button
+                    className="button mt-20"
+                    type="submit">Create Room</button>
+                </Link>
                 <div>
                 <input
                     placeholder="Room"
@@ -27,11 +32,12 @@ const Join = () => {
                     />
                 </div>
 
-                <Link onClick={event => (!name || !room) ? event.preventDefault() : null} to={`/chat?name=${name}&room=${room}`}>
+                <Link onClick={event => (!name || !room) ? event.preventDefault() : null} to={`/chat?name=${name}&room=${room}&player=adv`}>
                     <button
                     className="button mt-20"
                     type="submit">Enter Room</button>
                 </Link>
+
             </div>
         </div>
     )
