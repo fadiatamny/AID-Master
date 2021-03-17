@@ -31,10 +31,9 @@ class ModelRunner():
 
     def _creatdiv(self, raw_frame: DataFrame):
         categorieslist = list(raw_frame.columns)
-        n = len(categorieslist)
         k = raw_frame.count(axis='index')
         s = pd.Series([k], index=[0])
-        s.repeat(n)
+        s.repeat(len(categorieslist))
         return s.reindex(categorieslist, fill_value=k)
 
     def _dfToText(self, df: DataFrame) -> str:
