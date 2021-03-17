@@ -5,7 +5,7 @@ from pandas.core.frame import DataFrame
 import joblib
 import fasttext
 import numpy as np
-from pprint import pprint
+import json
 
 from pandas.core.series import Series
 from apiException import ApiException
@@ -81,5 +81,6 @@ class ModelRunner():
 
         knnRes = knnModel.kneighbors(tempDataframe, return_distance=False)
         textObj = self._dfToText(self.categories.loc[knnRes[0], :])
-        return self._normalize(textObj).to_json()
+        jsonPayload = self._normalize(textObj).to_json()
+        return json.dump(jsonPayload)
 
