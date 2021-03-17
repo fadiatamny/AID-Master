@@ -1,9 +1,13 @@
+from typing import Dict
 import pandas as pd
+from pandas.core import series
 from pandas.core.frame import DataFrame
 import joblib
 import fasttext
 import numpy as np
 from pprint import pprint
+
+from pandas.core.series import Series
 from apiException import ApiException
 
 
@@ -30,7 +34,7 @@ class ModelRunner():
 
         self._loadModels()
 
-    def _creatdiv(self, raw_frame: DataFrame):
+    def _creatdiv(self, raw_frame: DataFrame) -> DataFrame:
         categorieslist = list(raw_frame.columns)
         n = len(categorieslist)
         k = raw_frame.count(axis='index')
@@ -38,14 +42,20 @@ class ModelRunner():
         s.repeat(n)
         return s.reindex(categorieslist, fill_value=k)
 
-    def _dfToText(self, df: DataFrame) -> str:
+    def _dfToText(self, df: DataFrame) -> Series:
         raw_frame = df.replace(0, np.nan)
         raw_frame = raw_frame.dropna(axis='columns', how='all')
         del raw_frame['TEXT']
         res = raw_frame.count()
         div = self._creatdiv(raw_frame)
         res = res.divide(div)
-        return res[0].to_json()
+        return res[0]
+    
+    def _normalize(self,textObj: Series) -> Series:
+        for key in textObj.keys():
+            textObj[key] = round(textObj[key],2)
+        return textObj
+        
 
     def predict(self, text: str):
         if self.fastTextModel is None or self.knnModel is None:
@@ -67,6 +77,6 @@ class ModelRunner():
             tempDataframe[new] = ['1']
         del tempDataframe['TEXT']
 
-        knnres = knnModel.kneighbors(tempDataframe, return_distance=False)
-
-        return self._dfToText(self.categories.loc[knnres[0], :])
+        knnRes = knnModel.kneighbors(tempDataframe, return_distance=False)
+        textObj = self._dfToText(self.categories.loc[knnRes[0], :])
+        return self._normalize(textObj).to_json()
