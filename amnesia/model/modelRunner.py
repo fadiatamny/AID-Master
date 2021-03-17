@@ -35,7 +35,6 @@ class ModelRunner():
         k = raw_frame.count(axis='index')
         s = pd.Series([k],index=[0])
         s.repeat(n)
-        print(s)
         return s.reindex(categorieslist,fill_value=k)
 
     def _dfToText(self, df: DataFrame) -> str:
