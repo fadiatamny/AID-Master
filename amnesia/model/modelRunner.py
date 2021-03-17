@@ -3,6 +3,7 @@ from pandas.core.frame import DataFrame
 import joblib
 import fasttext
 import numpy as np
+from pprint import pprint
 from apiException import ApiException
 
 
@@ -31,9 +32,10 @@ class ModelRunner():
 
     def _creatdiv(self, raw_frame: DataFrame):
         categorieslist = list(raw_frame.columns)
+        n = len(categorieslist)
         k = raw_frame.count(axis='index')
-        s = pd.Series([k])
-        s.repeat(len(categorieslist))
+        s = pd.Series([k], index=[0])
+        s.repeat(n)
         return s.reindex(categorieslist, fill_value=k)
 
     def _dfToText(self, df: DataFrame) -> str:
@@ -42,8 +44,8 @@ class ModelRunner():
         del raw_frame['TEXT']
         res = raw_frame.count()
         div = self._creatdiv(raw_frame)
-        fin_payload = res.divide(div)
-        return fin_payload.to_json()
+        res = res.divide(div)
+        return res[0].to_json()
 
     def predict(self, text: str):
         if self.fastTextModel is None or self.knnModel is None:
@@ -55,7 +57,7 @@ class ModelRunner():
         knnModel = self.knnModel
         tempDataframe = pd.DataFrame()
 
-        fastTextRes = fastTextmodel.predict(text)
+        fastTextRes = fastTextmodel.predict(text, k=10)
         categorieslist = list(self.categories.columns)
 
         for label in categorieslist:
