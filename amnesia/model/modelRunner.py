@@ -31,11 +31,11 @@ class ModelRunner():
 
     def _creatdiv(self, raw_frame: DataFrame):
         categorieslist = list(raw_frame.columns)
-        n =len(categorieslist)
+        n = len(categorieslist)
         k = raw_frame.count(axis='index')
-        s = pd.Series([k],index=[0])
+        s = pd.Series([k], index=[0])
         s.repeat(n)
-        return s.reindex(categorieslist,fill_value=k)
+        return s.reindex(categorieslist, fill_value=k)
 
     def _dfToText(self, df: DataFrame) -> str:
         raw_frame = df.replace(0, np.nan)
@@ -48,7 +48,7 @@ class ModelRunner():
 
     def predict(self, text: str):
         if self.fastTextModel is None or self.knnModel is None:
-          self._loadModels()
+            self._loadModels()
         if self.fastTextModel is None or self.knnModel is None:
             raise ApiException(500, 'error occured in server')
 
@@ -69,4 +69,3 @@ class ModelRunner():
         knnres = knnModel.kneighbors(tempDataframe, return_distance=False)
 
         return self._dfToText(self.categories.loc[knnres[0], :])
-
