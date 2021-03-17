@@ -32,7 +32,7 @@ class ModelRunner():
     def _creatdiv(self, raw_frame: DataFrame):
         categorieslist = list(raw_frame.columns)
         k = raw_frame.count(axis='index')
-        s = pd.Series([k], index=[0])
+        s = pd.Series([k])
         s.repeat(len(categorieslist))
         return s.reindex(categorieslist, fill_value=k)
 
