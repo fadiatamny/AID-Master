@@ -1,19 +1,18 @@
-
-import * as dotenv from "dotenv"
+import * as dotenv from 'dotenv'
 dotenv.config()
 
-import { createServer} from 'http'
+import { createServer } from 'http'
 import { Server, Socket } from 'socket.io'
 
 import app from './app'
 import { initSocket } from './services/gameService'
 
-let port = process.env.PORT || 5069
-app.set('port',port)
+const port = process.env.PORT || 5069
+app.set('port', port)
 
 const server = createServer(app)
 
-const io = new Server(server);
+const io = new Server(server)
 io.sockets.on('connection', (socket: Socket) => {
     initSocket(io, socket)
 })
