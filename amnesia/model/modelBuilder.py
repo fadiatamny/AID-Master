@@ -5,8 +5,10 @@ import fasttext
 import joblib 
 import os
 import sys
+import requests
 
 class ModelBuilder():
+    @staticmethod
     def _cleanText(data) -> None:
         headlist=list(data.columns.values)
         del headlist[0]
@@ -22,6 +24,7 @@ class ModelBuilder():
         data['TEXT'] = first
         return data
 
+    @staticmethod
     def createFastText(filePath: str, hash = '') -> None:
         #read the data file and creat the fasttext 
         raw_data = pd.read_excel(filePath)
@@ -33,7 +36,7 @@ class ModelBuilder():
             os.remove(f'processed_data{hash}.txt')
         print('Generated FastText Model Successfully')
 
-        
+    @staticmethod
     def createKNN(filePath: str, k: int, hash = '') -> None:
         raw_data = pd.read_excel(filePath)
         notext = pd.DataFrame()
@@ -43,6 +46,7 @@ class ModelBuilder():
         joblib.dump(knn, f'./build/knnmodel{hash}.pkl')
         print('Generated KNN Model Successfully')
     
+    @staticmethod
     def createModels(filePath: str, k: int = 3, hash = '') -> None:
         ModelBuilder.createFastText(filePath, hash)
         ModelBuilder.createKNN(filePath, k, hash)
@@ -58,16 +62,42 @@ if __name__ == '__main__':
         sys.exit()
 
     if len(sys.argv) < 2:
-        print('Please follow format of modelBuilder.py [datasheet] [k-neighbors? = 3] [hash? = ""]')
+        print('Please follow format of modelBuilder.py [datasheet] -k [k-neighbors? = 3] -h [hash? = ""]')
         sys.exit()
 
+    if not os.path.isdir('data'):
+        os.mkdir('data')
+
+    if not os.path.isfile(sys.argv[1]):
+        #fetch n download it
+        url = 'https://cdn.discordapp.com/attachments/703993474927820811/821805778302009395/data.xls'
+        r = requests.get(url, allow_redirects=True)
+
+        open('./data/data.xls', 'wb').write(r.content)
+
+    if not os.path.isdir('build'):
+        os.mkdir('build')
+
+    k: int = 3
+    h: str = ''
+
+    for index, item in enumerate(sys.argv, 0):
+        if item == '-h' and index + 1 < len(sys.argv):
+            h = f'_{sys.argv[index + 1]}'
+        if item == '-k' and index + 1 < len(sys.argv):
+            k = int(sys.argv[index + 1])
+    
     try:
         ModelBuilder.createModels(
             filePath = sys.argv[1],
-            k = 3, 
-            hash = ''
+            k = k, 
+            hash = h
         )
 
         #add http call to server to change model based on name and hash.
-    except:
+    except Exception as e:
+        if os.path.exists(f'processed_data{h}.txt'): 
+            os.remove(f'processed_data{h}.txt')
         print('Error has occured please check -h for help.')
+        print('Stack;')
+        print(e)

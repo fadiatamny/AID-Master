@@ -1,8 +1,15 @@
+from typing import Dict
 import pandas as pd
+from pandas.core import series
 from pandas.core.frame import DataFrame
 import joblib
 import fasttext
+import numpy as np
+import json
+
+from pandas.core.series import Series
 from apiException import ApiException
+
 
 class ModelRunner():
     def __init__(self, fastText: str, knn: str, data: str) -> None:
@@ -19,7 +26,7 @@ class ModelRunner():
             self.fastTextModel = None
             self.knnModel = None
 
-    def changeInstance (self, fastText = '', knn = '') -> None:
+    def changeInstance(self, fastText='', knn='') -> None:
         if fastText != '':
             self.fastTextPath = fastText
         if knn != '':
@@ -27,20 +34,42 @@ class ModelRunner():
 
         self._loadModels()
 
-    def _dfToText(self, df: DataFrame) -> str: 
-        return df.to_json()
+#creat the Series to divid with frame
+    def _creatDiv(self, raw_frame: DataFrame) -> DataFrame:
+        categorieslist = list(raw_frame.columns)
+        n = len(categorieslist)
+        k = len(raw_frame.index)
+        s = pd.Series([n], index=[0])
+        s.repeat(n)
+        return s.reindex(categorieslist, fill_value=k)
+
+ #convert the data frame to text
+    def _dfToText(self, df: DataFrame) -> Series:
+        raw_frame = df.replace(0, np.nan)
+        raw_frame = raw_frame.dropna(axis='columns', how='all')
+        del raw_frame['TEXT']
+        res = raw_frame.count()
+        div = self._creatDiv(raw_frame)
+        res = res.divide(div)
+        return res
+    #normolize the % of the payload
+    def _normalize(self,textObj: Series) -> Series:
+        for key in textObj.keys():
+            textObj[key] = round(textObj[key],2)
+        return textObj
+        
 
     def predict(self, text: str):
         if self.fastTextModel is None or self.knnModel is None:
             self._loadModels()
         if self.fastTextModel is None or self.knnModel is None:
             raise ApiException(500, 'error occured in server')
-        
+
         fastTextmodel = self.fastTextModel
         knnModel = self.knnModel
         tempDataframe = pd.DataFrame()
 
-        fastTextRes = fastTextmodel.predict(text)
+        fastTextRes = fastTextmodel.predict(text, k=10)
         categorieslist = list(self.categories.columns)
 
         for label in categorieslist:
@@ -50,6 +79,8 @@ class ModelRunner():
             tempDataframe[new] = ['1']
         del tempDataframe['TEXT']
 
-        knnres = knnModel.kneighbors(tempDataframe, return_distance=False)
+        knnRes = knnModel.kneighbors(tempDataframe, return_distance=False)
+        textObj = self._dfToText(self.categories.loc[knnRes[0], :])
+        jsonPayload = self._normalize(textObj).to_json()
+        return json.dump(jsonPayload)
 
-        return self._dfToText(self.categories.loc[knnres[0], :])
