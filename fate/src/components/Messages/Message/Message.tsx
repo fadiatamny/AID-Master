@@ -1,4 +1,4 @@
-import './Message.module.css';
+import styles from './Message.module.css';
 
 export interface IMessageProps {
     message: string,
@@ -17,19 +17,19 @@ export default function Message (props: IMessageProps) {
     
     return(
         isSentByCurrentUser ? (
-      <div className="messageContainer justifyEnd">
-        <p className="sentText pr-10">{props.name}</p>
-        <div className="messageBox backgroundBlue">
-            <p className="messageText colorWhite">{props.message}</p>
+      <div className={`${styles.messageContainer} ${styles.justifyEnd}`}>
+        <p className={`${styles.sentText} ${styles.prTen}`}>{props.name}</p>
+        <div className={`${styles.messageBox} ${styles.backgroundBlue}`}>
+            <p className={`${styles.messageText} ${styles.colorWhite}`}>{props.message}</p>
         </div>
       </div>
         )
         : (
-        <div className="messageContainer justifyStart">
-            <div className="messageBox backgroundLight">
-                 <p className="messageText colorDark">{props.message}</p>
+        <div className={`${styles.messageContainer} ${styles.justifyStart}`}>
+            <div className={`${styles.messageBox} ${styles.backgroundLight}`}>
+                 <p className={`${styles.messageText} ${styles.colorDark}`}>{props.message}</p>
             </div>
-            <p className="sentText pl-10">{props.name}</p>
+            <p className={`${styles.sentText} ${styles.plTen}`}>{props.name}</p>
         </div>
         )
   );

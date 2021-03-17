@@ -1,3 +1,5 @@
+import styles from './Input.module.css';
+
 export interface IInputProps {
   message: string,
   setMessage: Function
@@ -8,7 +10,7 @@ export default function Input (props: IInputProps) {
   return (
     <form className="form">
         <input
-        className="input"
+        className={styles.input}
         type="text"
         placeholder="Type a message..."
         value={props.message}

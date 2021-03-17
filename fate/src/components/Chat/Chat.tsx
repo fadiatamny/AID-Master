@@ -1,8 +1,8 @@
-import React, {useState, useEffect} from 'react';
+import React from 'react';
 import queryString from 'query-string';
 import io from 'socket.io-client';
 
-import './Chat.module.css';
+import styles from './Chat.module.css';
 import InfoBar from '../InfoBar/InfoBar';
 import Input from '../Input/Input';
 import Messages from '../Messages/Messages';
@@ -15,11 +15,11 @@ export interface IChatProps {
 }
 
 export default function Chat (props: IChatProps) {
-   const [name, setName] = useState('');
-   const [room, setRoom] = useState('');
-   const [users, setUsers] = useState('');
-   const [message, setMessage] = useState('');
-   const [messages, setMessages] = useState([]);
+   const [name, setName] = React.useState('');
+   const [room, setRoom] = React.useState('');
+   const [users, setUsers] = React.useState('');
+   const [message, setMessage] = React.useState('');
+   const [messages, setMessages] = React.useState([]);
 
    const sendMessage = () => {
 //     event.preventDefault();
@@ -29,8 +29,8 @@ export default function Chat (props: IChatProps) {
 }
 
   return (
-    <div className="outerContainer">
-        <div className="container">
+    <div className={styles.outerContainer}>
+        <div className={styles.container}>
             <InfoBar room={room} />
             <Messages name={name} messages={messages}></Messages>
             <Input message={message} setMessage={setMessage} sendMessage={sendMessage} />

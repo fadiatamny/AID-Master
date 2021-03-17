@@ -1,13 +1,13 @@
-import { BrowserRouter as Router, Route} from 'react-router-dom';
-import Join from './components/Join/Join';
-import Chat from './components/Chat/Chat';
+import { BrowserRouter as Router, Route} from 'react-router-dom'
+import Join from './components/Join/Join'
+import Chat from './components/Chat/Chat'
 
-import './App.css'
+import './index.css'
 
 export interface IAppProps {
 }
 
-export default function App (props: IAppProps) {
+export default function App ({}: IAppProps) {
   return (
     <Router>
       <Route path="/" exact component={Join} />
