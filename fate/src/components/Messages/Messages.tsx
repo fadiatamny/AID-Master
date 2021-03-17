@@ -1,13 +1,14 @@
 import styles from './Messages.module.css';
 import ScrollToBottom from 'react-scroll-to-bottom'
-import Message from './Message/Message';
+import Message, { IMessageProps, MessageModel } from './Message/Message';
 
 export interface IMessagesProps {
-    messages: Array<string>,
+    messages: MessageModel[],
     name: string,
 }
 
 export default function Messages (props: IMessagesProps) {
+  console.log(props.messages.length);
   return (
     <ScrollToBottom className={styles.messages}>
         {props.messages.map((message, i:number) => 

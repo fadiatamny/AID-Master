@@ -30,7 +30,7 @@ export default function Join ({}: IJoinProps) {
                     />
                 </div>
 
-                <Link onClick={event => (!name || !room) ? event.preventDefault() : null} to={`/chat?name=${name}&room=${room}`}>
+                <Link onClick={event => (!name) ? event.preventDefault() : null} to={`/chat?name=${name}&room=${room}`}>
                     <button
                     className={`${styles.button} ${styles.mtTwenty}`}
                     type="submit">Enter Room</button>
