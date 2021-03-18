@@ -2,13 +2,16 @@ from flask import Blueprint, request, abort
 from apiException import ApiException
 from model.modelRunner import ModelRunner
 from flask_cors import cross_origin
+import json
 
 modelPath = './model'
 fastTextName = 'fasttextmodel.bin'
 knnName = 'knnmodel.pkl'
-model = ModelRunner(f'{modelPath}/build/{fastTextName}', f'{modelPath}/build/{knnName}', f'{modelPath}/data/data.xls')
+model = ModelRunner(f'{modelPath}/build/{fastTextName}',
+                    f'{modelPath}/build/{knnName}', f'{modelPath}/data/data.xls')
 
 router = Blueprint('api', __name__, url_prefix='/api')
+
 
 @cross_origin()
 @router.route('/predict', methods=['POST'])
@@ -16,7 +19,7 @@ def predict():
     try:
         text = request.json['text']
         res = model.predict(text)
-        return res
+        return json.dumps(res)
     except ApiException as e:
         abort(e.errorCode, {'message': str(e.message)})
     except Exception as e:
