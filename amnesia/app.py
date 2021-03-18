@@ -1,14 +1,20 @@
+from api import router
 from flask import Flask
+from flask_cors import CORS, cross_origin
 import os
 
 app = Flask('AIDMaster')
+cors = CORS(app)
+app.config['CORS_HEADERS'] = 'Content-Type'
 
-from api import router
 app.register_blueprint(router)
 
-@app.route('/', methods = ['GET'])
+
+@cross_origin()
+@app.route('/', methods=['GET'])
 def index():
     return 'Welcome To AID Master Prediction Service'
+
 
 if __name__ == '__main__':
     config = f'{os.path.dirname(os.path.realpath(__file__))}/.config.json'

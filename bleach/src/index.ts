@@ -12,7 +12,14 @@ app.set('port', port)
 
 const server = createServer(app)
 
-const io = new Server(server)
+const io = new Server(server, {cors: {
+    allowedHeaders: ['Origin', 'X-Requested-With', 'Content-Type', 'Accept', 'X-Access-Token'],
+    methods: 'GET,HEAD,OPTIONS,PUT,PATCH,POST,DELETE',
+    origin: process.env.API_URL || 'localhost',
+    preflightContinue: false,
+    credentials: true
+}})
+
 io.sockets.on('connection', (socket: Socket) => {
     initSocket(io, socket)
 })

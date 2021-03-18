@@ -34,7 +34,7 @@ class ModelRunner():
 
         self._loadModels()
 
-#creat the Series to divid with frame
+# creat the Series to divid with frame
     def _creatDiv(self, raw_frame: DataFrame) -> DataFrame:
         categorieslist = list(raw_frame.columns)
         n = len(categorieslist)
@@ -43,7 +43,7 @@ class ModelRunner():
         s.repeat(n)
         return s.reindex(categorieslist, fill_value=k)
 
- #convert the data frame to text
+ # convert the data frame to text
     def _dfToText(self, df: DataFrame) -> Series:
         raw_frame = df.replace(0, np.nan)
         raw_frame = raw_frame.dropna(axis='columns', how='all')
@@ -52,12 +52,12 @@ class ModelRunner():
         div = self._creatDiv(raw_frame)
         res = res.divide(div)
         return res
-    #normolize the % of the payload
-    def _normalize(self,textObj: Series) -> Series:
+    # normolize the % of the payload
+
+    def _normalize(self, textObj: Series) -> Series:
         for key in textObj.keys():
-            textObj[key] = round(textObj[key],2)
+            textObj[key] = round(textObj[key], 2)
         return textObj
-        
 
     def predict(self, text: str):
         if self.fastTextModel is None or self.knnModel is None:
@@ -82,5 +82,5 @@ class ModelRunner():
         knnRes = knnModel.kneighbors(tempDataframe, return_distance=False)
         textObj = self._dfToText(self.categories.loc[knnRes[0], :])
         jsonPayload = self._normalize(textObj).to_json()
-        return json.dump(jsonPayload)
 
+        return jsonPayload
