@@ -20,8 +20,9 @@ export default function Chat({ location }: IChatProps) {
     const [users, setUsers] = React.useState<string[]>([])
     const [message, setMessage] = React.useState('')
     const [messages, setMessages] = React.useState<any[]>([])
-    const socket = io(ENDPOINT)
+    const socket = io(ENDPOINT, { withCredentials: true })
     const [dm, setDm] = React.useState(false)
+    const [scenario, setScenario] = React.useState('')
 
     socket.on('roomCreated', (id: string) => {
         const { name } = queryString.parse(location.search)
@@ -44,6 +45,7 @@ export default function Chat({ location }: IChatProps) {
     socket.on('scenarioGuide', (username: string, data: string) => {
         console.log('DATA ', JSON.parse(data))
         alert(data)
+        setScenario(data)
     })
 
     React.useEffect(() => {
@@ -83,9 +85,12 @@ export default function Chat({ location }: IChatProps) {
                     onKeyPress={(event) => (event.key === 'Enter' ? sendMessage() : null)}
                 />
                 <button className="sendButton" onClick={sendMessage}>
-                    Send
+                    Send Chat
                 </button>
-                <button onClick={sendScenario}>SEND SCENARIO PLZ</button>
+                <button onClick={sendScenario}>Send Game Scenario</button>
+                <div>
+                    <p className={styles.guide}>{scenario}</p>
+                </div>
             </div>
         </div>
     ) : (
