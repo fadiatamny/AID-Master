@@ -1,6 +1,7 @@
 from flask import Blueprint, request, abort
 from apiException import ApiException
 from model.modelRunner import ModelRunner
+from flask_cors import cross_origin
 
 modelPath = './model'
 fastTextName = 'fasttextmodel.bin'
@@ -9,6 +10,7 @@ model = ModelRunner(f'{modelPath}/build/{fastTextName}', f'{modelPath}/build/{kn
 
 router = Blueprint('api', __name__, url_prefix='/api')
 
+@cross_origin()
 @router.route('/predict', methods=['POST'])
 def predict():
     try:
@@ -21,6 +23,7 @@ def predict():
         abort(500, {'message': str(e)})
 
 
+@cross_origin()
 @router.route('/model', methods=['POST'])
 def switchModels():
     try:

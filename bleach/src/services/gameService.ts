@@ -42,12 +42,18 @@ onsHandler['joinRoom'] = function (id: string, username: string) {
 onsHandler['sendMessage'] = (id: string, username: string, message: string, target?: string) => {
     io.sockets.in(id).emit('message', username, message, target)
 }
-onsHandler['sendSenario'] = async (id: string, username: string, scenario: string) => {
-    io.sockets.in(id).emit('scenario', scenario)
-    const res = await axios.post(`${process.env.AMNESIA_ENDPOINT}/api/predict`, {
-        text: scenario
-    })
-    io.sockets.in(id).emit('scenarioGuide', username, res.data)
+onsHandler['sendSenario'] = (id: string, username: string, scenario: string) => {
+    axios
+        .post(`${process.env.AMNESIA_ENDPOINT}/api/predict`, {
+            text: scenario
+        })
+        .then((res) => {
+            io.sockets.in(id).emit('scenario', scenario)
+            io.sockets.in(id).emit('scenarioGuide', username, res.data)
+        })
+        .catch((e) => {
+            console.log(e)
+        })
 }
 //#endregion
 

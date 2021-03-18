@@ -82,5 +82,6 @@ class ModelRunner():
         knnRes = knnModel.kneighbors(tempDataframe, return_distance=False)
         textObj = self._dfToText(self.categories.loc[knnRes[0], :])
         jsonPayload = self._normalize(textObj).to_json()
-        return json.dump(jsonPayload)
+        
+        return jsonPayload
 

@@ -6,6 +6,7 @@ import styles from './Chat.module.css';
 import InfoBar from '../InfoBar/InfoBar';
 import Input from '../Input/Input';
 import Messages from '../Messages/Messages';
+import axios from 'axios';
 
 const ENDPOINT = 'localhost:5069';
 
@@ -45,8 +46,8 @@ export default function Chat ({location}: IChatProps) {
   })
 
   socket.on('scenarioGuide', (username: string, data: string) => {
-    if (dm)
-      alert(JSON.parse(data))
+    console.log('DATA ', data)
+    alert(JSON.parse(data))
   })
 
   React.useEffect(() => {
@@ -71,8 +72,7 @@ export default function Chat ({location}: IChatProps) {
 }
 
   const sendScenario = () => {
-    if (dm)
-    socket.emit('sendSenario', roomId, username, message);
+    socket.emit('sendSenario', roomId, username, message);      
   }
 
 return dm ? (
