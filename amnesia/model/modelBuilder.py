@@ -30,9 +30,12 @@ class ModelBuilder():
         # read the data file and creat the fasttext
         raw_data = pd.read_excel(filePath)
         cleandata = ModelBuilder._cleanText(raw_data)
-        np.savetxt(f'processed_data{hash}.txt', cleandata.values, fmt='%s')
+        train, validate, test = np.split(cleandata.sample(frac=1), [int(.6*len(cleandata)), int(.8*len(cleandata))])
+        np.savetxt(f'validate_data{hash}.txt',validate.values,fmt='%s')
+        np.savetxt(f'test_data{hash}.txt',test.values,fmt='%s')
+        np.savetxt(f'processed_data{hash}.txt', train.values, fmt='%s')
         fastmodule = fasttext.train_supervised(
-            input=f'./processed_data{hash}.txt', epoch=50, lr=0.1, wordNgrams=2)
+            input=f'./processed_data{hash}.txt', autotuneValidationFile=f'./validate_data{hash}.txt',autotunePredictions=10,autotuneDuration = 1500)
         fastmodule.save_model(f'./build/fasttextmodel{hash}.bin')
         if os.path.exists(f'processed_data{hash}.txt'):
             os.remove(f'processed_data{hash}.txt')
