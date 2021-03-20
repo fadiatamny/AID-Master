@@ -24,18 +24,29 @@ class ModelBuilder():
         del data['TEXT']
         data['TEXT'] = first
         return data
+    
+    @staticmethod
+    def _testModel(model) -> None:
+        allResFIle = open('testRes.txt','a')
+        testRes = model.test(f'test_data{hash}.txt',10)
+        allResFIle.write(f'{testRes[0]} {testRes[1]} {testRes[2]} \n')
+        allResFIle.close()
+
 
     @staticmethod
     def createFastText(filePath: str, hash='') -> None:
         # read the data file and creat the fasttext
         raw_data = pd.read_excel(filePath)
         cleandata = ModelBuilder._cleanText(raw_data)
-        train, validate, test = np.split(cleandata.sample(frac=1), [int(.6*len(cleandata)), int(.8*len(cleandata))])
-        np.savetxt(f'validate_data{hash}.txt',validate.values,fmt='%s')
-        np.savetxt(f'test_data{hash}.txt',test.values,fmt='%s')
+        #spliting the data to 3 parts 60/20/20 
+        train, validate, test = np.split(cleandata.sample(
+            frac=1), [int(.6*len(cleandata)), int(.8*len(cleandata))])
+        np.savetxt(f'validate_data{hash}.txt', validate.values, fmt='%s')
+        np.savetxt(f'test_data{hash}.txt', test.values, fmt='%s')
         np.savetxt(f'processed_data{hash}.txt', train.values, fmt='%s')
         fastmodule = fasttext.train_supervised(
-            input=f'./processed_data{hash}.txt', autotuneValidationFile=f'./validate_data{hash}.txt',autotunePredictions=10,autotuneDuration = 1500)
+            input=f'./processed_data{hash}.txt',
+            autotuneValidationFile=f'./validate_data{hash}.txt', autotunePredictions=10, autotuneDuration=1500)
         fastmodule.save_model(f'./build/fasttextmodel{hash}.bin')
         if os.path.exists(f'processed_data{hash}.txt'):
             os.remove(f'processed_data{hash}.txt')
