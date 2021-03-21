@@ -27,12 +27,12 @@ class ModelBuilder():
 
     @staticmethod
     # testing the model accuracy
-    def _testModel(model) -> None:
+    def _testModel(model,hase: str) -> None:
         allResFIle = open('testRes.txt', 'a')
         # proforming the auto test accuracy test in fasttext model
         testRes = model.test(f'test_data{hash}.txt', 10)
         # saving the result for future analysis
-        allResFIle.write(f'{testRes[0]},{testRes[1]},{testRes[2]}\n')
+        allResFIle.write(f'{hase},{testRes[0]},{testRes[1]},{testRes[2]}\n')
         allResFIle.close()
 
     @staticmethod
@@ -60,7 +60,7 @@ class ModelBuilder():
         fastmodule = fasttext.train_supervised(
             input=f'./training_data{hash}.txt',
             autotuneValidationFile=f'./validate_data{hash}.txt', autotunePredictions=10, autotuneDuration=1500)
-        ModelBuilder._testModel(fastmodule)
+        ModelBuilder._testModel(fastmodule,hash)
         # saving the model
         fastmodule.save_model(f'./build/fasttextmodel{hash}.bin')
         ModelBuilder._cleanFiles()
