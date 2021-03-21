@@ -6,6 +6,7 @@ import os
 import sys
 import requests
 
+
 class ModelTester:
     @staticmethod
     def _cleanText(data) -> None:
@@ -65,13 +66,13 @@ class ModelTester:
                 file.write(
                     '\n#########################################################\n')
                 file.write(f'Time Stamp: {date}\n')
-                file.write(f'Test Number = {t}\n')
+                file.write(f'Test Number = {t + 1}\n')
                 file.write(f'Number of Examples = {res[0]}\n')
                 file.write(f'Percision = {round(res[1] * 100, 3)}%\n')
                 file.write(f'Recall = {round(res[2] * 100, 3)}%\n')
                 file.write(
                     '#########################################################\n')
-                file.close()
+                file.flush()
             file.close()
 
     @staticmethod
@@ -111,7 +112,7 @@ if __name__ == '__main__':
 
     try:
         ModelTester.cleanFiles(h)
-        #python modelTester.py ./data/data.xls
+        # python modelTester.py ./data/data.xls
         ModelTester.runTests(
             filePath=sys.argv[1],
             hash=h,
@@ -123,4 +124,3 @@ if __name__ == '__main__':
         print('Error has occured please check -h for help.')
         print('Stack;')
         print(e)
-
