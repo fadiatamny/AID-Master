@@ -2,4 +2,6 @@ __pycache__
 .config.json
 model/build
 model/data
+model/tests
+model/logs
 model/processed_data.txt
