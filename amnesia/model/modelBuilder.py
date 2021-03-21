@@ -56,10 +56,10 @@ class ModelBuilder():
         np.savetxt(f'validate_data{hash}.txt', validate.values, fmt='%s')
         np.savetxt(f'testing_data{hash}.txt', test.values, fmt='%s')
         np.savetxt(f'training_data{hash}.txt', train.values, fmt='%s')
-        # creating the model and performing auto tune for 10 labels and 25min (1500s)
+        # creating the model and performing auto tune for 10 labels and 5min (300s)
         fastmodule = fasttext.train_supervised(
             input=f'./training_data{hash}.txt',
-            autotuneValidationFile=f'./validate_data{hash}.txt', autotunePredictions=10, autotuneDuration=1500)
+            autotuneValidationFile=f'./validate_data{hash}.txt', autotunePredictions=10, autotuneDuration=300)
         ModelBuilder._testModel(fastmodule,hash)
         # saving the model
         fastmodule.save_model(f'./build/fasttextmodel{hash}.bin')
