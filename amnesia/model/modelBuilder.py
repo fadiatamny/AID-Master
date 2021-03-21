@@ -19,46 +19,60 @@ class ModelBuilder():
         # clean the text from end of line
         for i in range(len(data)):
             data['TEXT'][i] = data['TEXT'][i].replace("\n", ' ')
-        # move the first TEXT line to the end
+        # move the first TEXT colume to the end
         first = data["TEXT"]
         del data['TEXT']
         data['TEXT'] = first
         return data
-    
+
     @staticmethod
+    # testing the model accuracy
     def _testModel(model) -> None:
-        allResFIle = open('testRes.txt','a')
-        testRes = model.test(f'test_data{hash}.txt',10)
-        allResFIle.write(f'{testRes[0]} {testRes[1]} {testRes[2]} \n')
+        allResFIle = open('testRes.txt', 'a')
+        # proforming the auto test accuracy test in fasttext model
+        testRes = model.test(f'test_data{hash}.txt', 10)
+        # saving the result for future analysis
+        allResFIle.write(f'{testRes[0]},{testRes[1]},{testRes[2]}\n')
         allResFIle.close()
 
+    @staticmethod
+    # removing unnecessary file in the end of the process
+    def _cleanFiles() -> None:
+        if os.path.exists(f'training_data{hash}.txt'):
+            os.remove(f'training_data{hash}.txt')
+        if os.path.exists(f'validate_data{hash}.txt'):
+            os.remove(f'validate_data{hash}.txt')
+        if os.path.exists(f'testing_data{hash}.txt'):
+            os.remove(f'testing_data{hash}.txt')
 
     @staticmethod
+    # read the data file and creat the fasttext
     def createFastText(filePath: str, hash='') -> None:
-        # read the data file and creat the fasttext
         raw_data = pd.read_excel(filePath)
         cleandata = ModelBuilder._cleanText(raw_data)
-        #spliting the data to 3 parts 60/20/20 
+        # spliting the data to 3 parts 60/20/20
         train, validate, test = np.split(cleandata.sample(
             frac=1), [int(.6*len(cleandata)), int(.8*len(cleandata))])
         np.savetxt(f'validate_data{hash}.txt', validate.values, fmt='%s')
-        np.savetxt(f'test_data{hash}.txt', test.values, fmt='%s')
-        np.savetxt(f'processed_data{hash}.txt', train.values, fmt='%s')
+        np.savetxt(f'testing_data{hash}.txt', test.values, fmt='%s')
+        np.savetxt(f'training_data{hash}.txt', train.values, fmt='%s')
+        # creating the model and performing auto tune for 10 labels and 25min (1500s)
         fastmodule = fasttext.train_supervised(
-            input=f'./processed_data{hash}.txt',
+            input=f'./training_data{hash}.txt',
             autotuneValidationFile=f'./validate_data{hash}.txt', autotunePredictions=10, autotuneDuration=1500)
+        ModelBuilder._testModel(fastmodule)
+        # saving the model
         fastmodule.save_model(f'./build/fasttextmodel{hash}.bin')
-        if os.path.exists(f'processed_data{hash}.txt'):
-            os.remove(f'processed_data{hash}.txt')
+        ModelBuilder._cleanFiles()
         print('Generated FastText Model Successfully')
 
     @staticmethod
     def createKNN(filePath: str, k: int, hash='') -> None:
         raw_data = pd.read_excel(filePath)
-        notext = pd.DataFrame()
-        notext = raw_data
-        notext = notext.drop(['TEXT'], axis=1)
-        knn = NearestNeighbors(n_neighbors=k, algorithm='auto').fit(notext)
+        # preparing the data for the KNN by removing the TEXT
+        knnData = raw_data.drop(['TEXT'], axis=1)
+        knn = NearestNeighbors(n_neighbors=k, algorithm='auto').fit(knnData)
+        # saving the model
         joblib.dump(knn, f'./build/knnmodel{hash}.pkl')
         print('Generated KNN Model Successfully')
 
