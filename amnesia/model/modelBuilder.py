@@ -27,17 +27,17 @@ class ModelBuilder():
 
     @staticmethod
     # testing the model accuracy
-    def _testModel(model,hase: str) -> None:
-        allResFIle = open('testRes.txt', 'a')
+    def _testModel(model, hash: str) -> None:
         # proforming the auto test accuracy test in fasttext model
-        testRes = model.test(f'test_data{hash}.txt', 10)
+        testRes = model.test(f'./testing_data{hash}.txt', 10)
+        allResFIle = open('./testRes.txt', 'a')
         # saving the result for future analysis
-        allResFIle.write(f'{hase},{testRes[0]},{testRes[1]},{testRes[2]}\n')
+        allResFIle.write(f'{hash},{testRes[0]},{testRes[1]},{testRes[2]}\n')
         allResFIle.close()
 
     @staticmethod
     # removing unnecessary file in the end of the process
-    def _cleanFiles() -> None:
+    def _cleanFiles(hash) -> None:
         if os.path.exists(f'training_data{hash}.txt'):
             os.remove(f'training_data{hash}.txt')
         if os.path.exists(f'validate_data{hash}.txt'):
@@ -53,9 +53,9 @@ class ModelBuilder():
         # spliting the data to 3 parts 60/20/20
         train, validate, test = np.split(cleandata.sample(
             frac=1), [int(.6*len(cleandata)), int(.8*len(cleandata))])
-        np.savetxt(f'validate_data{hash}.txt', validate.values, fmt='%s')
-        np.savetxt(f'testing_data{hash}.txt', test.values, fmt='%s')
-        np.savetxt(f'training_data{hash}.txt', train.values, fmt='%s')
+        np.savetxt(f'./validate_data{hash}.txt', validate.values, fmt='%s')
+        np.savetxt(f'./testing_data{hash}.txt', test.values, fmt='%s')
+        np.savetxt(f'./training_data{hash}.txt', train.values, fmt='%s')
         # creating the model and performing auto tune for 10 labels and 5min (300s)
         fastmodule = fasttext.train_supervised(
             input=f'./training_data{hash}.txt',
@@ -63,7 +63,7 @@ class ModelBuilder():
         ModelBuilder._testModel(fastmodule,hash)
         # saving the model
         fastmodule.save_model(f'./build/fasttextmodel{hash}.bin')
-        ModelBuilder._cleanFiles()
+        ModelBuilder._cleanFiles(hash)
         print('Generated FastText Model Successfully')
 
     @staticmethod
