@@ -24,6 +24,24 @@ class ModelTester:
         data['TEXT'] = first
         return data
 
+    @staticmethod
+    def _initlizeTestFolder(date: datetime) -> None:
+        if not os.path.isdir('tests'):
+            os.mkdir('tests')
+
+        if not os.path.isdir(f'./tests/test_{date.day}_{date.month}_{date.year}'):
+            os.mkdir(f'./tests/test_{date.day}_{date.month}_{date.year}')
+
+    @staticmethod
+    def _getFastTextData(filePath: str, hash: str) -> None:
+        raw_data = pd.read_excel(filePath)
+        cleandata = ModelTester._cleanText(raw_data)
+
+        train, test = np.split(cleandata.sample(frac=1),
+                               [int(.8*len(cleandata))])
+        np.savetxt(f'./testing_data{hash}.txt', test.values, fmt='%s')
+        np.savetxt(f'./training_data{hash}.txt', train.values, fmt='%s')
+
     # removing unnecessary file in the end of the process
     @staticmethod
     def cleanFiles(hash) -> None:
@@ -35,49 +53,48 @@ class ModelTester:
             os.remove(f'testing_data{hash}.txt')
 
     @staticmethod
-    def fasttextTest(filePath: str, hash: str = '') -> None:
-        raw_data = pd.read_excel(filePath)
-        cleandata = ModelTester._cleanText(raw_data)
-
-        train, test = np.split(cleandata.sample(frac=1),
-                               [int(.8*len(cleandata))])
-        np.savetxt(f'./testing_data{hash}.txt', test.values, fmt='%s')
-        np.savetxt(f'./training_data{hash}.txt', train.values, fmt='%s')
-
+    def fastTextTest(time: int, cycles: int, hash: str = '') -> None:
         date = datetime.datetime.now()
+        ModelTester._initlizeTestFolder(date)
 
-        if not os.path.isdir('tests'):
-            os.mkdir('tests')
+        print('\n#########################################################')
+        print(f'Starting The {int(time/60)}m Tests:\t\t{date}')
+        file = open(
+            f'./tests/test_{date.day}_{date.month}_{date.year}/testRes#{int(time/60)}m.txt', 'a')
+        for t in range(cycles):
+            print(f'\tCycle #{t + 1}')
+            model = fasttext.train_supervised(
+                input=f'./training_data{hash}.txt', autotuneValidationFile=f'./testing_data{hash}.txt', autotunePredictions=10, autotuneDuration=time)
+            res = model.test(f'testing_data{hash}.txt', 10)
+            file.write(
+                '\n#########################################################\n')
+            file.write(f'Time Stamp: {date}\n')
+            file.write(f'Test Number = {t + 1}\n')
+            file.write(f'Number of Examples = {res[0]}\n')
+            file.write(f'Percision = {round(res[1] * 100, 3)}%\n')
+            file.write(f'Recall = {round(res[2] * 100, 3)}%\n')
+            file.write(
+                '#########################################################\n')
+            file.flush()
+        file.close()
 
-        if not os.path.isdir(f'./tests/test_{date.day}_{date.month}_{date.year}'):
-            os.mkdir(f'./tests/test_{date.day}_{date.month}_{date.year}')
+    @staticmethod
+    def specializedFastTextTest(filePath: str, time: int, cycles: int, hash: str = '') -> None:
+        ModelTester._getFastTextData(filePath, hash)
+        ModelTester.fastTextTest(time, cycles, hash)
 
-        print('Starting Tests\n\n')
+    @staticmethod
+    def generalFastTextTest(filePath: str, hash: str = '') -> None:
+        ModelTester._getFastTextData(filePath, hash)
+
+        print('Starting General Tests')
         for i in range(300, 2100, 300):
-            print('\n#########################################################')
-            print(f'Starting The {int(i/60)} Tests:')
-            file = open(
-                f'./tests/test_{date.day}_{date.month}_{date.year}/testRes#{int(i/60)}m.txt', 'a')
-            for t in range(3):
-                print(f'\tStarting The {int(i/60)} Run {t + 1}')
-                model = fasttext.train_supervised(
-                    input=f'./training_data{hash}.txt', autotuneValidationFile=f'./testing_data{hash}.txt', autotunePredictions=10, autotuneDuration=i)
-                res = model.test(f'testing_data{hash}.txt', 10)
-                file.write(
-                    '\n#########################################################\n')
-                file.write(f'Time Stamp: {date}\n')
-                file.write(f'Test Number = {t + 1}\n')
-                file.write(f'Number of Examples = {res[0]}\n')
-                file.write(f'Percision = {round(res[1] * 100, 3)}%\n')
-                file.write(f'Recall = {round(res[2] * 100, 3)}%\n')
-                file.write(
-                    '#########################################################\n')
-                file.flush()
-            file.close()
+            ModelTester.fastTextTest(i, 3, hash)
+        print('Finished All Tests')
 
     @staticmethod
     def runTests(filePath: str, hash: str = '') -> None:
-        ModelTester.fasttextTest(filePath, hash)
+        ModelTester.generalFastTextTest(filePath, hash)
 
 
 if __name__ == '__main__':
@@ -85,12 +102,13 @@ if __name__ == '__main__':
         print(
             'Please follow format of modelTester.py [datasheet] [hash? = ""]')
         print('[datasheet] = the data sheet to build models based on')
-        print('[hash] = hash to attach to model names. default = ""')
+        print('[hash] = hash to attach to model names. default = "" ( -h )')
+        print('[Specialized] = Specialized test mode ( -F for fasttext and -K for knn )')
         sys.exit()
 
     if len(sys.argv) < 2:
         print(
-            'Please follow format of modelTester.py [datasheet] -h [hash? = ""]')
+            'Please follow format of modelTester.py [datasheet] -h [hash? = ""] -F | -K [Specialized] { must include -t for time and -c for cylces }')
         sys.exit()
 
     if not os.path.isdir('data'):
@@ -105,18 +123,38 @@ if __name__ == '__main__':
         print('Successfully downloaded data')
 
     h: str = ''
+    fastTextTest = False
+    cycles: int = -1
+    time: int = -1
 
     for index, item in enumerate(sys.argv, 0):
         if item == '-h' and index + 1 < len(sys.argv):
             h = f'_{sys.argv[index + 1]}'
+        if item == '-F':
+            fastTextTest = True
+        if item == '-t' and index + 1 < len(sys.argv):
+            time = int(sys.argv[index + 1])
+        if item == '-c' and index + 1 < len(sys.argv):
+            cycles = int(sys.argv[index + 1])
+
+    if fastTextTest:
+        if cycles == -1 or time == -1:
+            print(
+                'Please follow format of modelTester.py [datasheet] -h [hash? = ""] -F | -K [Specialized] { must include -t for time and -c for cylces }')
+            sys.exit()
 
     try:
         ModelTester.cleanFiles(h)
-        # python modelTester.py ./data/data.xls
-        ModelTester.runTests(
-            filePath=sys.argv[1],
-            hash=h,
-        )
+        if fastTextTest:
+            # python modelTester.py ./data/data.xls -F -t 1200 -c 6
+            ModelTester.specializedFastTextTest(
+                filePath=sys.argv[1], hash=h, time=time, cycles=cycles)
+        else:
+            # python modelTester.py ./data/data.xls
+            ModelTester.runTests(
+                filePath=sys.argv[1],
+                hash=h,
+            )
 
         # add http call to server to change model based on name and hash.
     except Exception as e:
