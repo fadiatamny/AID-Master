@@ -33,7 +33,7 @@ class ModelTester:
             os.mkdir(f'./tests/test_{date.day}_{date.month}_{date.year}')
 
     @staticmethod
-    def _getFastTextData(filePath: str, hash: str) -> None:
+    def _genFastTextData(filePath: str, hash: str) -> None:
         raw_data = pd.read_excel(filePath)
         cleandata = ModelTester._cleanText(raw_data)
 
@@ -80,12 +80,12 @@ class ModelTester:
 
     @staticmethod
     def specializedFastTextTest(filePath: str, time: int, cycles: int, hash: str = '') -> None:
-        ModelTester._getFastTextData(filePath, hash)
+        ModelTester._genFastTextData(filePath, hash)
         ModelTester.fastTextTest(time, cycles, hash)
 
     @staticmethod
     def generalFastTextTest(filePath: str, hash: str = '') -> None:
-        ModelTester._getFastTextData(filePath, hash)
+        ModelTester._genFastTextData(filePath, hash)
 
         print('Starting General Tests')
         for i in range(300, 2100, 300):
