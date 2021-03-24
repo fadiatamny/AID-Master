@@ -5,6 +5,11 @@ import { io } from 'socket.io-client'
 import styles from './Chat.module.css'
 import InfoBar from '../InfoBar/InfoBar'
 import Messages from '../Messages/Messages'
+import {
+    PopupboxManager,
+    PopupboxContainer
+        // @ts-ignore
+    } from 'react-popupbox';
 
 const ENDPOINT = 'localhost:5069'
 
@@ -44,8 +49,8 @@ export default function Chat({ location }: IChatProps) {
 
     socket.on('scenarioGuide', (username: string, data: string) => {
         console.log('DATA ', JSON.parse(data))
-        alert(data)
-        setScenario(data)
+        setScenario(JSON.parse(data))
+        openPopupbox()
     })
 
     React.useEffect(() => {
@@ -70,8 +75,24 @@ export default function Chat({ location }: IChatProps) {
     const sendScenario = () => {
         socket.emit('sendSenario', roomId, username, message)
     }
+    //@ts-ignore
+    const openPopupbox = () => {
+        console.log('entered popup func')
+        const content = (
+          <div className={styles.guideContainer}>
+            <h2 className={styles.guideTitle}>Suggestions</h2>
+            
+            {Object.keys(scenario).map((key, i:number)=>(
+                // @ts-ignore
+                <p key={i} className={styles.guide}> <strong>{key}</strong> : {Number(scenario[key])*100}%</p>
+            ))}
+          </div>
+        )
+        PopupboxManager.open({ content })
+      }
 
     return dm ? (
+        
         <div className={styles.outerContainer}>
             <div className={styles.container}>
                 <InfoBar room={roomId ?? 'waiting for room'} />
@@ -88,11 +109,18 @@ export default function Chat({ location }: IChatProps) {
                     Send Chat
                 </button>
                 <button onClick={sendScenario}>Send Game Scenario</button>
-                <div>
-                    <p className={styles.guide}>{scenario}</p>
-                </div>
             </div>
+            <div className={styles.guideContainer}>
+            <h2 className={styles.guideTitle}>Suggestions</h2>
+            
+            {Object.keys(scenario).map((key, i:number)=>(
+                // @ts-ignore
+                <p key={i} className={styles.guide}> <strong>{key}</strong> : {Number(scenario[key])*100}%</p>
+            ))}
+          </div>
         </div>
+        
+
     ) : (
         <div className={styles.outerContainer}>
             <div className={styles.container}>
