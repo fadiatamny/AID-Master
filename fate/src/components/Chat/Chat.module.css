@@ -16,11 +16,26 @@
     width: 35%;
   }
 
-  .guide {
+  .guideContainer {
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: column;
     padding: 2%;
-    width: 100%;
-    text-align: center;
+    width: 35vw;
+
   }
+  
+  .guideTitle{
+    text-align: center;
+    color: antiquewhite;
+  }
+
+  .guide{
+    text-align: center;
+    color: antiquewhite;
+    font-size: medium;
+  }
+  
   
   @media (min-width: 320px) and (max-width: 480px) {
     .outerContainer {
