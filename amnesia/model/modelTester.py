@@ -5,6 +5,7 @@ import numpy as np
 import os
 import sys
 import requests
+import texthero as hero
 
 
 class ModelTester:
@@ -16,8 +17,7 @@ class ModelTester:
         for i in headlist:
             data[i] = data[i].replace([0, 1], [' ', '__label__'+i])
         # clean the text from end of line
-        for i in range(len(data)):
-            data['TEXT'][i] = data['TEXT'][i].replace("\n", ' ')
+        data["TEXT"] = hero.clean(data["TEXT"])         
         # move the first TEXT colume to the end
         first = data["TEXT"]
         del data['TEXT']
