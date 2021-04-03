@@ -7,9 +7,31 @@ import fasttext
 import numpy as np
 import json
 import texthero as hero
+import logging
+import time
+from functools import wraps
 
 from pandas.core.series import Series
 from apiException import ApiException
+
+logger =logging.getLogger(__name__)
+logger.setLevel("DEBUG")
+handler = logging.FileHandler("Runner_Model.log")
+formatter = "%(asctime)s %(levelname)s -- %(message)s"
+handler.setFormatter(logging.Formatter(formatter))
+logger.addHandler(handler)
+
+def timed(func):
+    
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        start = time.time()
+        res = func(*args,**kwargs)
+        end = time.time()
+        logger.debug("%s runnig time is %0.2fs",func.__name__,round(end-start,2))
+        return res
+
+    return wrapper
 
 
 class ModelRunner():
@@ -26,6 +48,7 @@ class ModelRunner():
         except:
             self.fastTextModel = None
             self.knnModel = None
+            logger.critical("loadModels fail")
 
     def changeInstance(self, fastText='', knn='') -> None:
         if fastText != '':
@@ -59,7 +82,7 @@ class ModelRunner():
         for key in textObj.keys():
             textObj[key] = round(textObj[key], 2)
         return textObj
-        
+
     #clean the reciving text
     def _cleanText(self,text) -> str:
         textSeries = pd.Series([text])
@@ -67,10 +90,12 @@ class ModelRunner():
         text = pd.Series.to_string(textSeries,index = False)
         return text
 
+    @timed
     def predict(self, text: str):
         if self.fastTextModel is None or self.knnModel is None:
             self._loadModels()
         if self.fastTextModel is None or self.knnModel is None:
+            logger.critical("cenat load model")
             raise ApiException(500, 'error occured in server')
 
         fastTextmodel = self.fastTextModel

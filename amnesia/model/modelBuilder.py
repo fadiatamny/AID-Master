@@ -8,7 +8,16 @@ import sys
 import requests
 import datetime
 import texthero as hero
+import logging
 
+
+
+logger =logging.getLogger(__name__)
+logger.setLevel("DEBUG")
+handler = logging.FileHandler("Runner_Model.log")
+formatter = "%(asctime)s %(levelname)s -- %(message)s"
+handler.setFormatter(logging.Formatter(formatter))
+logger.addHandler(handler)
 
 class ModelBuilder():
     @staticmethod
