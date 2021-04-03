@@ -6,6 +6,7 @@ import joblib
 import fasttext
 import numpy as np
 import json
+import texthero as hero
 
 from pandas.core.series import Series
 from apiException import ApiException
@@ -58,6 +59,13 @@ class ModelRunner():
         for key in textObj.keys():
             textObj[key] = round(textObj[key], 2)
         return textObj
+        
+    #clean the reciving text
+    def _cleanText(self,text) -> str:
+        textSeries = pd.Series([text])
+        textSeries = hero.clean(textSeries)
+        text = pd.Series.to_string(textSeries,index = False)
+        return text
 
     def predict(self, text: str):
         if self.fastTextModel is None or self.knnModel is None:
@@ -68,8 +76,8 @@ class ModelRunner():
         fastTextmodel = self.fastTextModel
         knnModel = self.knnModel
         tempDataframe = pd.DataFrame()
-
-        fastTextRes = fastTextmodel.predict(text, k=10)
+        cleanText = self._cleanText(text)
+        fastTextRes = fastTextmodel.predict(cleanText, k=10)
         categorieslist = list(self.categories.columns)
 
         for label in categorieslist:
