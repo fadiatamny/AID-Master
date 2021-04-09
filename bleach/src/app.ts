@@ -2,7 +2,24 @@ import express, { Application, Request, Response, NextFunction } from 'express'
 import cors from 'cors'
 import api from './router/api'
 import logger from 'morgan'
-import fs from 'fs'
+import winston from 'winston'
+
+const loggerFile = winston.createLogger({
+    transports: [
+        new winston.transports.File({
+            level: 'info',
+            filename: './logs/all-logs.log',
+            handleExceptions: true,
+            maxsize: 5242880, //5MB
+            maxFiles: 5
+        }),
+        new winston.transports.Console({
+            level: 'debug',
+            handleExceptions: true
+        })
+    ],
+    exitOnError: false
+});
 
 interface ResponseError extends Error {
     status?: number
@@ -21,7 +38,9 @@ const options: cors.CorsOptions = {
 
 if (process.env.ENV === 'production') {
     app.use(logger('common', {
-        stream: fs.createWriteStream('./logs.txt', { flags: 'a' })
+        stream: {
+            write: message => loggerFile.info(message)
+        }
     }))
 } else {
     app.use(logger('dev'))
