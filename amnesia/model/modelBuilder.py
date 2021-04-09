@@ -7,6 +7,7 @@ import os
 import sys
 import requests
 import datetime
+import texthero as hero
 
 
 class ModelBuilder():
@@ -17,9 +18,8 @@ class ModelBuilder():
         # convert the 0/1 vector to label that fit fasttext
         for i in headlist:
             data[i] = data[i].replace([0, 1], [' ', '__label__'+i])
-        # clean the text from end of line
-        for i in range(len(data)):
-            data['TEXT'][i] = data['TEXT'][i].replace("\n", ' ')
+        #clean the text    
+        data["TEXT"] = hero.clean(data["TEXT"])
         # move the first TEXT colume to the end
         first = data["TEXT"]
         del data['TEXT']
