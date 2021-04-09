@@ -1,6 +1,8 @@
 import express, { Application, Request, Response, NextFunction } from 'express'
 import cors from 'cors'
 import api from './router/api'
+import logger from 'morgan'
+import fs from 'fs'
 
 interface ResponseError extends Error {
     status?: number
@@ -16,6 +18,15 @@ const options: cors.CorsOptions = {
     preflightContinue: false,
     credentials: true
 }
+
+if (process.env.ENV === 'production') {
+    app.use(logger('common', {
+        stream: fs.createWriteStream('./logs.txt', { flags: 'a' })
+    }))
+} else {
+    app.use(logger('dev'))
+}
+
 
 app.use(cors(options))
 
