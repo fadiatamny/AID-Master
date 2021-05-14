@@ -1,4 +1,4 @@
-import Button from '../components/RoundButton/RoundButton'
+import Button from '../components/RoundButton/Button'
 import newGame from '../assets/images/CircleNew.png'
 import uploadGame from '../assets/images/CircleUpload.png'
 

@@ -1,11 +1,11 @@
-import styles from './RoundButton.module.css'
+import styles from './Button.module.css'
 
-export interface RoundButtonProps {
+export interface ButtonProps {
     img: string
     onClick: () => void
 }
 
-const Button = ({ img, onClick }: RoundButtonProps) => {
+const Button = ({ img, onClick }: ButtonProps) => {
     return (
         <div>
             <button style={styles} onClick={onClick}>
