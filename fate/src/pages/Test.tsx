@@ -1,17 +1,21 @@
-import React from 'react'
-import RoundButton from '../components/RoundButton/RoundButton'
-import newGame from '../images/CircleNew.png'
-import uploadGame from '../images/CircleUpload.png'
-import { clickNew, clickUpload } from '../services/buttons/ButtonFunctions'
+import Button from '../components/RoundButton/RoundButton'
+import newGame from '../assets/images/CircleNew.png'
+import uploadGame from '../assets/images/CircleUpload.png'
 
-Test.propTypes = {}
+const Test = () => {
+    const clickNew = () => {
+        alert('click new')
+    }
 
-function Test() {
+    const clickUpload = () => {
+        alert('click upload')
+    }
+
     return (
         <div>
             <p>testing</p>
-            <RoundButton buttonImg={newGame} clickFunc={clickNew} />
-            <RoundButton buttonImg={uploadGame} clickFunc={clickUpload} />
+            <Button img={newGame} onClick={clickNew} />
+            <Button img={uploadGame} onClick={clickUpload} />
         </div>
     )
 }
