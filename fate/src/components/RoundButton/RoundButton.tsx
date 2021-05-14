@@ -1,18 +1,18 @@
-import React from 'react';
+import React, { MouseEventHandler } from 'react';
 import PropTypes from 'prop-types';
 import styles from './RoundButton.module.css';
 
 
-RoundButton.propTypes = {
-    buttonImg: PropTypes.string,
-    clickFunc: PropTypes.func
+interface RoundButtonProps {
+    buttonImg: string,
+    clickFunc: (e: MouseEvent) => void
 };
 
-function RoundButton(props:any) {
+const RoundButton = ({buttonImg, clickFunc}: RoundButtonProps) => {
     return (
         <div>
-            <button style={styles} onClick={props.clickFunc}>
-                <img src={props.buttonImg} alt="adventurer circle"/>
+            <button style={styles} onClick={clickFunc}>
+                <img src={buttonImg} alt="adventurer circle"/>
             </button>
         </div>
     );
