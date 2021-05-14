@@ -1,4 +1,4 @@
-button{
+button {
     background-color: red;
     height: 40vh;
     width: 40vh;
@@ -9,8 +9,7 @@ button{
     /* background-image: url("../../images/CircleAdventurer.png"); */
 }
 
-img{
-
+img {
     margin: 0 auto;
     padding: 0;
     size: cover;
