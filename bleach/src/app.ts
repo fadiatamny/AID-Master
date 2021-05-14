@@ -19,7 +19,7 @@ const loggerFile = winston.createLogger({
         })
     ],
     exitOnError: false
-});
+})
 
 interface ResponseError extends Error {
     status?: number
@@ -37,15 +37,16 @@ const options: cors.CorsOptions = {
 }
 
 if (process.env.ENV === 'production') {
-    app.use(logger('common', {
-        stream: {
-            write: message => loggerFile.info(message)
-        }
-    }))
+    app.use(
+        logger('common', {
+            stream: {
+                write: (message) => loggerFile.info(message)
+            }
+        })
+    )
 } else {
     app.use(logger('dev'))
 }
-
 
 app.use(cors(options))
 
