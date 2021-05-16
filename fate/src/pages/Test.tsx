@@ -38,7 +38,8 @@ const Test = () => {
             <PlusMinus onClick={clickButtton}>
                 <p>-</p>
             </PlusMinus>
-            <Input label="Character Name" placeholder="Smittens the Unbroken" />
+            <Input id="Chartest" label="Character Name" placeholder="Smittens the Unbroken" />
+            <Input id="noclasstest" label="no class test" placeholder="trying an input with a missing attribute" />
             <Message username={username} playerName={playerName} messageText={messageText} myMessage={true} />
             <Message username={username} playerName={playerName} messageText={messageText} myMessage={false} />
         </div>
