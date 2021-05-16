@@ -6,4 +6,4 @@
 | :------- | :-------------------: |
 | [Fate](./fate)     |    React frontend     |
 | [Bleach](./bleach)   |     Game Service      |
-| [Amensia](./amnesia)  |    Prediction model   |
+| [Amnesia](./amnesia)  |    Prediction model   |
