@@ -1,5 +1,3 @@
-// import styles from './Input.module.css'
-
 export interface InputProps {
     label: string
     placeholder: string
