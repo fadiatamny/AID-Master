@@ -10,6 +10,8 @@ import texthero as hero
 import logging
 import time
 from functools import wraps
+import os
+from collections import Counter
 
 from pandas.core.series import Series
 from apiException import ApiException
@@ -41,9 +43,15 @@ class ModelRunner():
         self.categories = pd.read_excel(data)
         self._loadModels()
 
+    def _loadFasttextModels(self):
+        modelsFasttext =[]
+        for i,j in zip(range(3),os.scandir('finModel')):
+            modelsFasttext.append(fasttext.load_model(f'{os.path.abspath(j)}'))
+        return modelsFasttext
+
     def _loadModels(self) -> None:
         try:
-            self.fastTextModel = fasttext.load_model(self.fastTextPath)
+            self.fastTextModels = self._loadFasttextModels()
             self.knnModel = joblib.load(self.knnPath)
         except:
             self.fastTextModel = None
@@ -57,6 +65,13 @@ class ModelRunner():
             self.knnPath = knn
 
         self._loadModels()
+    
+    def _fullPredic(self,text):
+        resF = []
+        for i in range(3):
+            resF.append(self.fastTextModels[i].predict(text,k=10))
+        allres = (tuple(list(resF[0][0])+list(resF[1][0])+list(resF[2][0])))
+        return [key for key in Counter(allres).keys() if Counter(allres)[key]>1]
 
 # creat the Series to divid with frame
     def _creatDiv(self, raw_frame: DataFrame) -> DataFrame:
@@ -102,7 +117,7 @@ class ModelRunner():
         knnModel = self.knnModel
         tempDataframe = pd.DataFrame()
         cleanText = self._cleanText(text)
-        fastTextRes = fastTextmodel.predict(cleanText, k=10)
+        fastTextRes = self._fullPredic(cleanText)
         categorieslist = list(self.categories.columns)
 
         for label in categorieslist:

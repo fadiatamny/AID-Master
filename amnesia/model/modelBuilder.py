@@ -65,35 +65,49 @@ class ModelBuilder():
             os.remove(f'testing_data{hash}.txt')
         if os.path.exists(f'processed_data{hash}.txt'):
             os.remove(f'processed_data{hash}.txt')
+    
+    
+    def loadModels():
+        models =[]
+        for i,j in zip(range(3),os.scandir('build')):
+            models.append(fasttext.load_model(f'{os.path.abspath(j)}'))
 
     @staticmethod
     # read the data file and creat the fasttext
-    def createFastText(filePath: str, hash: str='', debug: bool=False) -> None:
+    def createFastText(filePath: str, hashbase: str='', debug: bool=False) -> None:
         raw_data = pd.read_excel(filePath)
         cleandata = ModelBuilder._cleanText(raw_data)
-        # spliting the data to 3 parts 60/20/20
-        # train, validate, test = np.split(cleandata.sample(
-        #     frac=1), [int(.6*len(cleandata)), int(.8*len(cleandata))])
     
         # removing validate for now until we have mode data. split is 80 - 20
         train, test = np.split(cleandata.sample(
             frac=1), [int(.8*len(cleandata))])
-        # np.savetxt(f'./validate_data{hash}.txt', validate.values, fmt='%s')
-        np.savetxt(f'./testing_data{hash}.txt', test.values, fmt='%s')
-        np.savetxt(f'./training_data{hash}.txt', train.values, fmt='%s')
-        # creating the model and performing auto tune for 10 labels and 5min (300s)
-        # fastmodule = fasttext.train_supervised(
-        #     input=f'./training_data{hash}.txt',
-        #     autotuneValidationFile=f'./validate_data{hash}.txt', autotunePredictions=10, autotuneDuration=300)
 
-        fastmodule = fasttext.train_supervised(
-            input=f'./training_data{hash}.txt',
-            autotuneValidationFile=f'./testing_data{hash}.txt', autotunePredictions=10, autotuneDuration=300)
+        # np.savetxt(f'./validate_data{hash}.txt', validate.values, fmt='%s')
+        np.savetxt(f'./testing_data{hashbase}.txt', test.values, fmt='%s')
+        np.savetxt(f'./training_data{hashbase}.txt', train.values, fmt='%s')
+
+        # creating the 5 base models and performing auto tune for 10 labels and 1h (3600s)
+        resDataFrame = pd.DataFrame(columns=['exmp','Percision','Recall'])
+        for i in range(5):
+            fastmodule = fasttext.train_supervised(
+                input=f'./training_data{hashbase}.txt',
+                autotuneValidationFile=f'./testing_data{hashbase}.txt', autotunePredictions=10, 
+                autotuneDuration=3600,autotuneModelSize='1500M')
+            restest = fastmodule.test('validateClean.txt',10)
+            resDataFrame = resDataFrame.append({'exmp':restest[0],'Percision':restest[1],'Recall':restest[2]},ignore_index=True)
+            fastmodule.save_model(f'./build/fasttextmodel{i}.bin')
+
+        # save the bast 3 fasttext models
+        indexlist = resDataFrame.nlargest(3,'Percision').index
+        for i in indexlist:
+            os.rename(f'allmod/fasttextmodel{i}.bin',f'finModel/fasttextmodel{i}.bin')
+        for i in os.scandir('build'):
+            os.remove(i.path)
 
         if debug:
             ModelBuilder._testModel(fastmodule,hash)
         # saving the model
-        fastmodule.save_model(f'./build/fasttextmodel{hash}.bin')
+        
         ModelBuilder.cleanFiles(hash)
         print('Generated FastText Model Successfully')
 
