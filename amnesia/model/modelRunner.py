@@ -117,7 +117,11 @@ class ModelRunner():
         knnModel = self.knnModel
         tempDataframe = pd.DataFrame()
         cleanText = self._cleanText(text)
-        fastTextRes = self._fullPredic(fastTextmodel,cleanText)
+        try:
+            fastTextRes = self._fullPredic(fastTextmodel,cleanText)
+        except:
+            logger.critical("cenat pradic")
+            return json.loads("cenat pradic")
         categorieslist = list(self.categories.columns)
 
         for label in categorieslist:
