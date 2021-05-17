@@ -111,6 +111,7 @@ class ModelBuilder():
         finally:
             for i in os.scandir('build'):
                 os.remove(i.path)
+            exit
 
         # save the bast 3 fasttext models
         indexlist = resDataFrame.nlargest(3,'Percision').index
@@ -137,6 +138,7 @@ class ModelBuilder():
             except:
                 logger.critical(f'unable to read the data file. the file path is {filePath}')
                 print("unable to read file try agian")
+                exit
 
         # preparing the data for the KNN by removing the TEXT
         knnData = raw_data.drop(['TEXT'], axis=1)
