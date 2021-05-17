@@ -87,15 +87,15 @@ class ModelBuilder():
         # np.savetxt(f'./validate_data{hash}.txt', validate.values, fmt='%s')
         np.savetxt(f'testing_data{hashbase}.txt', test.values, fmt='%s')
         np.savetxt(f'training_data{hashbase}.txt', train.values, fmt='%s')
-        print("hii 1")
+
         # creating the 5 base models and performing auto tune for 10 labels and 1h (3600s)
         resDataFrame = pd.DataFrame(columns=['exmp','Percision','Recall'])
         for i in range(5):
             fastmodule = fasttext.train_supervised(
                 input=f'training_data{hashbase}.txt',
                 autotuneValidationFile=f'testing_data{hashbase}.txt', autotunePredictions=10, 
-                autotuneDuration=600,autotuneModelSize='1500M')
-            print(f'model {i}')
+                autotuneDuration=120,autotuneModelSize='1500M')
+        
             restest = fastmodule.test(f'testing_data{hashbase}.txt',10)
             resDataFrame = resDataFrame.append({'exmp':restest[0],'Percision':restest[1],'Recall':restest[2]},ignore_index=True)
             fastmodule.save_model(f'build/fasttextmodel{i}.bin')
