@@ -45,8 +45,11 @@ class ModelRunner():
 
     def _loadFasttextModels(self):
         modelsFasttext =[]
-        for i,j in zip(range(3),os.scandir('finModel')):
-            modelsFasttext.append(fasttext.load_model(f'{os.path.abspath(j)}'))
+        try:
+            for i,j in zip(range(3),os.scandir('finModel')):
+                modelsFasttext.append(fasttext.load_model(f'{os.path.abspath(j)}'))
+        except:
+            logger(f'unable to load the 3 FastText models stop at {i}')
         return modelsFasttext
 
     def _loadModels(self) -> None:
@@ -110,7 +113,7 @@ class ModelRunner():
         if self.fastTextModel is None or self.knnModel is None:
             self._loadModels()
         if self.fastTextModel is None or self.knnModel is None:
-            logger.critical("cenat load model")
+            logger.critical("unable load model")
             raise ApiException(500, 'error occured in server')
 
         fastTextmodel = self.fastTextModels
