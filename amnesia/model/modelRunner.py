@@ -66,10 +66,10 @@ class ModelRunner():
 
         self._loadModels()
     
-    def _fullPredic(self,text):
+    def _fullPredic(self,models,text):
         resF = []
         for i in range(3):
-            resF.append(self.fastTextModels[i].predict(text,k=10))
+            resF.append(models[i].predict(text,k=10))
         allres = (tuple(list(resF[0][0])+list(resF[1][0])+list(resF[2][0])))
         return [key for key in Counter(allres).keys() if Counter(allres)[key]>1]
 
@@ -113,11 +113,11 @@ class ModelRunner():
             logger.critical("cenat load model")
             raise ApiException(500, 'error occured in server')
 
-        fastTextmodel = self.fastTextModel
+        fastTextmodel = self.fastTextModels
         knnModel = self.knnModel
         tempDataframe = pd.DataFrame()
         cleanText = self._cleanText(text)
-        fastTextRes = self._fullPredic(cleanText)
+        fastTextRes = self._fullPredic(fastTextmodel,cleanText)
         categorieslist = list(self.categories.columns)
 
         for label in categorieslist:
