@@ -3,6 +3,7 @@ import cors from 'cors'
 import api from './router/api'
 import logger from 'morgan'
 import winston from 'winston'
+import { ResponseError } from './models/ResponseError.model'
 
 const loggerFile = winston.createLogger({
     transports: [
@@ -20,10 +21,6 @@ const loggerFile = winston.createLogger({
     ],
     exitOnError: false
 })
-
-interface ResponseError extends Error {
-    status?: number
-}
 
 // Boot express
 const app: Application = express()
