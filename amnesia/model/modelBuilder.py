@@ -77,6 +77,8 @@ class ModelBuilder():
     def createFastText(filePath: str, hashbase: str='', debug: bool=False) -> None:
         raw_data = pd.read_excel(filePath)
         cleandata = ModelBuilder._cleanText(raw_data)
+        print(hashbase)
+        print(type(hashbase))
     
         # removing validate for now until we have mode data. split is 80 - 20
         train, test = np.split(cleandata.sample(
@@ -85,15 +87,16 @@ class ModelBuilder():
         # np.savetxt(f'./validate_data{hash}.txt', validate.values, fmt='%s')
         np.savetxt(f'./testing_data{hashbase}.txt', test.values, fmt='%s')
         np.savetxt(f'./training_data{hashbase}.txt', train.values, fmt='%s')
-
+        print("hii 1")
         # creating the 5 base models and performing auto tune for 10 labels and 1h (3600s)
         resDataFrame = pd.DataFrame(columns=['exmp','Percision','Recall'])
         for i in range(5):
             fastmodule = fasttext.train_supervised(
                 input=f'./training_data{hashbase}.txt',
                 autotuneValidationFile=f'./testing_data{hashbase}.txt', autotunePredictions=10, 
-                autotuneDuration=3600,autotuneModelSize='1500M')
-            restest = fastmodule.test('validateClean.txt',10)
+                autotuneDuration=600,autotuneModelSize='1500M')
+            print(f'model {i}')
+            restest = fastmodule.test(f'./testing_data{hashbase}.txt',10)
             resDataFrame = resDataFrame.append({'exmp':restest[0],'Percision':restest[1],'Recall':restest[2]},ignore_index=True)
             fastmodule.save_model(f'./build/fasttextmodel{i}.bin')
 
@@ -118,7 +121,7 @@ class ModelBuilder():
         knnData = raw_data.drop(['TEXT'], axis=1)
         knn = NearestNeighbors(n_neighbors=k, algorithm='auto').fit(knnData)
         # saving the model
-        joblib.dump(knn, f'./build/knnmodel{hash}.pkl')
+        joblib.dump(knn, f'./finModel/knnmodel{hash}.pkl')
         print('Generated KNN Model Successfully')
 
     @staticmethod
