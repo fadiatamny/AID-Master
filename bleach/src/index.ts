@@ -5,7 +5,7 @@ import { createServer } from 'http'
 import { Server, Socket } from 'socket.io'
 
 import app from './app'
-import { initSocket } from './services/gameService'
+import GameService from './services/Game.service'
 
 const port = process.env.PORT || 5069
 app.set('port', port)
@@ -23,7 +23,7 @@ const io = new Server(server, {
 })
 
 io.sockets.on('connection', (socket: Socket) => {
-    initSocket(io, socket)
+    GameService.init(io, socket)
 })
 
 server.listen(app.get('port'), () => {

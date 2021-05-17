@@ -36,6 +36,7 @@ module.exports = {
         'prefer-const': 'warn',
         '@typescript-eslint/explicit-module-boundary-types': 'off',
         'react/react-in-jsx-scope': 'off',
-        '@typescript-eslint/ban-ts-comment': 'off'
+        '@typescript-eslint/ban-ts-comment': 'off',
+        '@typescript-eslint/ban-types': 'off'
     }
 }

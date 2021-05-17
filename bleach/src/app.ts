@@ -3,27 +3,7 @@ import cors from 'cors'
 import api from './router/api'
 import logger from 'morgan'
 import winston from 'winston'
-
-const loggerFile = winston.createLogger({
-    transports: [
-        new winston.transports.File({
-            level: 'info',
-            filename: './logs/all-logs.log',
-            handleExceptions: true,
-            maxsize: 5242880, //5MB
-            maxFiles: 5
-        }),
-        new winston.transports.Console({
-            level: 'debug',
-            handleExceptions: true
-        })
-    ],
-    exitOnError: false
-})
-
-interface ResponseError extends Error {
-    status?: number
-}
+import { ResponseError } from './models/ResponseError.model'
 
 // Boot express
 const app: Application = express()
@@ -37,6 +17,23 @@ const options: cors.CorsOptions = {
 }
 
 if (process.env.ENV === 'production') {
+    const loggerFile = winston.createLogger({
+        transports: [
+            new winston.transports.File({
+                level: 'info',
+                filename: './logs/all-logs.log',
+                handleExceptions: true,
+                maxsize: 5242880, //5MB
+                maxFiles: 5
+            }),
+            new winston.transports.Console({
+                level: 'debug',
+                handleExceptions: true
+            })
+        ],
+        exitOnError: false
+    })
+
     app.use(
         logger('common', {
             stream: {

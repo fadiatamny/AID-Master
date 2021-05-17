@@ -1,24 +1,24 @@
-import styles from './PlusMinus.module.css'
+import styles from './Button.module.css'
 import InputGroup from 'react-bootstrap/InputGroup'
-import Button from 'react-bootstrap/Button'
+import BButton from 'react-bootstrap/Button'
 
 export interface PlusMinusProps {
     onClick: () => void
     children: JSX.Element
 }
 
-const PlusMinus = ({ onClick, children }: PlusMinusProps) => {
+const Button = ({ onClick, children }: PlusMinusProps) => {
     return (
         <div className={styles.button}>
             <InputGroup className="mb-3">
                 <InputGroup.Prepend>
-                    <Button variant="outline-secondary" onClick={onClick} style={{ width: '40px', height: '40px' }}>
+                    <BButton variant="outline-secondary" onClick={onClick} style={{ width: '40px', height: '40px' }}>
                         {children}
-                    </Button>
+                    </BButton>
                 </InputGroup.Prepend>
             </InputGroup>
         </div>
     )
 }
 
-export default PlusMinus
+export default Button
