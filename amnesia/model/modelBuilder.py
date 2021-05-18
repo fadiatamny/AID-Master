@@ -11,13 +11,13 @@ import texthero as hero
 import logging
 
 
-
-logger =logging.getLogger(__name__)
+logger = logging.getLogger(__name__)
 logger.setLevel("DEBUG")
 handler = logging.FileHandler("Runner_Model.log")
 formatter = "%(asctime)s %(levelname)s -- %(message)s"
 handler.setFormatter(logging.Formatter(formatter))
 logger.addHandler(handler)
+
 
 class ModelBuilder():
     @staticmethod
@@ -27,7 +27,7 @@ class ModelBuilder():
         # convert the 0/1 vector to label that fit fasttext
         for i in headlist:
             data[i] = data[i].replace([0, 1], [' ', '__label__'+i])
-        #clean the text    
+        # clean the text
         data["TEXT"] = hero.clean(data["TEXT"])
         # move the first TEXT colume to the end
         first = data["TEXT"]
@@ -43,15 +43,18 @@ class ModelBuilder():
         date = datetime.datetime.now()
         # proforming the auto test accuracy test in fasttext model
         testRes = model.test(f'./testing_data{hash}.txt', 10)
-        allResFIle = open(f'./logs/test_{date.day}_{date.month}_{date.year}.txt', 'a')
+        allResFIle = open(
+            f'./logs/test_{date.day}_{date.month}_{date.year}.txt', 'a')
         # saving the result for future analysis
-        allResFIle.write('\n#########################################################\n')
+        allResFIle.write(
+            '\n#########################################################\n')
         allResFIle.write(f'Time Stamp: {date}\n')
         allResFIle.write(f'HASH = {hash}\n')
         allResFIle.write(f'Number of Examples = {testRes[0]}\n')
         allResFIle.write(f'Percision = {round(testRes[1] * 100, 3)}%\n')
         allResFIle.write(f'Recall = {round(testRes[2] * 100, 3)}%\n')
-        allResFIle.write('#########################################################\n')
+        allResFIle.write(
+            '#########################################################\n')
         allResFIle.close()
 
     @staticmethod
@@ -65,23 +68,23 @@ class ModelBuilder():
             os.remove(f'testing_data{hash}.txt')
         if os.path.exists(f'processed_data{hash}.txt'):
             os.remove(f'processed_data{hash}.txt')
-    
 
     @staticmethod
     # read the data file and creat the fasttext
-    def createFastText(filePath: str, hashbase: str='', debug: bool=False) -> None:
+    def createFastText(filePath: str, hashbase: str = '', debug: bool = False) -> None:
         try:
             raw_data = pd.read_excel(filePath)
         except:
-            logger.critical("unable to read the data file trying diffrent format")
+            logger.critical(
+                "unable to read the data file trying diffrent format")
             try:
                 raw_data = pd.read_csv(filePath)
             except:
-                logger.critical(f'unable to read the data file try agian. the file path is {filePath} ')
+                logger.critical(
+                    f'unable to read the data file try agian. the file path is {filePath} ')
 
         cleandata = ModelBuilder._cleanText(raw_data)
 
-    
         # removing validate for now until we have mode data. split is 80 - 20
         train, test = np.split(cleandata.sample(
             frac=1), [int(.8*len(cleandata))])
@@ -91,20 +94,22 @@ class ModelBuilder():
             np.savetxt(f'testing_data{hashbase}.txt', test.values, fmt='%s')
             np.savetxt(f'training_data{hashbase}.txt', train.values, fmt='%s')
         except:
-            logger.critical("unable to save the testing and training data files")
+            logger.critical(
+                "unable to save the testing and training data files")
             exit
 
         # creating the 5 base models and performing auto tune for 10 labels and 1h (3600s)
-        resDataFrame = pd.DataFrame(columns=['exmp','Percision','Recall'])
+        resDataFrame = pd.DataFrame(columns=['exmp', 'Percision', 'Recall'])
         try:
             for i in range(5):
                 fastmodule = fasttext.train_supervised(
                     input=f'training_data{hashbase}.txt',
-                    autotuneValidationFile=f'testing_data{hashbase}.txt', autotunePredictions=10, 
-                    autotuneDuration=120,autotuneModelSize='1500M')
-            
-                restest = fastmodule.test(f'testing_data{hashbase}.txt',10)
-                resDataFrame = resDataFrame.append({'exmp':restest[0],'Percision':restest[1],'Recall':restest[2]},ignore_index=True)
+                    autotuneValidationFile=f'testing_data{hashbase}.txt', autotunePredictions=10,
+                    autotuneDuration=120, autotuneModelSize='1500M')
+
+                restest = fastmodule.test(f'testing_data{hashbase}.txt', 10)
+                resDataFrame = resDataFrame.append(
+                    {'exmp': restest[0], 'Percision': restest[1], 'Recall': restest[2]}, ignore_index=True)
                 fastmodule.save_model(f'build/fasttextmodel{i}.bin')
         except:
             logger.critical(f'unable to creat models stop at {i}')
@@ -114,21 +119,22 @@ class ModelBuilder():
             exit
 
         # save the bast 3 fasttext models
-        indexlist = resDataFrame.nlargest(3,'Percision').index
+        indexlist = resDataFrame.nlargest(3, 'Percision').index
         for i in indexlist:
-            os.rename(f'build/fasttextmodel{i}.bin',f'finModel/fasttextmodel{i}.bin')
+            os.rename(f'build/fasttextmodel{i}.bin',
+                      f'finModel/fasttextmodel{i}.bin')
         for i in os.scandir('build'):
             os.remove(i.path)
 
         if debug:
-            ModelBuilder._testModel(fastmodule,hash)
+            ModelBuilder._testModel(fastmodule, hash)
         # saving the model
-        
+
         ModelBuilder.cleanFiles(hash)
         print('Generated FastText Model Successfully')
 
     @staticmethod
-    def createKNN(filePath: str, k: int, hash: str='') -> None:
+    def createKNN(filePath: str, k: int, hash: str = '') -> None:
         try:
             raw_data = pd.read_excel(filePath)
         except:
@@ -136,7 +142,8 @@ class ModelBuilder():
             try:
                 raw_data = pd.read_csv(filePath)
             except:
-                logger.critical(f'unable to read the data file. the file path is {filePath}')
+                logger.critical(
+                    f'unable to read the data file. the file path is {filePath}')
                 print("unable to read file try agian")
                 exit
 
@@ -148,7 +155,7 @@ class ModelBuilder():
         print('Generated KNN Model Successfully')
 
     @staticmethod
-    def createModels(self,filePath: str, k: int = 3, hash: str='', debug: bool = False) -> None:
+    def createModels(self, filePath: str, k: int = 3, hash: str = '', debug: bool = False) -> None:
         try:
             ModelBuilder.createFastText(filePath, hash, debug)
             ModelBuilder.createKNN(filePath, k, hash)
@@ -196,9 +203,9 @@ if __name__ == '__main__':
     try:
         if not os.path.isdir('build'):
             os.mkdir('build')
-        
+
         if not os.path.isdir('finModel'):
-            os.mkdir('finModel')    
+            os.mkdir('finModel')
     except:
         logger.critical("unable to create the needed folders")
 
