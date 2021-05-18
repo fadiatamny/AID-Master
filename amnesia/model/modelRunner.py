@@ -16,21 +16,23 @@ from collections import Counter
 from pandas.core.series import Series
 from apiException import ApiException
 
-logger =logging.getLogger(__name__)
+logger = logging.getLogger(__name__)
 logger.setLevel("DEBUG")
 handler = logging.FileHandler("Runner_Model.log")
 formatter = "%(asctime)s %(levelname)s -- %(message)s"
 handler.setFormatter(logging.Formatter(formatter))
 logger.addHandler(handler)
 
+
 def timed(func):
-    
+
     @wraps(func)
     def wrapper(*args, **kwargs):
         start = time.time()
-        res = func(*args,**kwargs)
+        res = func(*args, **kwargs)
         end = time.time()
-        logger.debug("%s runnig time is %0.2fs",func.__name__,round(end-start,2))
+        logger.debug("%s runnig time is %0.2fs",
+                     func.__name__, round(end-start, 2))
         return res
 
     return wrapper
@@ -44,12 +46,14 @@ class ModelRunner():
         self._loadModels()
 
     def _loadFasttextModels(self):
-        modelsFasttext =[]
+        modelsFasttext = []
         try:
-            for i,j in zip(range(3),os.scandir('finModel')):
-                modelsFasttext.append(fasttext.load_model(f'{os.path.abspath(j)}'))
+            for j in os.scandir('finModel'):
+                if os.path.splitext(j)[1] == '.bin':
+                    modelsFasttext.append(
+                        fasttext.load_model(f'{os.path.abspath(j)}'))
         except:
-            logger(f'unable to load the 3 FastText models stop at {i}')
+            logger(f'unable to load the 3 FastText models')
             raise ApiException(500, 'error occured in server')
         return modelsFasttext
 
@@ -69,13 +73,13 @@ class ModelRunner():
             self.knnPath = knn
 
         self._loadModels()
-    
-    def _fullPredic(self,models,text):
+
+    def _fullPredic(self, models, text):
         resF = []
         for i in range(3):
-            resF.append(models[i].predict(text,k=10))
+            resF.append(models[i].predict(text, k=10))
         allres = (tuple(list(resF[0][0])+list(resF[1][0])+list(resF[2][0])))
-        return [key for key in Counter(allres).keys() if Counter(allres)[key]>1]
+        return [key for key in Counter(allres).keys() if Counter(allres)[key] > 1]
 
 # creat the Series to divid with frame
     def _creatDiv(self, raw_frame: DataFrame) -> DataFrame:
@@ -102,11 +106,11 @@ class ModelRunner():
             textObj[key] = round(textObj[key], 2)
         return textObj
 
-    #clean the reciving text
-    def _cleanText(self,text) -> str:
+    # clean the reciving text
+    def _cleanText(self, text) -> str:
         textSeries = pd.Series([text])
         textSeries = hero.clean(textSeries)
-        text = pd.Series.to_string(textSeries,index = False)
+        text = pd.Series.to_string(textSeries, index=False)
         return text
 
     @timed
@@ -122,10 +126,10 @@ class ModelRunner():
         tempDataframe = pd.DataFrame()
         cleanText = self._cleanText(text)
         try:
-            fastTextRes = self._fullPredic(fastTextmodel,cleanText)
+            fastTextRes = self._fullPredic(fastTextmodel, cleanText)
         except:
-            logger.critical("cenat pradic")
-            return json.loads("cenat pradic")
+            logger.critical("unable to pradic")
+            return json.loads("unable to pradic")
         categorieslist = list(self.categories.columns)
 
         for label in categorieslist:
