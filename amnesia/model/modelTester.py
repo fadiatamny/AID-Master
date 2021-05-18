@@ -21,10 +21,10 @@ logger.addHandler(handler)
 class ModelTester:
 
     @staticmethod
-    def loadFasttextModels():
+    def loadFasttextModels(path: str) -> list:
         modelsFasttext = []
         try:
-            for j in os.scandir('finModel'):
+            for j in os.scandir(path):
                 if os.path.splitext(j)[1] == '.bin':
                     modelsFasttext.append(
                         fasttext.load_model(f'{os.path.abspath(j)}'))
@@ -33,7 +33,7 @@ class ModelTester:
         return modelsFasttext
 
     @staticmethod
-    def pred(text, models):
+    def pred(text: str, models: list)-> list:
         resF = []
         for i in range(3):
             resF.append(models[i].predict(text, k=10))
@@ -77,4 +77,4 @@ class ModelTester:
 
 if __name__ == '__main__':
     test = ModelTester()
-    test.fastTextTest()
+    test.fastTextTest(path)
