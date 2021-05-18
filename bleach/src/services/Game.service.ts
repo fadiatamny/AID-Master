@@ -74,7 +74,7 @@ export default class GameService {
     private _joinRoom(roomId: string, playerId: string, data?: Player) {
         try {
             const session = this.getGame(roomId)
-            if (!session || session.userCount <= 0) {
+            if (!session || session.playerCount <= 0) {
                 throw new Error('Room is Closed')
             }
 
@@ -89,6 +89,7 @@ export default class GameService {
                     session.addPlayer(data)
                     playerData = data
                 } else {
+                    session.playerReconnect(playerId)
                     this.io.sockets.in(roomId).emit('playerData', playerId, playerData)
                 }
                 this._socket.join(roomId)
@@ -140,7 +141,7 @@ export default class GameService {
         }
         const session = this.getGame(roomId)
         this.io.sockets.in(roomId).emit('message', 'Server', `${playerId} has left the game`)
-        session.playerLeft()
+        session.playerLeft(playerId)
         this._socket.leave(roomId)
     }
 
