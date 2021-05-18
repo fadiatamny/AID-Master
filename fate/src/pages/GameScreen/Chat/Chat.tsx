@@ -1,10 +1,12 @@
 import styles from './Chat.module.css'
 import Message from '../../../components/Message/Message'
 import User from '../../../components/User/User'
-import { useState } from 'react'
+import React from 'react'
+import ChatTabs from './ChatTabs'
+import EventsManager, { SocketEvent } from '../../../services/EventsManager'
 
 const Chat = () => {
-    const [activeChat, setActiveChat] = useState('All')
+    const [activeChat, setActiveChat] = React.useState('All')
     const mockDataMessages = [
         {
             username: 'Smittens the Unbroken',
@@ -43,28 +45,20 @@ const Chat = () => {
         { username: 'Zor Fallwanderer', playerName: 'Tara Jackson' }
     ]
 
+    React.useEffect(() => {
+        EventsManager.instance.on(SocketEvent.MESSAGE, 'Chat', (event: unknown) => {
+            console.log('im here')
+        })
+    }, [])
+
+    const switchActive = (name: string) => setActiveChat(name)
+
     return (
-        <div className="container-fluid h-100">
-            <div className="row justify-content-center h-100">
+        <div className="container-fluid">
+            <div className="row justify-content-center">
                 <div className={`col-md-4 col-xl-3 ${styles.chat}`}>
-                    <div className={`${styles.card} mb-sm-3 mb-md-0 contacts_card`}>
-                        <div className={styles.cardheader}>
-                            <div className="input-group">
-                                <input
-                                    type="text"
-                                    placeholder="Search..."
-                                    name=""
-                                    className={`form-control ${styles.search}`}
-                                />
-                                <div className="input-group-prepend">
-                                    <span className={`input-group-text ${styles.search_btn}`}>
-                                        <i className="fas fa-search"></i>
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-                        <div className={`card-body ${styles.contacts_body}`}>
-                            <ul className={styles.contacts}>
+                    <ChatTabs users={mockDataUsers} switchActive={switchActive} />
+                    {/* <ul className={styles.contacts}>
                                 {mockDataUsers.map((user, i) => {
                                     return (
                                         <div
@@ -81,10 +75,7 @@ const Chat = () => {
                                         </div>
                                     )
                                 })}
-                            </ul>
-                        </div>
-                        <div className={styles.cardfooter}></div>
-                    </div>
+                            </ul> */}
                 </div>
                 <div className={`col-md-8 col-xl-6 ${styles.chat}`}>
                     <div className={styles.card}>

@@ -68,6 +68,12 @@ export default class EventsManager {
     }
 }
 
-export enum EventType {
-    CONNECTED = 'connected'
+export type EventType = PlatformEvent | SocketEvent
+
+export enum SocketEvent {
+    CONNECTED = 'connected',
+    MESSAGE = 'message',
+    CONNECT = 'connect'
 }
+
+export enum PlatformEvent {}
