@@ -45,7 +45,7 @@ class ModelRunner():
         self.categories = pd.read_excel(data)
         self._loadModels()
 
-    def _loadFasttextModels(self):
+    def _loadFasttextModels(self)->list:
         modelsFasttext = []
         try:
             for j in os.scandir('finModel'):
@@ -74,7 +74,7 @@ class ModelRunner():
 
         self._loadModels()
 
-    def _fullPredic(self, models, text):
+    def _fullPredic(self, models:list, text:str)->list:
         resF = []
         for i in range(3):
             resF.append(models[i].predict(text, k=10))
