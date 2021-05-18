@@ -1,4 +1,4 @@
-import PlusMinus from '../components/PlusMinus/PlusMinus'
+import Button from '../components/Button/Button'
 import Clickable from '../components/Clickable/Clickable'
 import newGame from '../assets/images/CircleNew.png'
 import uploadGame from '../assets/images/CircleUpload.png'
@@ -21,25 +21,26 @@ const Test = () => {
     const username = 'Smittens the Unbroken'
     const playerName = 'Blake Holt'
     const messageText =
-        'He removes his tall black hat to reveal a balding pate. “I apologize for disturbing you,” he says in a deep, monotone voice. “I assume you are adventurers for hire, and I seek your expertise for a small matter.”'
+        'He removes his tall black hat to reveal a balding pate. “I apologize for disturbing you,” \
+        he says in a deep, monotone voice. “I assume you are adventurers for hire, \
+        and I seek your expertise for a small matter.”'
 
     return (
         <div>
             <h1 style={{ textAlign: 'center', fontSize: '48px' }}>testing page</h1>
-            <Clickable onclick={clickNew}>
+            <Clickable onClick={clickNew}>
                 <img src={newGame} />
             </Clickable>
-            <Clickable onclick={clickUpload}>
+            <Clickable onClick={clickUpload}>
                 <img src={uploadGame} />
             </Clickable>
-            <PlusMinus onClick={clickButtton}>
+            <Button onClick={clickButtton}>
                 <p>+</p>
-            </PlusMinus>
-            <PlusMinus onClick={clickButtton}>
+            </Button>
+            <Button onClick={clickButtton}>
                 <p>-</p>
-            </PlusMinus>
-            <Input id="Chartest" label="Character Name" placeholder="Smittens the Unbroken" />
-            <Input id="noclasstest" label="no class test" placeholder="trying an input with a missing attribute" />
+            </Button>
+            <Input id="charainput" label="Character Name" placeholder="Smittens the Unbroken" />
             <Message username={username} playerName={playerName} messageText={messageText} myMessage={true} />
             <Message username={username} playerName={playerName} messageText={messageText} myMessage={false} />
         </div>

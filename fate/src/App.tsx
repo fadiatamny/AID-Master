@@ -6,6 +6,7 @@ import AdvLoginScreen from './pages/StartingPages/AdvLoginScreen'
 import DMLoginScreen from './pages/StartingPages/DMLoginScreen'
 import NewGame from './pages/StartingPages/DM/NewGame'
 import UploadGame from './pages/StartingPages/DM/UploadGame'
+import GameScreen from './pages/GameScreen/GameScreen'
 import Test from './pages/Test'
 
 export default function App() {
@@ -16,6 +17,7 @@ export default function App() {
             <Route path="/DMLogin" component={DMLoginScreen} />
             <Route path="/newGame" component={NewGame} />
             <Route path="/gameUpload" component={UploadGame} />
+            <Route path="/play" component={GameScreen} />
             <Route path="/test" component={Test} />
         </Router>
     )
