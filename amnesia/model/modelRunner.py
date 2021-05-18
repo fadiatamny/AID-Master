@@ -50,6 +50,7 @@ class ModelRunner():
                 modelsFasttext.append(fasttext.load_model(f'{os.path.abspath(j)}'))
         except:
             logger(f'unable to load the 3 FastText models stop at {i}')
+            raise ApiException(500, 'error occured in server')
         return modelsFasttext
 
     def _loadModels(self) -> None:
