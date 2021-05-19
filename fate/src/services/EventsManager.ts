@@ -73,7 +73,16 @@ export type EventType = PlatformEvent | SocketEvent
 export enum SocketEvent {
     CONNECTED = 'connected',
     MESSAGE = 'message',
-    CONNECT = 'connect'
+    CONNECT = 'connect',
+    ROOMCREATED = 'roomcreatred',
+    ROOMJOINED = 'roomjoined',
+    DMCHANGED = 'dmchanged',
+    PLAYERDATA = 'playerdata',
+    SCENARIO = 'scenario',
+    SCENARIOGUIDE = 'scenatioguide',
+    ERROR = 'error'
+
+
 }
 
 export enum PlatformEvent {}
