@@ -74,14 +74,20 @@ export enum SocketEvent {
     CONNECTED = 'connected',
     MESSAGE = 'message',
     CONNECT = 'connect',
-    ROOMCREATED = 'roomcreatred',
+    ROOMCREATED = 'roomcreated',
+    ROOMCREATING = 'roomcreatring',
     ROOMJOINED = 'roomjoined',
     DMCHANGED = 'dmchanged',
+    DMCHANGEING = 'dmchanging',
     PLAYERDATA = 'playerdata',
     SCENARIO = 'scenario',
     SCENARIOGUIDE = 'scenatioguide',
-    ERROR = 'error'
-
+    ERROR = 'error',
+    ROOMJOINING = 'roomjoining',
+    RECPLAYERDATA = 'recplayrdata',
+    RECSCENARIO = 'recscenario',
+    RECSCENARIOGUIDE = 'recscenatioguide',
+    RECERROR = 'recerror'
 
 }
 

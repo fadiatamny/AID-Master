@@ -21,35 +21,35 @@ export default class SocketManager {
         })
         EventsManager.instance.on(SocketEvent.MESSAGE, 'socket-manager', () => (this._socket = io(endpoint)))
         this._socket.on('message', (username:string, massege:string,target:string) => {
-            EventsManager.instance.trigger(SocketEvent.MESSAGE, {})
+            EventsManager.instance.trigger(SocketEvent.MESSAGE, {username, massege,target})
         })
-        EventsManager.instance.on(SocketEvent.ROOMCREATED, 'socket-manager', () => (this._socket = io(endpoint)))
-        this._socket.on('roomcreatred', (id:string, mode:usermode) => {
-            EventsManager.instance.trigger(SocketEvent.ROOMCREATED, {})
+        EventsManager.instance.on(SocketEvent.ROOMCREATING, 'socket-manager', () => (this._socket = io(endpoint)))
+        this._socket.on('roomcreated', (id:string, mode:usermode) => {
+            EventsManager.instance.trigger(SocketEvent.ROOMCREATED, {id,mode})
         })
-        EventsManager.instance.on(SocketEvent.ROOMJOINED, 'socket-manager', () => (this._socket = io(endpoint)))
+        EventsManager.instance.on(SocketEvent.ROOMJOINING, 'socket-manager', () => (this._socket = io(endpoint)))
         this._socket.on('roomjoined', (username:string, type:playertype) => {
-            EventsManager.instance.trigger(SocketEvent.ROOMJOINED, {})
+            EventsManager.instance.trigger(SocketEvent.ROOMJOINED, {username,type})
         })
-        EventsManager.instance.on(SocketEvent.DMCHANGED, 'socket-manager', () => (this._socket = io(endpoint)))
+        EventsManager.instance.on(SocketEvent.DMCHANGEING, 'socket-manager', () => (this._socket = io(endpoint)))
         this._socket.on('dmchanged', (playerid:string ) => {
-            EventsManager.instance.trigger(SocketEvent.DMCHANGED, {})
+            EventsManager.instance.trigger(SocketEvent.DMCHANGED, {playerid})
         })
-        EventsManager.instance.on(SocketEvent.PLAYERDATA, 'socket-manager', () => (this._socket = io(endpoint)))
+        EventsManager.instance.on(SocketEvent.RECPLAYERDATA, 'socket-manager', () => (this._socket = io(endpoint)))
         this._socket.on('playerdata', (playerid:string,playerdata:string ) => {
-            EventsManager.instance.trigger(SocketEvent.PLAYERDATA, {})
+            EventsManager.instance.trigger(SocketEvent.PLAYERDATA, {playerid,playerdata})
         })
-        EventsManager.instance.on(SocketEvent.SCENARIO, 'socket-manager', () => (this._socket = io(endpoint)))
+        EventsManager.instance.on(SocketEvent.RECSCENARIO, 'socket-manager', () => (this._socket = io(endpoint)))
         this._socket.on('scenario', (username:string,message:string ) => {
-            EventsManager.instance.trigger(SocketEvent.SCENARIO, {})
+            EventsManager.instance.trigger(SocketEvent.SCENARIO, {username,message})
         })
-        EventsManager.instance.on(SocketEvent.SCENARIOGUIDE, 'socket-manager', () => (this._socket = io(endpoint)))
+        EventsManager.instance.on(SocketEvent.RECSCENARIOGUIDE, 'socket-manager', () => (this._socket = io(endpoint)))
         this._socket.on('scenatioguide', (username:string,message:string ) => {
-            EventsManager.instance.trigger(SocketEvent.SCENARIOGUIDE, {})
+            EventsManager.instance.trigger(SocketEvent.SCENARIOGUIDE, {username,message})
         })
-        EventsManager.instance.on(SocketEvent.ERROR, 'socket-manager', () => (this._socket = io(endpoint)))
+        EventsManager.instance.on(SocketEvent.RECERROR, 'socket-manager', () => (this._socket = io(endpoint)))
         this._socket.on('error', (username:string,message:string ) => {
-            EventsManager.instance.trigger(SocketEvent.ERROR, {})
+            EventsManager.instance.trigger(SocketEvent.ERROR, {username,message})
         })
     }
 }
