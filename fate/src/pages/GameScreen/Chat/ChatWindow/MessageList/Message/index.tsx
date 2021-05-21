@@ -1,5 +1,5 @@
 import Card from 'react-bootstrap/Card'
-import styles from './Message.module.css'
+import styles from './styles.module.css'
 
 export interface MessageProps {
     username: string
@@ -12,11 +12,11 @@ const Message = ({ username, playerName, messageText, myMessage }: MessageProps)
     return (
         <Card className={myMessage ? styles.mymessage : ''}>
             <Card.Body>
-                <Card.Title>{username}</Card.Title>
-                <Card.Subtitle className={myMessage ? 'text-white mb-2' : 'text-muted mb-2'}>
+                <Card.Title className={styles.title}>{username}</Card.Title>
+                <Card.Subtitle className={`${styles.subtitle} ${myMessage ? 'text-white mb-2' : 'text-muted mb-2'}`}>
                     {playerName}
                 </Card.Subtitle>
-                <Card.Text>{messageText}</Card.Text>
+                <Card.Text className={styles.content}>{messageText}</Card.Text>
             </Card.Body>
         </Card>
     )

@@ -3,13 +3,14 @@ import InputGroup from 'react-bootstrap/InputGroup'
 import BButton from 'react-bootstrap/Button'
 
 export interface PlusMinusProps {
-    onClick: () => void
+    onClick?: () => void
     children: JSX.Element
+    className?: string
 }
 
-const Button = ({ onClick, children }: PlusMinusProps) => {
+const Button = ({ onClick, children, className }: PlusMinusProps) => {
     return (
-        <div className={styles.button}>
+        <div className={`${styles.button} ${className}`}>
             <InputGroup className="mb-3">
                 <InputGroup.Prepend>
                     <BButton variant="outline-secondary" onClick={onClick} style={{ width: '40px', height: '40px' }}>
