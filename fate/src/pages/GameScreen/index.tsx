@@ -1,4 +1,4 @@
-import styles from './GameScreen.module.css'
+import styles from './styles.module.css'
 import Header from '../../components/Header/Header'
 import Chat from './Chat'
 
@@ -8,7 +8,7 @@ const GameScreen = () => {
     return (
         <div>
             <Header />
-            <div className={`${styles.container} row`}>
+            <div className={`${styles.container}`}>
                 <Chat />
             </div>
         </div>

@@ -1,4 +1,3 @@
-
 import { PlayerDump } from './Player.model'
 import { Scenario } from './Scenario.model'
 
@@ -8,4 +7,3 @@ export interface GameDump {
     playerList: PlayerDump[]
     lastScenario: Scenario
 }
-

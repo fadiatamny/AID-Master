@@ -15,7 +15,7 @@ const Tab = ({ username, charactername, isActive }: TabProps) => {
     }
     return (
         <div className={`${styles.container} ${isActive ? styles.selected : ''}`}>
-            <p className={styles.username}>{shortifyString(username)}</p>
+            <p className={`${styles.username}`}>{shortifyString(username)}</p>
             <p className={styles.charactername}>{shortifyString(charactername)}</p>
         </div>
     )

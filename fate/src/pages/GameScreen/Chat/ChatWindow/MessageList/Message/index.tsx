@@ -13,7 +13,9 @@ const Message = ({ username, playerName, messageText, myMessage }: MessageProps)
         <Card className={myMessage ? styles.mymessage : ''}>
             <Card.Body>
                 <Card.Title className={styles.title}>{username}</Card.Title>
-                <Card.Subtitle className={`${styles.subtitle} ${myMessage ? 'text-white mb-2' : 'text-muted mb-2'}`}>
+                <Card.Subtitle
+                    className={`${styles.subtitle} ${myMessage ? 'text-white mb-2' : `mb-2  ${styles.otherMessage}`}`}
+                >
                     {playerName}
                 </Card.Subtitle>
                 <Card.Text className={styles.content}>{messageText}</Card.Text>

@@ -7,3 +7,17 @@
     text-align: center;
     float: left;
 }
+
+.buttonStyling {
+    height: 40px;
+    min-width: 40px;
+    background-color: transparent;
+    border-color: #191b25;
+    color: #191b25;
+}
+
+.buttonStyling:hover {
+    background-color: #191b25;
+    color: #ffa3a4;
+    border-color: transparent;
+}

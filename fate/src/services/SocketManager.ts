@@ -29,8 +29,6 @@ export default class SocketManager {
             [SocketEvent.SCENARIO]: this._scenario.bind(this),
             [SocketEvent.SCENARIOGUIDE]: this._scenarioGuide.bind(this),
             [SocketEvent.ERROR]: this._error.bind(this)
-
-
         }
         const onsHandler = {
             ['createRoom']: this._createRoom.bind(this),
@@ -40,17 +38,16 @@ export default class SocketManager {
             ['leaveroom']: this._leaveRoom.bind(this)
         }
 
-        Object.entries(emitsHandler).forEach(([key, value]) => EventsManager.instance.on(key as any as SocketEvent, 'socket-manager', value))
+        Object.entries(emitsHandler).forEach(([key, value]) =>
+            EventsManager.instance.on(key as any as SocketEvent, 'socket-manager', value)
+        )
         Object.entries(onsHandler).forEach(([key, value]) => this._socket.on(key, value))
-
-
     }
     private _joinRoom(id: string, userId: string, data: IPlayer) {
         EventsManager.instance.trigger(SocketEvent.JOINROOM, { id, userId, data })
     }
 
-
-    private _createRoom(userId: string, username: string, data: GameDump) {      
+    private _createRoom(userId: string, username: string, data: GameDump) {
         EventsManager.instance.trigger(SocketEvent.CREATEROOM, { userId, username, data })
     }
 
@@ -66,7 +63,6 @@ export default class SocketManager {
         EventsManager.instance.trigger(SocketEvent.MESSAGE, { username, message, target })
     }
 
-
     private _roomCreated(id: string) {
         EventsManager.instance.trigger(SocketEvent.ROOMCREATED, { id })
     }
@@ -77,7 +73,6 @@ export default class SocketManager {
     private _sendMessage(id: string, username: string, massege: string, target: string) {
         EventsManager.instance.trigger(SocketEvent.SENDMESSAGE, { id, username, massege, target })
     }
-
 
     private _roomJoined(username: string, type: PlayerType) {
         EventsManager.instance.trigger(SocketEvent.ROOMJOINED, { username, type })
@@ -101,5 +96,4 @@ export default class SocketManager {
     private _scenarioGuide(username: string, message: string) {
         EventsManager.instance.trigger(SocketEvent.SCENARIOGUIDE, { username, message })
     }
-
 }

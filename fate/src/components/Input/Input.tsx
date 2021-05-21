@@ -1,4 +1,4 @@
-import Button from "../Button/Button"
+import Button from '../Button/Button'
 
 export interface InputProps {
     label?: string
@@ -39,8 +39,8 @@ const Input = ({ label, placeholder, id, className, onChange, onSubmit, submitLa
                         </span>
                     </div>
                 ) : null}
-                 {onSubmit ? (
-                    <div className="input-group-prepend">
+                {onSubmit ? (
+                    <div className="input-group-prepend" style={{ margin: '2px' }}>
                         <Button onClick={onSubmit}>
                             <p>{submitLabel ?? 'Submit'}</p>
                         </Button>

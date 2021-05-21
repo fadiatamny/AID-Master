@@ -1,15 +1,18 @@
 .container {
     height: 80vh;
     padding-top: 1vh;
-    border-radius: 15px !important;
-    background-color: #6b778d;
+    border-radius: 15px;
+    background-color: #2f313a;
+}
+
+.messageList {
+    height: 85%;
+}
+
+.inputHolder {
+    height: 5%;
 }
 
 .input {
     width: 95%;
-    
-}
-
-.inputHolder{
-    height: 5%;
 }

@@ -5,16 +5,17 @@
     margin-right: 0.5vh;
     transition: background-color 0.5s ease;
     border-radius: 15px;
+    color: #ff6768;
 }
 
 .container:hover {
-    color: cornsilk;
-    background-color: #263859;
+    color: cornsilk !important;
+    background-color: #ff6768;
 }
 
-.selected{
+.selected {
     color: cornsilk;
-    background-color: #263859;
+    background-color: #ff6768;
 }
 .username {
     font-size: 1.5vw;
@@ -26,7 +27,7 @@
 
 .charactername {
     font-size: 1vw;
-    color: #ff6768;
+    color: #ffa3a4;
     margin-left: 10%;
     margin-top: 0;
     margin-bottom: 0;

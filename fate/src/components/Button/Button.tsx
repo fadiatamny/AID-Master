@@ -13,7 +13,7 @@ const Button = ({ onClick, children, className }: PlusMinusProps) => {
         <div className={`${styles.button} ${className}`}>
             <InputGroup className="mb-3">
                 <InputGroup.Prepend>
-                    <BButton variant="outline-secondary" onClick={onClick} style={{ width: '40px', height: '40px' }}>
+                    <BButton onClick={onClick} className={styles.buttonStyling}>
                         {children}
                     </BButton>
                 </InputGroup.Prepend>
