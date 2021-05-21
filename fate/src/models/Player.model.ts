@@ -5,7 +5,6 @@ export enum PlayerType {
     PLAYER = 'player'
 }
 
-
 export interface IPlayer {
     type: PlayerType
     id: string

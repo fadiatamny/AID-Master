@@ -1,4 +1,5 @@
 import io, { Socket } from 'socket.io-client'
+import { GameDump } from '../models/GameSession.model'
 import { PlayerType, IPlayer } from '../models/Player.model'
 import EventsManager, { SocketEvent } from './EventsManager'
 const endpoint = 'https://localhost:5069'
@@ -49,7 +50,7 @@ export default class SocketManager {
     }
 
 
-    private _createRoom(userId: string, username: string, data: string) {      //data need to be gamedump but is not defined
+    private _createRoom(userId: string, username: string, data: GameDump) {      
         EventsManager.instance.trigger(SocketEvent.CREATEROOM, { userId, username, data })
     }
 
