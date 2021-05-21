@@ -1,0 +1,31 @@
+.container {
+    padding-top: 0.5vh;
+    padding-bottom: 0.5vh;
+    margin-left: 0.5vh;
+    margin-right: 0.5vh;
+    transition: background-color 0.5s ease;
+    border-radius: 15px !important;
+}
+
+.container:hover {
+    background-color: #ff949466 !important;
+}
+
+.selected{
+    background-color: #ff949466;
+}
+.username {
+    font-size: 1.5vw;
+    font-weight: 600;
+    margin-left: 5%;
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+.charactername {
+    font-size: 1vw;
+    color: sienna;
+    margin-left: 10%;
+    margin-top: 0;
+    margin-bottom: 0;
+}
