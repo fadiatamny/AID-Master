@@ -2,7 +2,7 @@ import io, { Socket } from 'socket.io-client'
 import { GameDump } from '../models/GameSession.model'
 import { PlayerType, IPlayer } from '../models/Player.model'
 import EventsManager, { SocketEvent } from './EventsManager'
-const endpoint = 'https://localhost:5069'
+const endpoint = 'http://localhost:5069'
 
 export default class SocketManager {
     private static _instance: SocketManager
@@ -16,15 +16,13 @@ export default class SocketManager {
 
     private _socket: Socket
     constructor() {
-        this._socket = io(endpoint)
-
         const emitsHandler = {
-            [SocketEvent.CONNECTED]: this._connected.bind(this),
-            [SocketEvent.ROOMCREATED]: this._roomCreated.bind(this),
-            [SocketEvent.MESSAGESENT]: this._messageSent.bind(this),
-            [SocketEvent.SENARIOSENT]: this._scenarioSent.bind(this),
-            [SocketEvent.JOINROOM]: this._joinRoom.bind(this),
-            [SocketEvent.ROOMLEAVED]: this._roomLeaved.bind(this)
+            [SocketEvent.HI]: this._hi.bind(this)
+            // [SocketEvent.ROOMCREATED]: this._roomCreated.bind(this),
+            // [SocketEvent.MESSAGESENT]: this._messageSent.bind(this),
+            // [SocketEvent.SENARIOSENT]: this._scenarioSent.bind(this),
+            // [SocketEvent.JOINROOM]: this._joinRoom.bind(this),
+            // [SocketEvent.ROOMLEAVED]: this._roomLeaved.bind(this)
         }
         /*
 emit:
@@ -48,26 +46,45 @@ emit:
 */
 
         const onsHandler = {
-            [SocketEvent.CONNECT]: this._connect.bind(this),
-            [SocketEvent.ROOMJOINED]: this._roomJoined.bind(this),
-            [SocketEvent.SENDMESSAGE]: this._sendMessage.bind(this),
-            [SocketEvent.DMCHANGED]: this._dmChanged.bind(this),
-            [SocketEvent.ROOMCREATED]: this._roomCreated.bind(this),
-            [SocketEvent.PLAYERDATA]: this._playerData.bind(this),
-            [SocketEvent.MESSAGE]: this._message.bind(this),
-            [SocketEvent.SCENARIO]: this._scenario.bind(this),
-            [SocketEvent.SCENARIOGUIDE]: this._scenarioGuide.bind(this),
-            [SocketEvent.ERROR]: this._error.bind(this)
+            [SocketEvent.HELLO]: this._hello.bind(this),
+            [SocketEvent.CONNECT]: this._connect.bind(this)
+            // [SocketEvent.ROOMJOINED]: this._roomJoined.bind(this),
+            // [SocketEvent.SENDMESSAGE]: this._sendMessage.bind(this),
+            // [SocketEvent.DMCHANGED]: this._dmChanged.bind(this),
+            // [SocketEvent.ROOMCREATED]: this._roomCreated.bind(this),
+            // [SocketEvent.PLAYERDATA]: this._playerData.bind(this),
+            // [SocketEvent.MESSAGE]: this._message.bind(this),
+            // [SocketEvent.SCENARIO]: this._scenario.bind(this),
+            // [SocketEvent.SCENARIOGUIDE]: this._scenarioGuide.bind(this),
+            // [SocketEvent.ERROR]: this._error.bind(this)
         }
 
         Object.entries(emitsHandler).forEach(([key, value]) =>
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             EventsManager.instance.on(key as any as SocketEvent, 'socket-manager', value)
         )
+
+        this._socket = io(endpoint)
+        this._socket.on(SocketEvent.CONNECT, this._connected.bind(this))
         Object.entries(onsHandler).forEach(([key, value]) => this._socket.on(key, value))
     }
 
-    private _connect(messege: string) {
-        EventsManager.instance.trigger(SocketEvent.CONNECT, { messege })
+    private _connect() {
+        if (!this._socket) {
+            console.log('connecting')
+            this._socket = io(endpoint)
+        }
+    }
+    private _connected() {
+        EventsManager.instance.trigger(SocketEvent.CONNECTED, {})
+    }
+
+    private _hi() {
+        this._socket.emit(SocketEvent.HI, {})
+    }
+
+    private _hello() {
+        EventsManager.instance.trigger(SocketEvent.HELLO, {})
     }
 
     private _roomLeaved(id: string, userId: string) {
@@ -105,9 +122,6 @@ emit:
     private _roomCreated(id: string) {
         EventsManager.instance.trigger(SocketEvent.ROOMCREATED, { id })
     }
-    private _connected(messege: string) {
-        EventsManager.instance.trigger(SocketEvent.CONNECTED, { messege })
-    }
 
     private _sendMessage(id: string, username: string, massege: string, target: string) {
         EventsManager.instance.trigger(SocketEvent.SENDMESSAGE, { id, username, massege, target })
@@ -136,5 +150,3 @@ emit:
         EventsManager.instance.trigger(SocketEvent.SCENARIOGUIDE, { username, message })
     }
 }
-
-SocketManager.instance

@@ -1,17 +1,17 @@
-import React from 'react'
-import Button from '../../../../components/Button/Button'
+// import React from 'react'
+// import Button from '../../../../components/Button/Button'
 import Input from '../../../../components/Input/Input'
 import ChatTitle from './ChatTitle'
 import MessagesList from './MessageList'
 import { MessageProps } from './MessageList/Message'
 import styles from './styles.module.css'
 
-export interface ChatWindowProps{
+export interface ChatWindowProps {
     data: Array<MessageProps>
     activeChat: string
 }
 
-const ChatWindow = ({data, activeChat} : ChatWindowProps) => {
+const ChatWindow = ({ data, activeChat }: ChatWindowProps) => {
     return (
         <div className="col">
             <div className={`${styles.container}`}>

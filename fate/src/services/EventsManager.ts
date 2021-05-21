@@ -62,7 +62,6 @@ export default class EventsManager {
 
     public trigger(type: EventType, event: unknown) {
         if (!this._events[type]) {
-            console.log('hiiiiiii')
             return
         }
         this._events[type].trigger(event)
@@ -72,6 +71,8 @@ export default class EventsManager {
 export type EventType = PlatformEvent | SocketEvent
 
 export enum SocketEvent {
+    HI = 'hi',
+    HELLO = 'hello',
     CONNECTED = 'connected',
     MESSAGE = 'message',
     CONNECT = 'connect',

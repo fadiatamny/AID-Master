@@ -10,11 +10,12 @@ const GameScreen = () => {
     const eventsManager = EventsManager.instance
 
     const connected = () => {
-        console.log('TEST: connected')
+        console.log('GameScreen: connected')
     }
     useEffect(() => {
-        eventsManager.on(SocketEvent.CONNECT, 'game-screen', connected)
-        eventsManager.trigger(SocketEvent.CONNECT, {})
+        eventsManager.on(SocketEvent.CONNECTED, 'game-screen', connected)
+        eventsManager.on(SocketEvent.HELLO, 'game-screen', () => console.log('HELLOooo'))
+        eventsManager.trigger(SocketEvent.HI, {})
     }, [])
 
     return (
