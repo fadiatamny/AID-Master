@@ -48,7 +48,8 @@ export default class SocketManager {
         EventsManager.instance.trigger(SocketEvent.JOINROOM,{id,userId,data})
     }
 
-    private _createRoom(userId: string, username: string, data: GameDump ) {
+    
+    private _createRoom(userId: string, username: string, data: string ) {      //data need to be gamedump but is not defined
         EventsManager.instance.trigger(SocketEvent.CREATEROOM,{userId,username,data})
     }
 
