@@ -1,6 +1,6 @@
 ## Structure
 
-### Version 0.6.1 Pre-Beta
+### Version 0.5.2 Post-Alpha
 
 | Codebase |      Description      |
 | :------- | :-------------------: |
