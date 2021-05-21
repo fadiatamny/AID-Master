@@ -1,14 +1,17 @@
+import Button from "../Button/Button"
+
 export interface InputProps {
-    label: string
+    label?: string
     placeholder: string
     id: string
     className?: string
     onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void
+    onSubmit?: () => void
+    submitLabel?: string
 }
 
 const defaultProps: InputProps = {
     id: '',
-    label: 'input label',
     placeholder: 'placeholder',
     className: '',
     onChange: (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -16,7 +19,7 @@ const defaultProps: InputProps = {
     }
 }
 
-const Input = ({ label, placeholder, id, className, onChange }: InputProps = defaultProps) => {
+const Input = ({ label, placeholder, id, className, onChange, onSubmit, submitLabel }: InputProps = defaultProps) => {
     return (
         <div className={className}>
             <div className="input-group mb-3 ml-5 mr-5">
@@ -29,11 +32,20 @@ const Input = ({ label, placeholder, id, className, onChange }: InputProps = def
                     id={id}
                     onChange={onChange}
                 />
-                <div className="input-group-prepend">
-                    <span className="input-group-text" id="basic-addon1">
-                        {label}
-                    </span>
-                </div>
+                {label ? (
+                    <div className="input-group-prepend">
+                        <span className="input-group-text" id="basic-addon1">
+                            {label}
+                        </span>
+                    </div>
+                ) : null}
+                 {onSubmit ? (
+                    <div className="input-group-prepend">
+                        <Button onClick={onSubmit}>
+                            <p>{submitLabel ?? 'Submit'}</p>
+                        </Button>
+                    </div>
+                ) : null}
             </div>
         </div>
     )

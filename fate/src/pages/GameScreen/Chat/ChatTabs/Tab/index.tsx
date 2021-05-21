@@ -3,9 +3,10 @@ import styles from './styles.module.css'
 export interface TabProps {
     username: string
     charactername: string
+    isActive?: boolean
 }
 
-const Tab = ({ username, charactername }: TabProps) => {
+const Tab = ({ username, charactername, isActive }: TabProps) => {
     const shortifyString = (s: string) => {
         if (s.length >= 15) {
             return s.substring(0, 15) + '...'
@@ -13,7 +14,7 @@ const Tab = ({ username, charactername }: TabProps) => {
         return s
     }
     return (
-        <div className={styles.container}>
+        <div className={`${styles.container} ${isActive ? styles.selected : ''}`}>
             <p className={styles.username}>{shortifyString(username)}</p>
             <p className={styles.charactername}>{shortifyString(charactername)}</p>
         </div>

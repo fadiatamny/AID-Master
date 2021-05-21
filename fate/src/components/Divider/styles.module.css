@@ -1,0 +1,12 @@
+.container {
+    padding-top: 1vh;
+    padding-bottom: 1vh;
+    margin-left: 0.5vh;
+    margin-right: 0.5vh;
+
+}
+
+.divider{
+    width: 80%;
+    border-bottom: 1px solid #442724;
+}
