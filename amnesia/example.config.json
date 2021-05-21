@@ -1,5 +1,0 @@
-{
-    "ENV": "production",
-    "DEBUG": false,
-    "SECRET_KEY": "somerandomkey"
-}
