@@ -75,19 +75,17 @@ export enum SocketEvent {
     MESSAGE = 'message',
     CONNECT = 'connect',
     ROOMCREATED = 'roomcreated',
-    ROOMCREATING = 'roomcreatring',
+    CREATEROOM = 'createroom',
     ROOMJOINED = 'roomjoined',
     DMCHANGED = 'dmchanged',
-    DMCHANGEING = 'dmchanging',
     PLAYERDATA = 'playerdata',
     SCENARIO = 'scenario',
     SCENARIOGUIDE = 'scenatioguide',
     ERROR = 'error',
-    ROOMJOINING = 'roomjoining',
-    RECPLAYERDATA = 'recplayrdata',
-    RECSCENARIO = 'recscenario',
-    RECSCENARIOGUIDE = 'recscenatioguide',
-    RECERROR = 'recerror'
+    JOINROOM = 'joinroom',
+    SENDMESSAGE = 'sendmessage',
+    LEAVEROOM = 'leaveroom',
+    SENDSENARIO = 'sendSenario'
 
 }
 
