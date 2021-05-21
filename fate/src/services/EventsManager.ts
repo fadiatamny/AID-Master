@@ -62,6 +62,7 @@ export default class EventsManager {
 
     public trigger(type: EventType, event: unknown) {
         if (!this._events[type]) {
+            console.log('hiiiiiii')
             return
         }
         this._events[type].trigger(event)
@@ -85,8 +86,10 @@ export enum SocketEvent {
     JOINROOM = 'joinroom',
     SENDMESSAGE = 'sendmessage',
     LEAVEROOM = 'leaveroom',
-    SENDSENARIO = 'sendSenario'
-
+    SENDSENARIO = 'sendSenario',
+    MESSAGESENT = 'messagesent',
+    SENARIOSENT = 'senariosent',
+    ROOMLEAVED = 'roomleaved'
 }
 
 export enum PlatformEvent {}

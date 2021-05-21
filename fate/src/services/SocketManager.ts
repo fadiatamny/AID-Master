@@ -19,7 +19,36 @@ export default class SocketManager {
         this._socket = io(endpoint)
 
         const emitsHandler = {
-            [SocketEvent.CONNECT]: this._connected.bind(this),
+            [SocketEvent.CONNECTED]: this._connected.bind(this),
+            [SocketEvent.ROOMCREATED]: this._roomCreated.bind(this),
+            [SocketEvent.MESSAGESENT]: this._messageSent.bind(this),
+            [SocketEvent.SENARIOSENT]: this._scenarioSent.bind(this),
+            [SocketEvent.JOINROOM]: this._joinRoom.bind(this),
+            [SocketEvent.ROOMLEAVED]: this._roomLeaved.bind(this)
+        }
+        /*
+emit:
+        [SocketEvent.CONNECT]: this._connected.bind(this),
+        [SocketEvent.ROOMJOINED]: this._roomJoined.bind(this),
+        [SocketEvent.SENDMESSAGE]: this._sendMessage.bind(this),
+        [SocketEvent.DMCHANGED]: this._dmChanged.bind(this),
+        [SocketEvent.ROOMCREATED]: this._roomCreated.bind(this),
+        [SocketEvent.PLAYERDATA]: this._playerData.bind(this),
+        [SocketEvent.MESSAGE]: this._message.bind(this),
+        [SocketEvent.SCENARIO]: this._scenario.bind(this),
+        [SocketEvent.SCENARIOGUIDE]: this._scenarioGuide.bind(this),
+        [SocketEvent.ERROR]: this._error.bind(this)
+
+    on:
+        ['createRoom']: this._createRoom.bind(this),
+        ['sendmessage']: this._sendMessage.bind(this),
+        ['sendScenario']: this._sendScenario.bind(this),
+        ['joinroom']: this._joinRoom.bind(this),
+        ['leaveroom']: this._leaveRoom.bind(this)
+*/
+
+        const onsHandler = {
+            [SocketEvent.CONNECT]: this._connect.bind(this),
             [SocketEvent.ROOMJOINED]: this._roomJoined.bind(this),
             [SocketEvent.SENDMESSAGE]: this._sendMessage.bind(this),
             [SocketEvent.DMCHANGED]: this._dmChanged.bind(this),
@@ -29,28 +58,35 @@ export default class SocketManager {
             [SocketEvent.SCENARIO]: this._scenario.bind(this),
             [SocketEvent.SCENARIOGUIDE]: this._scenarioGuide.bind(this),
             [SocketEvent.ERROR]: this._error.bind(this)
-
-
-        }
-        const onsHandler = {
-            ['createRoom']: this._createRoom.bind(this),
-            ['sendmessage']: this._sendMessage.bind(this),
-            ['sendScenario']: this._sendScenario.bind(this),
-            ['joinroom']: this._joinRoom.bind(this),
-            ['leaveroom']: this._leaveRoom.bind(this)
         }
 
-        Object.entries(emitsHandler).forEach(([key, value]) => EventsManager.instance.on(key as any as SocketEvent, 'socket-manager', value))
+        Object.entries(emitsHandler).forEach(([key, value]) =>
+            EventsManager.instance.on(key as any as SocketEvent, 'socket-manager', value)
+        )
         Object.entries(onsHandler).forEach(([key, value]) => this._socket.on(key, value))
-
-
     }
+
+    private _connect(messege: string) {
+        EventsManager.instance.trigger(SocketEvent.CONNECT, { messege })
+    }
+
+    private _roomLeaved(id: string, userId: string) {
+        EventsManager.instance.trigger(SocketEvent.ROOMLEAVED, { id, userId })
+    }
+
+    private _scenarioSent(username: string, message: string) {
+        EventsManager.instance.trigger(SocketEvent.SENARIOSENT, { username, message })
+    }
+
+    private _messageSent(id: string, username: string, massege: string, target: string) {
+        EventsManager.instance.trigger(SocketEvent.MESSAGESENT, { id, username, massege, target })
+    }
+
     private _joinRoom(id: string, userId: string, data: IPlayer) {
         EventsManager.instance.trigger(SocketEvent.JOINROOM, { id, userId, data })
     }
 
-
-    private _createRoom(userId: string, username: string, data: GameDump) {      
+    private _createRoom(userId: string, username: string, data: GameDump) {
         EventsManager.instance.trigger(SocketEvent.CREATEROOM, { userId, username, data })
     }
 
@@ -66,18 +102,16 @@ export default class SocketManager {
         EventsManager.instance.trigger(SocketEvent.MESSAGE, { username, message, target })
     }
 
-
     private _roomCreated(id: string) {
         EventsManager.instance.trigger(SocketEvent.ROOMCREATED, { id })
     }
     private _connected(messege: string) {
-        EventsManager.instance.trigger(SocketEvent.CONNECTED, {})
+        EventsManager.instance.trigger(SocketEvent.CONNECTED, { messege })
     }
 
     private _sendMessage(id: string, username: string, massege: string, target: string) {
         EventsManager.instance.trigger(SocketEvent.SENDMESSAGE, { id, username, massege, target })
     }
-
 
     private _roomJoined(username: string, type: PlayerType) {
         EventsManager.instance.trigger(SocketEvent.ROOMJOINED, { username, type })
@@ -101,5 +135,6 @@ export default class SocketManager {
     private _scenarioGuide(username: string, message: string) {
         EventsManager.instance.trigger(SocketEvent.SCENARIOGUIDE, { username, message })
     }
-
 }
+
+SocketManager.instance
