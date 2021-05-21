@@ -15,7 +15,7 @@ The service is responsible for handling messages between participants in game se
 
 #### Emits are : 
 - connected     | { message: string }                                       | someone joined the room
-- roomCreated   | id: string, mode: UserMode                                | created a room with this id
+- roomCreated   | id: string                                                | created a room with this id
 - roomJoined    | username: string, , type: PlayerType                      | username joined the room
 - dmChanged     | playerID                                                  | signifies new dm of the room
 - playerData    | playerID, PlayerData                                      | the data of the user if he is reconnecting
