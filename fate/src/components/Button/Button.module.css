@@ -1,5 +1,5 @@
 .button {
-    width: 40px;
+    min-width: 40px;
     height: 40px;
     border-radius: 20%;
     padding: 0;
@@ -12,12 +12,17 @@
     height: 40px;
     min-width: 40px;
     background-color: transparent;
-    border-color: #191b25;
-    color: #191b25;
+    border-color: #ff6768;
+    color: #ff6768;
 }
 
 .buttonStyling:hover {
     background-color: #191b25;
     color: #ffa3a4;
     border-color: transparent;
+}
+
+.noRound{
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
 }
