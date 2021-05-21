@@ -1,0 +1,11 @@
+
+.container {
+    width: 95%;
+}
+
+.title{
+    font-family: 'Rye', cursive;
+    font-size: 36px;
+    text-align: center;
+    color: sienna;
+}
