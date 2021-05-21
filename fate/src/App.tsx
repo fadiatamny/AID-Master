@@ -1,6 +1,6 @@
 import { BrowserRouter as Router, Route } from 'react-router-dom'
-import './index.css'
 import 'bootstrap/dist/css/bootstrap.min.css'
+import './App.css'
 import HomePage from './pages/StartingPages/HomaPage'
 import AdvLoginScreen from './pages/StartingPages/AdvLoginScreen'
 import DMLoginScreen from './pages/StartingPages/DMLoginScreen'

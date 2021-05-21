@@ -86,7 +86,6 @@ export enum SocketEvent {
     SENDMESSAGE = 'sendmessage',
     LEAVEROOM = 'leaveroom',
     SENDSENARIO = 'sendSenario'
-
 }
 
 export enum PlatformEvent {}
