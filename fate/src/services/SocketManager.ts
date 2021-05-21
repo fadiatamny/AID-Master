@@ -1,5 +1,5 @@
 import io, { Socket } from 'socket.io-client'
-import { PlayerType,IPlayer } from '../models/Player.model'
+import { PlayerType, IPlayer } from '../models/Player.model'
 import EventsManager, { SocketEvent } from './EventsManager'
 const endpoint = 'https://localhost:5069'
 
@@ -19,15 +19,15 @@ export default class SocketManager {
 
         const emitsHandler = {
             [SocketEvent.CONNECT]: this._connected.bind(this),
-            [SocketEvent.ROOMJOINED]:this._roomJoined.bind(this),
-            [SocketEvent.SENDMESSAGE]:this._sendMessage.bind(this),
+            [SocketEvent.ROOMJOINED]: this._roomJoined.bind(this),
+            [SocketEvent.SENDMESSAGE]: this._sendMessage.bind(this),
             [SocketEvent.DMCHANGED]: this._dmChanged.bind(this),
-            [SocketEvent.ROOMCREATED]:this._roomCreated.bind(this),
-            [SocketEvent.PLAYERDATA]:this._playerData.bind(this),
-            [SocketEvent.MESSAGE]:this._message.bind(this),
-            [SocketEvent.SCENARIO]:this._scenario.bind(this),
-            [SocketEvent.SCENARIOGUIDE]:this._scenarioGuide.bind(this),
-            [SocketEvent.ERROR]:this._error.bind(this)
+            [SocketEvent.ROOMCREATED]: this._roomCreated.bind(this),
+            [SocketEvent.PLAYERDATA]: this._playerData.bind(this),
+            [SocketEvent.MESSAGE]: this._message.bind(this),
+            [SocketEvent.SCENARIO]: this._scenario.bind(this),
+            [SocketEvent.SCENARIOGUIDE]: this._scenarioGuide.bind(this),
+            [SocketEvent.ERROR]: this._error.bind(this)
 
 
         }
@@ -44,25 +44,25 @@ export default class SocketManager {
 
 
     }
-    private _joinRoom(id: string, userId: string, data: IPlayer){
-        EventsManager.instance.trigger(SocketEvent.JOINROOM,{id,userId,data})
+    private _joinRoom(id: string, userId: string, data: IPlayer) {
+        EventsManager.instance.trigger(SocketEvent.JOINROOM, { id, userId, data })
     }
 
-    
-    private _createRoom(userId: string, username: string, data: string ) {      //data need to be gamedump but is not defined
-        EventsManager.instance.trigger(SocketEvent.CREATEROOM,{userId,username,data})
+
+    private _createRoom(userId: string, username: string, data: string) {      //data need to be gamedump but is not defined
+        EventsManager.instance.trigger(SocketEvent.CREATEROOM, { userId, username, data })
     }
 
     private _scenario(username: string, message: string) {
         EventsManager.instance.trigger(SocketEvent.SCENARIO, { username, message })
     }
 
-    private _leaveRoom(id: string, userId: string ) {
-        EventsManager.instance.trigger(SocketEvent.LEAVEROOM, { id, userId})
+    private _leaveRoom(id: string, userId: string) {
+        EventsManager.instance.trigger(SocketEvent.LEAVEROOM, { id, userId })
     }
 
-    private _message(username: string, message: string, target: string ) {
-        EventsManager.instance.trigger(SocketEvent.MESSAGE, { username, message,target })
+    private _message(username: string, message: string, target: string) {
+        EventsManager.instance.trigger(SocketEvent.MESSAGE, { username, message, target })
     }
 
 
@@ -73,8 +73,8 @@ export default class SocketManager {
         EventsManager.instance.trigger(SocketEvent.CONNECTED, {})
     }
 
-    private _sendMessage(id:string,username: string, massege: string, target: string) {
-        EventsManager.instance.trigger(SocketEvent.SENDMESSAGE, { id,username, massege, target })
+    private _sendMessage(id: string, username: string, massege: string, target: string) {
+        EventsManager.instance.trigger(SocketEvent.SENDMESSAGE, { id, username, massege, target })
     }
 
 
@@ -93,11 +93,11 @@ export default class SocketManager {
         EventsManager.instance.trigger(SocketEvent.SENDSENARIO, { username, message })
     }
 
-    private _dmChanged(playerid:string) {
+    private _dmChanged(playerid: string) {
         EventsManager.instance.trigger(SocketEvent.DMCHANGED, { playerid })
     }
 
-    private _scenarioGuide(username:string,message:string) {
+    private _scenarioGuide(username: string, message: string) {
         EventsManager.instance.trigger(SocketEvent.SCENARIOGUIDE, { username, message })
     }
 
