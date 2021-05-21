@@ -1,0 +1,15 @@
+.mymessage{
+    background-color: rgba(145, 40, 29, 0.5);
+}
+
+.title{
+    font-size: 14px;
+}
+
+.subtitle{
+    font-size: 12px;
+}
+
+.content{
+    font-size: 13px;
+}
