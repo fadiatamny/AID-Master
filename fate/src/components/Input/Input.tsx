@@ -1,4 +1,5 @@
 import Button from '../Button/Button'
+import styles from './Input.module.css'
 
 export interface InputProps {
     label?: string
@@ -22,10 +23,10 @@ const defaultProps: InputProps = {
 const Input = ({ label, placeholder, id, className, onChange, onSubmit, submitLabel }: InputProps = defaultProps) => {
     return (
         <div className={className}>
-            <div className="input-group mb-3 ml-5 mr-5">
+            <div className={`input-group mb-3 ml-5 mr-5 ${styles.container}`}>
                 <input
                     type="text"
-                    className="form-control"
+                    className={`form-control ${styles.input}`}
                     placeholder={placeholder}
                     aria-label="Username"
                     aria-describedby="basic-addon1"
@@ -34,14 +35,14 @@ const Input = ({ label, placeholder, id, className, onChange, onSubmit, submitLa
                 />
                 {label ? (
                     <div className="input-group-prepend">
-                        <span className="input-group-text" id="basic-addon1">
+                        <span className={`input-group-text ${styles.input}`} id="basic-addon1">
                             {label}
                         </span>
                     </div>
                 ) : null}
                 {onSubmit ? (
-                    <div className="input-group-prepend">
-                        <Button onClick={onSubmit}>
+                    <div className={`input-group-prepend ${styles.button}`}>
+                        <Button onClick={onSubmit} forLabel={true}>
                             <p>{submitLabel ?? 'Submit'}</p>
                         </Button>
                     </div>

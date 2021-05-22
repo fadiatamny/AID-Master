@@ -1,10 +1,8 @@
-// import React from 'react'
-// import Button from '../../../../components/Button/Button'
+import styles from './styles.module.css'
 import Input from '../../../../components/Input/Input'
 import ChatTitle from './ChatTitle'
 import MessagesList from './MessageList'
 import { MessageProps } from './MessageList/Message'
-import styles from './styles.module.css'
 
 export interface ChatWindowProps {
     data: Array<MessageProps>
@@ -13,12 +11,12 @@ export interface ChatWindowProps {
 
 const ChatWindow = ({ data, activeChat }: ChatWindowProps) => {
     return (
-        <div className="col">
+        <div className="col justify-content-center">
             <div className={`${styles.container}`}>
-                <div className={`row justify-content-center`}>
+                <div className={`row justify-content-center ${styles.inputHolder}`}>
                     <ChatTitle />
                 </div>
-                <div className="row justify-content-center" style={{ height: '85%' }}>
+                <div className={`row justify-content-center ${styles.messageList} `}>
                     <MessagesList data={data} activeChat={activeChat} />
                 </div>
                 <div className={`row align-item-end justify-content-center ${styles.inputHolder}`}>
