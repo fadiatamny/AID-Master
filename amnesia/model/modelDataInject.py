@@ -5,8 +5,6 @@ import json
 from modelRunner import ModelRunner
 import texthero as hero
 
-
-
 class dataimport():
     @staticmethod
     def runing():

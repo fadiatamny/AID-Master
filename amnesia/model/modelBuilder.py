@@ -232,9 +232,9 @@ if __name__ == '__main__':
 
         # add http call to server to change model based on name and hash.
     except ModelException as e:
-        logger.critical(f'Component: {e.component}\nError: {e.message}')
+        logger.critical(str(e))
     except Exception as e:
-        logger.critical('Stack:', e)
+        logger.critical('Stack:', str(e))
     finally:
         print('Please check -h for help.')
         ModelBuilder.cleanFiles(h)
