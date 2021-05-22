@@ -76,23 +76,24 @@ export enum SocketEvent {
     CONNECTED = 'connected',
     MESSAGE = 'message',
     CONNECT = 'connect',
-    ROOMCREATED = 'roomcreated',
+    ROOM_CREATING = 'room_creating',
     CREATEROOM = 'createroom',
-    ROOMJOINED = 'roomjoined',
-    DMCHANGED = 'dmchanged',
-    PLAYERDATA = 'playerdata',
+    JOINED_ROOM = 'joined_room',
+    DM_CHANGED = 'dm_changed',
+    PLAYER_DATA = 'player_data',
     SCENARIO = 'scenario',
     SCENARIOGUIDE = 'scenatioguide',
     ERROR = 'error',
-    JOINROOM = 'joinroom',
+    JOIN_ROOM = 'join_room',
     SENDMESSAGE = 'sendmessage',
     LEAVEROOM = 'leaveroom',
-    SENDSENARIO = 'sendSenario',
     MESSAGESENT = 'messagesent',
     SENARIOSENT = 'senariosent',
     ROOMLEAVED = 'roomleaved',
     SEND_MESSAGE = 'send_message',
-    SEND_SCENARIO = 'send_scenario'
+    SEND_SCENARIO = 'send_scenario',
+    LEAVE_ROOM = 'leave_room',
+    ROOM_CREATED = 'room_created'
 }
 
 export enum PlatformEvent {}
