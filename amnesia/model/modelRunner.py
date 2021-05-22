@@ -1,6 +1,10 @@
-from typing import Dict
+
+import os
+import sys
+sys.path.insert(0, '../')
+sys.path.insert(0, '../../') 
+
 import pandas as pd
-from pandas.core import series
 from pandas.core.frame import DataFrame
 import joblib
 import fasttext
@@ -10,12 +14,9 @@ import texthero as hero
 import logging
 import time
 from functools import wraps
-import os
 from collections import Counter
-
-
 from pandas.core.series import Series
-#from apiException import ApiException
+from apiException import ApiException
 
 logger = logging.getLogger(__name__)
 logger.setLevel("DEBUG")
@@ -87,7 +88,7 @@ class ModelRunner():
         categorieslist = list(raw_frame.columns)
         n = len(categorieslist)
         k = len(raw_frame.index)
-        s = pd.Series([n], index=[0])
+        s = Series([n], index=[0])
         s.repeat(n)
         return s.reindex(categorieslist, fill_value=k)
 
@@ -109,9 +110,9 @@ class ModelRunner():
 
     # clean the reciving text
     def _cleanText(self, text) -> str:
-        textSeries = pd.Series([text])
+        textSeries = Series([text])
         textSeries = hero.clean(textSeries)
-        text = pd.Series.to_string(textSeries, index=False)
+        text = Series.to_string(textSeries, index=False)
         return text
 
     @timed

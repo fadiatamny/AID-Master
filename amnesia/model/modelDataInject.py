@@ -34,5 +34,9 @@ class dataimport():
 
 
 if __name__ == '__main__':
-    test = dataimport()
-    test.runing()
+    modelPath = './'
+    fastTextName = 'fasttextmodel.bin'
+    knnName = 'knnmodel.pkl'
+    model = ModelRunner(f'{modelPath}/build/{fastTextName}',
+                        f'{modelPath}/build/{knnName}', f'{modelPath}/data/data.csv')
+    dataimport.runing()
