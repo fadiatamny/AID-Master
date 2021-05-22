@@ -8,7 +8,6 @@ import texthero as hero
 
 
 class dataimport():
-
     @staticmethod
     def runing():
         runner = ModelRunner('finModel/fastText','finModel/knn/knnmodel.pkl','data/data.csv')
@@ -23,7 +22,7 @@ class dataimport():
             'https://www.kassoon.com/dnd/plot-twist-generator/',
             'https://www.kassoon.com/dnd/puzzle-generator/'
         ]
-        crawler = Crawler(urls,1)
+        crawler = Crawler(urls, 1)
         res = crawler.crawl()
 
         modeRes = runner.fullPredic(pd.Series.to_string(hero.clean(pd.Series(res[0])),index=False))
@@ -31,11 +30,16 @@ class dataimport():
 
         # for label in categorieslist:
         #     dataframe[label] = ['0']
-        
+
         print(modeRes)
 
 
-
 if __name__ == '__main__':
-    test = dataimport()
-    test.runing()
+    modelPath = './'
+    fastTextName = 'fasttextmodel.bin'
+    knnName = 'knnmodel.pkl'
+    runner = ModelRunner(f'{modelPath}/build/{fastTextName}',
+                         f'{modelPath}/build/{knnName}', f'{modelPath}/data/data.csv')
+    dataPath = f'{modelPath}/data/data.csv'
+    headersPath = 'dataset.headers.json'
+    dataimport.runing(runner, dataPath, headersPath)

@@ -9,7 +9,8 @@ import requests
 import datetime
 import texthero as hero
 import logging
-
+import json
+from modelException import ModelException
 
 logger = logging.getLogger(__name__)
 logger.setLevel("DEBUG")
@@ -171,6 +172,16 @@ class ModelBuilder():
         print('Generated Models Successfully')
 
 
+def fetchDatasetConfig() -> dict:
+    if not os.path.isfile('./dataset.config.json'):
+        raise ModelException( 'builder:building','ERROR: your data location config does not exist')
+    
+    with open('./dataset.config.json') as f:
+        text = f.read()
+        return json.loads(text)
+    
+
+
 if __name__ == '__main__':
     if sys.argv[1] == '-h' or sys.argv[1] == '-help':
         print(
@@ -186,17 +197,19 @@ if __name__ == '__main__':
             'Please follow format of modelBuilder.py [datasheet] -k [k-neighbors? = 3] -h [hash? = ""] -d')
         sys.exit()
     try:
-        if not os.path.isdir('data'):
-            os.mkdir('data')
+        if not os.path.isdir('dataset'):
+            os.mkdir('dataset')
     except:
         logger.critical("unable to create the data folder")
 
     if not os.path.isfile(sys.argv[1]):
         # fetch n download it
         try:
-            url = 'https://cdn.discordapp.com/attachments/703993474927820811/823254393041190922/text_dnd_big.xls'
-            r = requests.get(url, allow_redirects=True)
-            open('./data/data.xls', 'wb').write(r.content)
+            path = sys.argv[1].split('/')
+            filename = path[len(path) - 1].split('.')[0]
+            datasetConfig = fetchDatasetConfig()            
+            r = requests.get(datasetConfig['url'], allow_redirects=True)
+            open(f'./dataset/{filename}.{datasetConfig["type"]}', 'wb').write(r.content)
             print('Successfully downloaded data')
         except:
             logger.critical("unable to download data")

@@ -1,6 +1,4 @@
-from typing import Dict
 import pandas as pd
-from pandas.core import series
 from pandas.core.frame import DataFrame
 import joblib
 import fasttext
@@ -10,12 +8,9 @@ import texthero as hero
 import logging
 import time
 from functools import wraps
-import os
 from collections import Counter
-
-
 from pandas.core.series import Series
-#from apiException import ApiException
+from modelException import ModelException
 
 logger = logging.getLogger(__name__)
 logger.setLevel("DEBUG")
@@ -60,7 +55,7 @@ class ModelRunner():
                 raise 'Not enough models'
         except:
             logger(f'unable to load the 3 FastText models')
-            #raise ApiException(500, 'error occured in server')
+            raise ModelException('runner:load_ft_model', 'error occured not load model')
         return modelsFasttext
 
     def _loadModels(self) -> None:
@@ -92,7 +87,7 @@ class ModelRunner():
         categorieslist = list(raw_frame.columns)
         n = len(categorieslist)
         k = len(raw_frame.index)
-        s = pd.Series([n], index=[0])
+        s = Series([n], index=[0])
         s.repeat(n)
         return s.reindex(categorieslist, fill_value=k)
 
@@ -114,9 +109,9 @@ class ModelRunner():
 
     # clean the reciving text
     def _cleanText(self, text) -> str:
-        textSeries = pd.Series([text])
+        textSeries = Series([text])
         textSeries = hero.clean(textSeries)
-        text = pd.Series.to_string(textSeries, index=False)
+        text = Series.to_string(textSeries, index=False)
         return text
 
     @timed
@@ -125,8 +120,8 @@ class ModelRunner():
             self._loadModels()
         if self.fastTextModels is None or self.knnModel is None:
             logger.critical("unable load model")
-            #raise ApiException(500, 'error occured in server')
-        knnModel = self.knnModel
+            raise ModelException('runner:load_ft_model', 'error occured not load model')
+
         tempDataframe = pd.DataFrame()
         cleanText = self._cleanText(text)
         try:
@@ -143,7 +138,7 @@ class ModelRunner():
             tempDataframe[new] = ['1']
         del tempDataframe['TEXT']
 
-        knnRes = knnModel.kneighbors(tempDataframe, return_distance=False)
+        knnRes = self.knnModel.kneighbors(tempDataframe, return_distance=False)
         textObj = self._dfToText(self.categories.loc[knnRes[0], :])
         jsonPayload = self._normalize(textObj).to_json()
 
