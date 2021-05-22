@@ -35,21 +35,21 @@ def timed(func):
 
 
 class ModelRunner():
-    def __init__(self, fastText: str, knn: str, data: str) -> None:
+    def __init__(self, fastText: str, knn: str) -> None:
         self.fastTextPath = fastText
         self.knnPath = knn
-        self.categories = None
+        self.categories = ModelRunner.loadCategories()
         self.fastTextModels = None
-        self._loadCategories()
         self._loadModels()
 
-    def _loadCategories(self):        
+    @staticmethod
+    def loadCategories():        
         if not os.path.isfile('dataset.headers.json'):
             raise ModelException('runner:load_categories','Please make sure that the dataset.headers.json file exist.')
 
         with open('dataset.headers.json') as f:
             categoriesDict =  json.loads((f.read()))
-            self.categories = pd.DataFrame(categoriesDict)
+            return pd.DataFrame(categoriesDict)
 
     def _loadFasttextModels(self)->list:
         modelsFasttext = []
