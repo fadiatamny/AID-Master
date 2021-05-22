@@ -14,7 +14,7 @@ class dataimport():
         data = pd.read_csv("./data/data.csv")
         categorieslist = list(data.columns)
         #dataframe  = pd.DataFrame(json.load('amnesia/model/dataHeaders.json'))
-        f = open('dataHeaders.json')
+        f = open('dataset.headers.json')
         lines =  f.read()
         dataframe = pd.DataFrame(json.loads(lines))
         urls = [
@@ -35,11 +35,11 @@ class dataimport():
 
 
 if __name__ == '__main__':
-    modelPath = './'
-    fastTextName = 'fasttextmodel.bin'
-    knnName = 'knnmodel.pkl'
-    runner = ModelRunner(f'{modelPath}/build/{fastTextName}',
-                         f'{modelPath}/build/{knnName}', f'{modelPath}/data/data.csv')
-    dataPath = f'{modelPath}/data/data.csv'
-    headersPath = 'dataset.headers.json'
-    dataimport.runing(runner, dataPath, headersPath)
+    # modelPath = './'
+    # fastTextName = 'fasttextmodel.bin'
+    # knnName = 'knnmodel.pkl'
+    # runner = ModelRunner(f'{modelPath}/build/{fastTextName}',
+    #                      f'{modelPath}/build/{knnName}', f'{modelPath}/data/data.csv')
+    # dataPath = f'{modelPath}/data/data.csv'
+    # headersPath = 'dataset.headers.json'
+    dataimport.runing()

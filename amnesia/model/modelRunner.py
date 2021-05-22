@@ -11,6 +11,7 @@ from functools import wraps
 from collections import Counter
 from pandas.core.series import Series
 from modelException import ModelException
+import os
 
 logger = logging.getLogger(__name__)
 logger.setLevel("DEBUG")
@@ -42,30 +43,27 @@ class ModelRunner():
         self.fastTextModels = None
         self._loadModels()
 
-        input()
-
     def _loadFasttextModels(self)->list:
         modelsFasttext = []
-        try:
-            for j in os.scandir(self.fastTextPath):
-                if os.path.splitext(j)[1] == '.bin':
-                    modelsFasttext.append(
-                        fasttext.load_model(f'{os.path.abspath(j)}'))
-            if len(modelsFasttext) != 3:
-                raise 'Not enough models'
-        except:
-            logger(f'unable to load the 3 FastText models')
+        dir = os.scandir(self.fastTextPath)
+        if not dir or len(os.listdir(self.fastTextPath)) != 3:
+            logger.critical(f'unable to load the 3 FastText models')
             raise ModelException('runner:load_ft_model', 'error occured not load model')
+
+        for j in dir:
+            if os.path.splitext(j)[1] == '.bin':
+                modelsFasttext.append(
+                    fasttext.load_model(f'{os.path.abspath(j)}'))
         return modelsFasttext
 
     def _loadModels(self) -> None:
         try:
             self.fastTextModels = self._loadFasttextModels()
             self.knnModel = joblib.load(self.knnPath)
-        except:
-            self.fastTextModel = None
+        except ModelException as e:
+            logger.critical("Loading models failed")
             self.knnModel = None
-            logger.critical("loadModels fail")
+            self.fastTextModel = None
 
     def changeInstance(self, fastText='', knn='') -> None:
         if fastText != '':

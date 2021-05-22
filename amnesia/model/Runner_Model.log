@@ -8,3 +8,10 @@
 2021-05-22 23:11:23,437 CRITICAL -- loadModels fail
 2021-05-22 23:16:26,077 CRITICAL -- loadModels fail
 2021-05-22 23:39:40,090 CRITICAL -- loadModels fail
+2021-05-22 23:54:00,190 CRITICAL -- loadModels fail
+2021-05-22 23:55:43,066 CRITICAL -- loadModels fail
+2021-05-22 23:56:18,669 CRITICAL -- loadModels fail
+2021-05-22 23:58:11,171 CRITICAL -- loadModels fail
+2021-05-22 23:59:26,895 CRITICAL -- unable to load the 3 FastText models
+2021-05-22 23:59:26,895 CRITICAL -- loadModels fail
+2021-05-23 00:03:14,638 CRITICAL -- loadModels fail
