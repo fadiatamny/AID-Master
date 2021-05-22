@@ -9,3 +9,4 @@ model/testing_data.txt
 model/training_data.txt
 model/validate_data.txt
 model/finModel
+model/modelTestercopy.py
