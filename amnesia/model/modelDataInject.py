@@ -23,7 +23,18 @@ class dataimport():
         res = crawler.crawl()
         modeRes = []
         for i in range(len(res)):
-            modeRes.append(runner.fastPredict(pd.Series.to_string(hero.clean(pd.Series(res[i])),index=False)))
+            try:
+                print('\n\n\n\n________________________________________________________________')
+                print(res[i])
+                series = pd.Series(res[i])
+                print(series)
+                series = hero.clean(series)
+                print(series)
+                toString = pd.Series.to_string(series,index=False)
+                print(f'String:   {toString}')
+                modeRes.append(runner.fastPredict(toString))
+            except:
+                input()
         print(len(modeRes))
 
         for j in range(len(modeRes)):
@@ -31,6 +42,7 @@ class dataimport():
                 dataframe = pd.DataFrame(json.loads(lines))
                 new = modeRes[j][i].replace('__label__', '')
                 dataframe[new] = [1]
+                dataframe["TEXT"] = res[j]
             if fleg == 0:
                 finalframe = dataframe
                 fleg = 1
@@ -39,9 +51,11 @@ class dataimport():
                         [finalframe, dataframe], ignore_index=True)
         # for label in categorieslist:
         #     dataframe[label] = ['0']
+        print(finalframe)
+        input()
 
-        newdata = pd.concat([data,finalframe,data], ignore_index=True)
-        print(newdata.shape)
+        newdata = pd.concat([data,finalframe], ignore_index=True)
+        newdata.to_csv('temp.csv',index=False)
         
 
 
