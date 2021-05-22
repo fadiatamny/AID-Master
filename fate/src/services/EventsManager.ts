@@ -90,7 +90,9 @@ export enum SocketEvent {
     SENDSENARIO = 'sendSenario',
     MESSAGESENT = 'messagesent',
     SENARIOSENT = 'senariosent',
-    ROOMLEAVED = 'roomleaved'
+    ROOMLEAVED = 'roomleaved',
+    SEND_MESSAGE = 'send_message',
+    SEND_SCENARIO = 'send_scenario'
 }
 
 export enum PlatformEvent {}

@@ -17,11 +17,11 @@ export default class SocketManager {
     private _socket: Socket
     constructor() {
         const emitsHandler = {
-            [SocketEvent.HI]: this._hi.bind(this)
-            // [SocketEvent.ROOMCREATED]: this._roomCreated.bind(this),
-            // [SocketEvent.MESSAGESENT]: this._messageSent.bind(this),
-            // [SocketEvent.SENARIOSENT]: this._scenarioSent.bind(this),
-            // [SocketEvent.JOINROOM]: this._joinRoom.bind(this),
+            [SocketEvent.HI]: this._hi.bind(this),
+            [SocketEvent.ROOMCREATED]: this._roomCreated.bind(this),
+            [SocketEvent.SEND_MESSAGE]: this._sendMessage.bind(this),
+            [SocketEvent.SEND_SCENARIO]: this._sendScenario.bind(this),
+            [SocketEvent.JOINROOM]: this._joinRoom.bind(this)
             // [SocketEvent.ROOMLEAVED]: this._roomLeaved.bind(this)
         }
         /*
@@ -47,15 +47,15 @@ emit:
 
         const onsHandler = {
             [SocketEvent.HELLO]: this._hello.bind(this),
-            [SocketEvent.CONNECT]: this._connect.bind(this)
-            // [SocketEvent.ROOMJOINED]: this._roomJoined.bind(this),
+            [SocketEvent.CONNECT]: this._connect.bind(this),
+            [SocketEvent.ROOMJOINED]: this._roomJoined.bind(this),
             // [SocketEvent.SENDMESSAGE]: this._sendMessage.bind(this),
             // [SocketEvent.DMCHANGED]: this._dmChanged.bind(this),
             // [SocketEvent.ROOMCREATED]: this._roomCreated.bind(this),
             // [SocketEvent.PLAYERDATA]: this._playerData.bind(this),
-            // [SocketEvent.MESSAGE]: this._message.bind(this),
+            [SocketEvent.MESSAGE]: this._reciveMessage.bind(this),
             // [SocketEvent.SCENARIO]: this._scenario.bind(this),
-            // [SocketEvent.SCENARIOGUIDE]: this._scenarioGuide.bind(this),
+            [SocketEvent.SCENARIOGUIDE]: this._scenarioGuide.bind(this),
             // [SocketEvent.ERROR]: this._error.bind(this)
         }
 
@@ -87,6 +87,34 @@ emit:
         EventsManager.instance.trigger(SocketEvent.HELLO, {})
     }
 
+    private _sendMessage(id: string, username: string, messege: string, target: string) {
+        this._socket.emit(SocketEvent.MESSAGESENT, { id, username, messege, target })
+    }
+
+    private _reciveMessage(id: string, username: string, messege: string, target: string) {
+        EventsManager.instance.trigger(SocketEvent.MESSAGE, { id, username, messege, target })
+    }
+    private _joinRoom(id: string, userId: string, data: IPlayer) {
+        this._socket.emit(SocketEvent.JOINROOM, { id, userId, data })
+    }
+
+    private _roomJoined(username: string, type: PlayerType) {
+        EventsManager.instance.trigger(SocketEvent.ROOMJOINED, { username, type })
+    }
+
+    private _roomCreated(id: string) {
+        this._socket.emit(SocketEvent.ROOMCREATED, { id })
+    }
+
+    private _sendScenario(username: string, message: string) {
+        this._socket.emit(SocketEvent.SEND_SCENARIO, { username, message })
+    }
+
+    private _scenarioGuide(username: string, message: string) {
+        EventsManager.instance.trigger(SocketEvent.SCENARIOGUIDE, { username, message })
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////
     private _roomLeaved(id: string, userId: string) {
         EventsManager.instance.trigger(SocketEvent.ROOMLEAVED, { id, userId })
     }
@@ -97,10 +125,6 @@ emit:
 
     private _messageSent(id: string, username: string, massege: string, target: string) {
         EventsManager.instance.trigger(SocketEvent.MESSAGESENT, { id, username, massege, target })
-    }
-
-    private _joinRoom(id: string, userId: string, data: IPlayer) {
-        EventsManager.instance.trigger(SocketEvent.JOINROOM, { id, userId, data })
     }
 
     private _createRoom(userId: string, username: string, data: GameDump) {
@@ -119,18 +143,6 @@ emit:
         EventsManager.instance.trigger(SocketEvent.MESSAGE, { username, message, target })
     }
 
-    private _roomCreated(id: string) {
-        EventsManager.instance.trigger(SocketEvent.ROOMCREATED, { id })
-    }
-
-    private _sendMessage(id: string, username: string, massege: string, target: string) {
-        EventsManager.instance.trigger(SocketEvent.SENDMESSAGE, { id, username, massege, target })
-    }
-
-    private _roomJoined(username: string, type: PlayerType) {
-        EventsManager.instance.trigger(SocketEvent.ROOMJOINED, { username, type })
-    }
-
     private _playerData(playerid: string, playerdata: string) {
         EventsManager.instance.trigger(SocketEvent.PLAYERDATA, { playerid, playerdata })
     }
@@ -138,15 +150,10 @@ emit:
     private _error(username: string, message: string) {
         EventsManager.instance.trigger(SocketEvent.ERROR, { username, message })
     }
-    private _sendScenario(username: string, message: string) {
-        EventsManager.instance.trigger(SocketEvent.SENDSENARIO, { username, message })
-    }
 
     private _dmChanged(playerid: string) {
         EventsManager.instance.trigger(SocketEvent.DMCHANGED, { playerid })
     }
 
-    private _scenarioGuide(username: string, message: string) {
-        EventsManager.instance.trigger(SocketEvent.SCENARIOGUIDE, { username, message })
-    }
+
 }
