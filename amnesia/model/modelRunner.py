@@ -1,9 +1,3 @@
-
-import os
-import sys
-sys.path.insert(0, '../')
-sys.path.insert(0, '../../') 
-
 import pandas as pd
 from pandas.core.frame import DataFrame
 import joblib
@@ -16,7 +10,7 @@ import time
 from functools import wraps
 from collections import Counter
 from pandas.core.series import Series
-from apiException import ApiException
+from modelException import ModelException
 
 logger = logging.getLogger(__name__)
 logger.setLevel("DEBUG")
@@ -56,7 +50,7 @@ class ModelRunner():
                         fasttext.load_model(f'{os.path.abspath(j)}'))
         except:
             logger(f'unable to load the 3 FastText models')
-            #raise ApiException(500, 'error occured in server')
+            raise ModelException('runner:load_ft_model', 'error occured not load model')
         return modelsFasttext
 
     def _loadModels(self) -> None:
@@ -121,7 +115,7 @@ class ModelRunner():
             self._loadModels()
         if self.fastTextModels is None or self.knnModel is None:
             logger.critical("unable load model")
-            #raise ApiException(500, 'error occured in server')
+            raise ModelException('runner:load_ft_model', 'error occured not load model')
 
         fastTextmodel = self.fastTextModels
         knnModel = self.knnModel
@@ -129,9 +123,10 @@ class ModelRunner():
         cleanText = self._cleanText(text)
         try:
             fastTextRes = self._fullPredic(fastTextmodel, cleanText)
+            print(fastTextRes)
         except:
-            logger.critical("unable to pradic")
-            return json.loads("unable to pradic")
+            logger.critical("unable to predict")
+            return json.loads("unable to predict")
         categorieslist = list(self.categories.columns)
 
         for label in categorieslist:

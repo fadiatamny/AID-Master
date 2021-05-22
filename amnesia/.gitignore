@@ -2,6 +2,7 @@ __pycache__
 .config.json
 model/build
 model/data
+model/dataset
 model/tests
 model/logs
 model/processed_data.txt
@@ -10,3 +11,5 @@ model/training_data.txt
 model/validate_data.txt
 model/finModel
 model/modelTestercopy.py
+model/testRes.txt
+test.py
