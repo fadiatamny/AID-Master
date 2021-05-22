@@ -9,6 +9,7 @@ import requests
 import texthero as hero
 import logging
 from collections import Counter
+from modelException import ModelException
 
 logger = logging.getLogger(__name__)
 logger.setLevel("DEBUG")
@@ -17,19 +18,19 @@ formatter = "%(asctime)s %(levelname)s -- %(message)s"
 handler.setFormatter(logging.Formatter(formatter))
 logger.addHandler(handler)
 
-
 class ModelTester:
 
     @staticmethod
     def loadFasttextModels(path: str) -> list:
         modelsFasttext = []
-        try:
-            for j in os.scandir(path):
-                if os.path.splitext(j)[1] == '.bin':
-                    modelsFasttext.append(
-                        fasttext.load_model(f'{os.path.abspath(j)}'))
-        except:
-            logger(f'unable to load the 3 FastText models')
+        dir = os.scandir(path)
+        if not dir or len(os.listdir(path)) != 3:
+            raise ModelException('runner:load_ft_model', 'error occured not load model')
+
+        for j in dir:
+            if os.path.splitext(j)[1] == '.bin':
+                modelsFasttext.append(
+                    fasttext.load_model(f'{os.path.abspath(j)}'))
         return modelsFasttext
 
     @staticmethod
@@ -43,14 +44,14 @@ class ModelTester:
         return finres
 
     @staticmethod
-    def fastTextTest() -> None:
+    def fastTextTest(dataPath: str, fastTextPath: str) -> None:
         fleg = 0
         tempDataframe = pd.DataFrame()
-        data = pd.read_excel("./data/data.xls")
+        data = pd.read_excel(dataPath)
         finalres = np.zeros([data.index.size])
         categorieslist = list(data.columns)
         data["TEXT"] = hero.clean(data["TEXT"])
-        models = ModelTester.loadFasttextModels()
+        models = ModelTester.loadFasttextModels(fastTextPath)
         for i in data.index:
             predicateres = ModelTester.pred(data["TEXT"][i], models)
             for label in categorieslist:
@@ -76,5 +77,27 @@ class ModelTester:
 
 
 if __name__ == '__main__':
-    test = ModelTester()
-    test.fastTextTest(path)
+    if sys.argv[1] == '-h' or sys.argv[1] == '-help':
+        print( 'Please follow format of modelBuilder.py [datasheet] -f [fastText]')
+        print('[datasheet] = the data sheet to build models based on')
+        sys.exit()
+
+    if len(sys.argv) < 2:
+        logger.error('Please follow format of modelBuilder.py [datasheet]')
+        sys.exit()
+
+    fastText: str = ''
+
+    for index, item in enumerate(sys.argv, 0):
+        if item == '-f' and index + 1 < len(sys.argv):
+            fastText = str(sys.argv[index + 1])
+
+    try: 
+        ModelTester.fastTextTest(sys.argv[1], fastText)
+    except ModelException as e:
+        logger.critical(str(e))
+    except Exception as e:
+        logger.critical('Stack:', str(e))
+    finally:
+        print('Please check -h for help.')
+    

@@ -21,7 +21,6 @@ formatter = "%(asctime)s %(levelname)s -- %(message)s"
 handler.setFormatter(logging.Formatter(formatter))
 logger.addHandler(handler)
 
-
 def timed(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
@@ -77,7 +76,7 @@ class ModelRunner():
         # have to handle if changing failed to return to old state
         self._loadModels()
 
-    def fullPredic(self,text:str)->list:
+    def fastPredict(self,text:str)->list:
         resF = []
         for i in range(len(self.fastTextModels)):
            resF.append(self.fastTextModels[i].predict(text, k=10))
@@ -124,7 +123,7 @@ class ModelRunner():
         tempDataframe = pd.DataFrame()
         cleanText = self._cleanText(text)
         try:
-            fastTextRes = self.fullPredic(cleanText)
+            fastTextRes = self.fastPredict(cleanText)
         except:
             raise ModelException('runner:predict', "unable to predict")
         categorieslist = list(self.categories.columns)
