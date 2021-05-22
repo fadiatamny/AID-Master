@@ -44,15 +44,20 @@ class ModelRunner():
         self.fastTextPath = fastText
         self.knnPath = knn
         self.categories = pd.read_csv(data)
+        self.fastTextModels = None
         self._loadModels()
+
+        input()
 
     def _loadFasttextModels(self)->list:
         modelsFasttext = []
         try:
-            for j in os.scandir('finModel'):
+            for j in os.scandir(self.fastTextPath):
                 if os.path.splitext(j)[1] == '.bin':
                     modelsFasttext.append(
                         fasttext.load_model(f'{os.path.abspath(j)}'))
+            if len(modelsFasttext) != 3:
+                raise 'Not enough models'
         except:
             logger(f'unable to load the 3 FastText models')
             #raise ApiException(500, 'error occured in server')
@@ -75,10 +80,10 @@ class ModelRunner():
 
         self._loadModels()
 
-    def _fullPredic(self, models:list, text:str)->list:
+    def fullPredic(self,text:str)->list:
         resF = []
-        for i in range(3):
-            resF.append(models[i].predict(text, k=10))
+        for i in range(len(self.fastTextModels)):
+           resF.append(self.fastTextModels[i].predict(text, k=10))
         allres = (tuple(list(resF[0][0])+list(resF[1][0])+list(resF[2][0])))
         return [key for key in Counter(allres).keys() if Counter(allres)[key] > 1]
 
@@ -121,16 +126,14 @@ class ModelRunner():
         if self.fastTextModels is None or self.knnModel is None:
             logger.critical("unable load model")
             #raise ApiException(500, 'error occured in server')
-
-        fastTextmodel = self.fastTextModels
         knnModel = self.knnModel
         tempDataframe = pd.DataFrame()
         cleanText = self._cleanText(text)
         try:
-            fastTextRes = self._fullPredic(fastTextmodel, cleanText)
+            fastTextRes = self.fullPredic(cleanText)
         except:
-            logger.critical("unable to pradic")
-            return json.loads("unable to pradic")
+            logger.critical("unable to predict")
+            return json.loads("unable to predict")
         categorieslist = list(self.categories.columns)
 
         for label in categorieslist:

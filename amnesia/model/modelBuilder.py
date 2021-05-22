@@ -122,7 +122,7 @@ class ModelBuilder():
         indexlist = resDataFrame.nlargest(3, 'Percision').index
         for i in indexlist:
             os.rename(f'build/fasttextmodel{i}.bin',
-                      f'finModel/fasttextmodel{i}.bin')
+                      f'finModel/fastText/fasttextmodel{i}.bin')
         for i in os.scandir('build'):
             os.remove(i.path)
 
@@ -151,7 +151,7 @@ class ModelBuilder():
         knnData = raw_data.drop(['TEXT'], axis=1)
         knn = NearestNeighbors(n_neighbors=k, algorithm='auto').fit(knnData)
         # saving the model
-        joblib.dump(knn, f'./finModel/knnmodel{hash}.pkl')
+        joblib.dump(knn, f'./finModel/knn/knnmodel{hash}.pkl')
         print('Generated KNN Model Successfully')
 
     @staticmethod

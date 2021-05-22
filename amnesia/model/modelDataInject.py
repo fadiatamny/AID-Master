@@ -3,29 +3,32 @@ from crawler import Crawler
 import pandas as pd
 import json
 from modelRunner import ModelRunner
+import texthero as hero
+
 
 
 class dataimport():
 
     @staticmethod
     def runing():
-        runner = ModelRunner('amnesia/model/finModel','finModel/knnmodel.pkl','data/data.csv')
+        runner = ModelRunner('finModel/fastText','finModel/knn/knnmodel.pkl','data/data.csv')
         data = pd.read_csv("./data/data.csv")
         categorieslist = list(data.columns)
         #dataframe  = pd.DataFrame(json.load('amnesia/model/dataHeaders.json'))
         f = open('dataHeaders.json')
         lines =  f.read()
-        print(json.loads(lines))
         dataframe = pd.DataFrame(json.loads(lines))
-        print(dataframe)
         urls = [
-        'https://www.kassoon.com/dnd/random-plot-hooks-generator/',
-        'https://www.kassoon.com/dnd/plot-twist-generator/',
-        'https://www.kassoon.com/dnd/puzzle-generator/'
-    ]
+            'https://www.kassoon.com/dnd/random-plot-hooks-generator/',
+            'https://www.kassoon.com/dnd/plot-twist-generator/',
+            'https://www.kassoon.com/dnd/puzzle-generator/'
+        ]
         crawler = Crawler(urls,1)
         res = crawler.crawl()
-        modeRes = runner.predict(res[0])
+
+        modeRes = runner.fullPredic(pd.Series.to_string(hero.clean(pd.Series(res[0])),index=False))
+        
+
         # for label in categorieslist:
         #     dataframe[label] = ['0']
         
