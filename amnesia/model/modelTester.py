@@ -9,7 +9,8 @@ import requests
 import texthero as hero
 import logging
 from collections import Counter
-from modelException import ModelException
+from model.modelException import ModelException
+from model.modelUtils import ModelUtils
 
 logger = logging.getLogger(__name__)
 logger.setLevel("DEBUG")
@@ -19,30 +20,6 @@ handler.setFormatter(logging.Formatter(formatter))
 logger.addHandler(handler)
 
 class ModelTester:
-
-    @staticmethod
-    def loadFasttextModels(path: str) -> list:
-        modelsFasttext = []
-        dir = os.scandir(path)
-        if not dir or len(os.listdir(path)) != 3:
-            raise ModelException('runner:load_ft_model', 'error occured not load model')
-
-        for j in dir:
-            if os.path.splitext(j)[1] == '.bin':
-                modelsFasttext.append(
-                    fasttext.load_model(f'{os.path.abspath(j)}'))
-        return modelsFasttext
-
-    @staticmethod
-    def pred(text: str, models: list)-> list:
-        resF = []
-        for i in range(3):
-            resF.append(models[i].predict(text, k=10))
-        allres = (tuple(list(resF[0][0])+list(resF[1][0])+list(resF[2][0])))
-        finres = [key for key in Counter(
-            allres).keys() if Counter(allres)[key] > 1]
-        return finres
-
     @staticmethod
     def fastTextTest(dataPath: str, fastTextPath: str) -> None:
         fleg = 0
@@ -51,9 +28,9 @@ class ModelTester:
         finalres = np.zeros([data.index.size])
         categorieslist = list(data.columns)
         data["TEXT"] = hero.clean(data["TEXT"])
-        models = ModelTester.loadFasttextModels(fastTextPath)
+        models = ModelUtils.loadFasttextModels(fastTextPath)
         for i in data.index:
-            predicateres = ModelTester.pred(data["TEXT"][i], models)
+            predicateres = ModelUtils.fastPredict(data["TEXT"][i], models)
             for label in categorieslist:
                 tempDataframe[label] = [0]
             for i in range(len(predicateres)):
