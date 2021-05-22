@@ -1,13 +1,23 @@
+from pandas.core.frame import DataFrame
 from crawler import Crawler
 import pandas as pd
+import json
+from modelRunner import ModelRunner
+
 
 class dataimport():
 
     @staticmethod
     def runing():
+        runner = ModelRunner('amnesia/model/finModel','finModel/knnmodel.pkl','data/data.csv')
         data = pd.read_csv("./data/data.csv")
         categorieslist = list(data.columns)
-        dataframe  = pd.DataFrame()
+        #dataframe  = pd.DataFrame(json.load('amnesia/model/dataHeaders.json'))
+        f = open('dataHeaders.json')
+        lines =  f.read()
+        print(json.loads(lines))
+        dataframe = pd.DataFrame(json.loads(lines))
+        print(dataframe)
         urls = [
         'https://www.kassoon.com/dnd/random-plot-hooks-generator/',
         'https://www.kassoon.com/dnd/plot-twist-generator/',
@@ -15,11 +25,11 @@ class dataimport():
     ]
         crawler = Crawler(urls,1)
         res = crawler.crawl()
-        for label in categorieslist:
-            dataframe[label] = ['0']
-        for i in range(res):
-            dataframe['TEXT']
-        print(dataframe)
+        modeRes = runner.predict(res[0])
+        # for label in categorieslist:
+        #     dataframe[label] = ['0']
+        
+        print(modeRes)
 
 
 

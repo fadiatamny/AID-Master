@@ -13,8 +13,9 @@ from functools import wraps
 import os
 from collections import Counter
 
+
 from pandas.core.series import Series
-from apiException import ApiException
+#from apiException import ApiException
 
 logger = logging.getLogger(__name__)
 logger.setLevel("DEBUG")
@@ -42,7 +43,7 @@ class ModelRunner():
     def __init__(self, fastText: str, knn: str, data: str) -> None:
         self.fastTextPath = fastText
         self.knnPath = knn
-        self.categories = pd.read_excel(data)
+        self.categories = pd.read_csv(data)
         self._loadModels()
 
     def _loadFasttextModels(self)->list:
@@ -54,7 +55,7 @@ class ModelRunner():
                         fasttext.load_model(f'{os.path.abspath(j)}'))
         except:
             logger(f'unable to load the 3 FastText models')
-            raise ApiException(500, 'error occured in server')
+            #raise ApiException(500, 'error occured in server')
         return modelsFasttext
 
     def _loadModels(self) -> None:
@@ -115,11 +116,11 @@ class ModelRunner():
 
     @timed
     def predict(self, text: str):
-        if self.fastTextModel is None or self.knnModel is None:
+        if self.fastTextModels is None or self.knnModel is None:
             self._loadModels()
-        if self.fastTextModel is None or self.knnModel is None:
+        if self.fastTextModels is None or self.knnModel is None:
             logger.critical("unable load model")
-            raise ApiException(500, 'error occured in server')
+            #raise ApiException(500, 'error occured in server')
 
         fastTextmodel = self.fastTextModels
         knnModel = self.knnModel
