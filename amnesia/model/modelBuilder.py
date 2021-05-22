@@ -59,6 +59,16 @@ class ModelBuilder():
         allResFIle.close()
 
     @staticmethod
+    def _readRawData(filePath: str):
+        type = filePath.split('.')[1]
+        if type == 'csv':
+            return pd.read_csv(filePath)
+        elif type == 'xls' or type == 'xlsx':
+            return pd.read_excel(filePath)
+        else:
+            raise Exception('unable to read the dataset file, format not supported')
+
+    @staticmethod
     # removing unnecessary file in the end of the process
     def cleanFiles(hash) -> None:
         if os.path.exists(f'training_data{hash}.txt'):
@@ -74,15 +84,9 @@ class ModelBuilder():
     # read the data file and creat the fasttext
     def createFastText(filePath: str, hashbase: str = '', debug: bool = False) -> None:
         try:
-            raw_data = pd.read_excel(filePath)
-        except:
-            logger.critical(
-                "unable to read the data file trying diffrent format")
-            try:
-                raw_data = pd.read_csv(filePath)
-            except:
-                logger.critical(
-                    f'unable to read the data file try agian. the file path is {filePath} ')
+            raw_data = ModelBuilder.readRawData(filePath)
+        except Exception as e:
+            raise ModelException('builder', str(e))
 
         cleandata = ModelBuilder._cleanText(raw_data)
 
@@ -95,9 +99,7 @@ class ModelBuilder():
             np.savetxt(f'testing_data{hashbase}.txt', test.values, fmt='%s')
             np.savetxt(f'training_data{hashbase}.txt', train.values, fmt='%s')
         except:
-            logger.critical(
-                "unable to save the testing and training data files")
-            exit
+            raise ModelException('builder', 'unable to save the testing and training data files')
 
         # creating the 5 base models and performing auto tune for 10 labels and 1h (3600s)
         resDataFrame = pd.DataFrame(columns=['exmp', 'Percision', 'Recall'])
@@ -113,11 +115,10 @@ class ModelBuilder():
                     {'exmp': restest[0], 'Percision': restest[1], 'Recall': restest[2]}, ignore_index=True)
                 fastmodule.save_model(f'build/fasttextmodel{i}.bin')
         except:
-            logger.critical(f'unable to creat models stop at {i}')
+            raise ModelException('builder', 'unable to create models')
         finally:
             for i in os.scandir('build'):
                 os.remove(i.path)
-            exit
 
         # save the bast 3 fasttext models
         indexlist = resDataFrame.nlargest(3, 'Percision').index
@@ -132,44 +133,36 @@ class ModelBuilder():
         # saving the model
 
         ModelBuilder.cleanFiles(hash)
-        print('Generated FastText Model Successfully')
+        logger.log('Generated FastText Model Successfully')
 
     @staticmethod
     def createKNN(filePath: str, k: int, hash: str = '') -> None:
         try:
-            raw_data = pd.read_excel(filePath)
-        except:
-            logger.critical("unable to read the file, testing diffrent foramt")
-            try:
-                raw_data = pd.read_csv(filePath)
-            except:
-                logger.critical(
-                    f'unable to read the data file. the file path is {filePath}')
-                print("unable to read file try agian")
-                exit
+            raw_data = ModelBuilder.readRawData(filePath)
+        except Exception as e:
+            raise ModelException('builder', str(e))
 
         # preparing the data for the KNN by removing the TEXT
         knnData = raw_data.drop(['TEXT'], axis=1)
         knn = NearestNeighbors(n_neighbors=k, algorithm='auto').fit(knnData)
         # saving the model
         joblib.dump(knn, f'./finModel/knn/knnmodel{hash}.pkl')
-        print('Generated KNN Model Successfully')
+        logger.log('Generated KNN Model Successfully')
 
     @staticmethod
     def createModels(self, filePath: str, k: int = 3, hash: str = '', debug: bool = False) -> None:
         try:
             ModelBuilder.createFastText(filePath, hash, debug)
             ModelBuilder.createKNN(filePath, k, hash)
+            logger.log('Generated Models Successfully')
         except:
-            logger.critical("unable to create the models")
+            raise ModelException('Builder', "unable to create the models")
         finally:
             self.cleanFiles(hash)
             for i in os.scandir('build'):
                 os.remove(i.path)
             for i in os.scandir('finModel'):
                 os.remove(i.path)
-            exit
-        print('Generated Models Successfully')
 
 
 def fetchDatasetConfig() -> dict:
@@ -193,34 +186,28 @@ if __name__ == '__main__':
         sys.exit()
 
     if len(sys.argv) < 2:
-        print(
+        logger.error(
             'Please follow format of modelBuilder.py [datasheet] -k [k-neighbors? = 3] -h [hash? = ""] -d')
         sys.exit()
-    try:
-        if not os.path.isdir('dataset'):
-            os.mkdir('dataset')
-    except:
-        logger.critical("unable to create the data folder")
+
+    if not os.path.isdir('dataset'):
+        os.mkdir('dataset')
 
     if not os.path.isfile(sys.argv[1]):
         # fetch n download it
-        try:
-            path = sys.argv[1].split('/')
-            filename = path[len(path) - 1].split('.')[0]
-            datasetConfig = fetchDatasetConfig()            
-            r = requests.get(datasetConfig['url'], allow_redirects=True)
-            open(f'./dataset/{filename}.{datasetConfig["type"]}', 'wb').write(r.content)
-            print('Successfully downloaded data')
-        except:
-            logger.critical("unable to download data")
-    try:
-        if not os.path.isdir('build'):
-            os.mkdir('build')
+        path = sys.argv[1].split('/')
+        filename = path[len(path) - 1].split('.')[0]
+        datasetConfig = fetchDatasetConfig()            
+        r = requests.get(datasetConfig['url'], allow_redirects=True)
+        open(f'./dataset/{filename}.{datasetConfig["type"]}', 'wb').write(r.content)
+        logger.log('Successfully downloaded data')
 
-        if not os.path.isdir('finModel'):
-            os.mkdir('finModel')
-    except:
-        logger.critical("unable to create the needed folders")
+
+    if not os.path.isdir('build'):
+        os.mkdir('build')
+
+    if not os.path.isdir('finModel'):
+        os.mkdir('finModel')
 
     k: int = 3
     h: str = ''
@@ -244,8 +231,10 @@ if __name__ == '__main__':
         )
 
         # add http call to server to change model based on name and hash.
+    except ModelException as e:
+        logger.critical(f'Component: {e.component}\nError: {e.message}')
     except Exception as e:
+        logger.critical('Stack:', e)
+    finally:
+        print('Please check -h for help.')
         ModelBuilder.cleanFiles(h)
-        print('Error has occured please check -h for help.')
-        print('Stack;')
-        print(e)
