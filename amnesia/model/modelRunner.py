@@ -1,3 +1,4 @@
+from model.modelUtils import ModelUtils
 import pandas as pd
 from pandas.core.frame import DataFrame
 import joblib
@@ -9,7 +10,7 @@ import time
 from functools import wraps
 from collections import Counter
 from pandas.core.series import Series
-from modelException import ModelException
+from model.modelException import ModelException
 import os
 import sys
 import json
@@ -33,7 +34,6 @@ def timed(func):
 
     return wrapper
 
-
 class ModelRunner():
     def __init__(self, fastText: str, knn: str) -> None:
         self.fastTextPath = fastText
@@ -42,29 +42,8 @@ class ModelRunner():
         self.fastTextModels = None
         self._loadModels()
 
-    @staticmethod
-    def loadCategories():        
-        if not os.path.isfile('dataset.headers.json'):
-            raise ModelException('runner:load_categories','Please make sure that the dataset.headers.json file exist.')
-
-        with open('dataset.headers.json') as f:
-            categoriesDict =  json.loads((f.read()))
-            return pd.DataFrame(categoriesDict)
-
-    def _loadFasttextModels(self)->list:
-        modelsFasttext = []
-        dir = os.scandir(self.fastTextPath)
-        if not dir or len(os.listdir(self.fastTextPath)) != 3:
-            raise ModelException('runner:load_ft_model', 'error occured not load model')
-
-        for j in dir:
-            if os.path.splitext(j)[1] == '.bin':
-                modelsFasttext.append(
-                    fasttext.load_model(f'{os.path.abspath(j)}'))
-        return modelsFasttext
-
     def _loadModels(self) -> None:
-        self.fastTextModels = self._loadFasttextModels()
+        self.fastTextModels = ModelUtils.loadFasttextModels(self.fastTextPath)
         self.knnModel = joblib.load(self.knnPath)
 
     def changeInstance(self, fastText='', knn='') -> None:
@@ -75,13 +54,6 @@ class ModelRunner():
 
         # have to handle if changing failed to return to old state
         self._loadModels()
-
-    def fastPredict(self,text:str)->list:
-        resF = []
-        for i in range(len(self.fastTextModels)):
-           resF.append(self.fastTextModels[i].predict(text, k=10))
-        allres = (tuple(list(resF[0][0])+list(resF[1][0])+list(resF[2][0])))
-        return [key for key in Counter(allres).keys() if Counter(allres)[key] > 1]
 
 # creat the Series to divid with frame
     def _creatDiv(self, raw_frame: DataFrame) -> DataFrame:
@@ -123,7 +95,7 @@ class ModelRunner():
         tempDataframe = pd.DataFrame()
         cleanText = self._cleanText(text)
         try:
-            fastTextRes = self.fastPredict(cleanText)
+            fastTextRes = ModelUtils.fastPredict(cleanText, self.fastTextModels)
         except:
             raise ModelException('runner:predict', "unable to predict")
         categorieslist = list(self.categories.columns)
