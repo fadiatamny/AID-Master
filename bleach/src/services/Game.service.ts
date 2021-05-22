@@ -6,18 +6,12 @@ import ScenarioUtils from '../utils/Scenario.utils'
 import { Player, PlayerType } from '../models/Player.model'
 
 export default class GameService {
-    private static _instance: GameService
     private static _activeGames: Record<string, GameSession> = {}
 
     public static init(io: Server, socket: Socket) {
-        if (!GameService._instance) {
-            GameService._instance = new GameService(io, socket)
-        }
+        new GameService(io, socket)
     }
 
-    public static get instance() {
-        return GameService._instance
-    }
 
     public static getGameSession(id: string) {
         return GameService._activeGames[id]
@@ -28,6 +22,7 @@ export default class GameService {
             ['connected']: this._connected.bind(this)
         }
         const onsHandler = {
+            ['hi']: this._hi.bind(this),
             ['createRoom']: this._createRoom.bind(this),
             ['joinRoom']: this._joinRoom.bind(this),
             ['sendMessage']: this._sendMessage.bind(this),
@@ -35,8 +30,8 @@ export default class GameService {
             ['leaveRoom']: this._leaveRoom.bind(this)
         }
 
-        Object.entries(emitsHandler).forEach(([key, value]) => this._socket.emit(key, value))
         Object.entries(onsHandler).forEach(([key, value]) => this._socket.on(key, value))
+        Object.entries(emitsHandler).forEach(([key, value]) => this._socket.emit(key, value()))
     }
 
     private get rooms() {
@@ -45,6 +40,10 @@ export default class GameService {
 
     public getGame(roomId: string) {
         return GameService._activeGames[roomId]
+    }
+
+    private _hi () {
+        this._socket.emit('hello', { message: 'You are connected!' })
     }
 
     private _connected() {

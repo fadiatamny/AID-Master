@@ -44,7 +44,6 @@ const MessagesList = ({ data, activeChat }: MessagesListProps) => {
                         </div>
                     )
             })}
-
         </div>
     )
 }
@@ -84,10 +83,8 @@ export default MessagesList
 //     </div>
 // </div>
 
-
-
-
-{/* <div className={`row justify-content-start`}>
+{
+    /* <div className={`row justify-content-start`}>
 <div className={`${styles.messageContainer} `}>
     <Message
         username="Poop"
@@ -131,4 +128,5 @@ export default MessagesList
 <div className={`${styles.messageContainer} `}>
     <Message username="Neko" playerName="Annieli" messageText="Fadi is a poopy head" myMessage={true} />
 </div>
-</div> */}
+</div> */
+}

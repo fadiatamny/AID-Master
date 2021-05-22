@@ -62,7 +62,7 @@ const Chat = () => {
     }
 
     React.useEffect(() => {
-        EventsManager.instance.on(SocketEvent.MESSAGE, 'Chat', (event: unknown) => {
+        EventsManager.instance.on(SocketEvent.MESSAGE, 'Chat', () => {
             console.log('im here')
         })
     }, [])
