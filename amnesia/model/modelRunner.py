@@ -1,4 +1,5 @@
-from amnesia.model.modelUtils import ModelUtils
+
+from modelUtils import ModelUtils
 import pandas as pd
 from pandas.core.frame import DataFrame
 import joblib
@@ -10,7 +11,7 @@ import time
 from functools import wraps
 from collections import Counter
 from pandas.core.series import Series
-from amnesia.model.modelException import ModelException
+from modelException import ModelException
 import os
 import sys
 import json
@@ -92,16 +93,13 @@ class ModelRunner():
         if self.fastTextModels is None or self.knnModel is None:
             self._loadModels()
 
-        tempDataframe = pd.DataFrame()
+        tempDataframe = ModelUtils.fetchDatasetHeaders()
         cleanText = self._cleanText(text)
         try:
             fastTextRes = ModelUtils.fastPredict(cleanText, self.fastTextModels)
         except:
             raise ModelException('runner:predict', "unable to predict")
-        categorieslist = list(self.categories.columns)
-
-        for label in categorieslist:
-            tempDataframe[label] = ['0']
+        
         for i in range(len(fastTextRes[0])):
             new = fastTextRes[0][i].replace('__label__', '')
             tempDataframe[new] = ['1']

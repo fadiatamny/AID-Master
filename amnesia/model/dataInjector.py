@@ -1,10 +1,11 @@
-from amnesia.model.modelUtils import ModelUtils
+from modelUtils import ModelUtils
 from pandas.core.frame import DataFrame
-from amnesia.model.crawler import Crawler
+from crawler import Crawler
 import pandas as pd
 import json
-from amnesia.model.modelRunner import ModelRunner
+from modelRunner import ModelRunner
 import texthero as hero
+from modelBuilder import ModelBuilder
 
 class DataInjector():
     @staticmethod
@@ -19,43 +20,36 @@ class DataInjector():
 
     @staticmethod
     def runing():
-        fleg =0
+        models = ModelUtils.loadFasttextModels('finModel/fastText')
         headers = ModelUtils.fetchDatasetHeaders()
         crawledData = DataInjector.fetchCrawledData()
         predictions = []
         for i in range(len(crawledData)):
             try:
                 print('\n\n\n\n________________________________________________________________')
-                print(crawledData[i])
                 series = pd.Series(crawledData[i])
-                print(series)
                 series = hero.clean(series)
-                print(series)
                 toString = pd.Series.to_string(series,index=False)
-                print(f'String:   {toString}')
-                predictions.append(ModelUtils.fastPredict(toString))
+                predictions.append(ModelUtils.fastPredict(toString,models))
+
             except:
                 input()
 
         print(len(predictions))
-
+        print(len(crawledData))
         resFrame = pd.DataFrame()
         for i in range(len(predictions)):
             for j in range(len(predictions[i])):
                 dataframe = headers.copy()
                 new = predictions[i][j].replace('__label__', '')
                 dataframe[new] = [1]
-                dataframe["TEXT"] = crawledData[i]
-                resFrame = pd.concat([resFrame, dataframe], ignore_index=True)
+            dataframe["TEXT"] = crawledData[i] 
+            resFrame = pd.concat([resFrame, dataframe], ignore_index=True)
 
-        # for label in categorieslist:
-        #     dataframe[label] = ['0']
-        print(resFrame)
-        input()
 
         data = pd.read_csv("./data/data.csv")
-        newdata = pd.concat([data,finalframe], ignore_index=True)
-        newdata.to_csv('temp.csv',index=False)
+        newdata = pd.concat([data,resFrame,data], ignore_index=True)
+        
         
 
 
