@@ -57,7 +57,7 @@ const generateRelaxed = () => {
         farm: 0,
         conversation: 0,
         trade: 0,
-        neutral: 0,
+        neutral_mood: 0,
         friendly: 0,
         relaxed: 0,
         peaceful: 0,
@@ -73,7 +73,7 @@ const generateMysterious = () => {
         hideout: 0,
         puzzle: 0,
         invstigate: 0,
-        neutral: 0,
+        neutral_mood: 0,
         friendly: 0,
         'exploration encounter': 0
     }
