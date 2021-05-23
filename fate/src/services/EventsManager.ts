@@ -71,24 +71,29 @@ export default class EventsManager {
 export type EventType = PlatformEvent | SocketEvent
 
 export enum SocketEvent {
+    HI = 'hi',
+    HELLO = 'hello',
     CONNECTED = 'connected',
     MESSAGE = 'message',
     CONNECT = 'connect',
-    ROOMCREATED = 'roomcreated',
-    ROOMCREATING = 'roomcreatring',
-    ROOMJOINED = 'roomjoined',
-    DMCHANGED = 'dmchanged',
-    DMCHANGEING = 'dmchanging',
-    PLAYERDATA = 'playerdata',
+    ROOM_CREATING = 'room_creating',
+    CREATEROOM = 'createroom',
+    JOINED_ROOM = 'joined_room',
+    DM_CHANGED = 'dm_changed',
+    PLAYER_DATA = 'player_data',
     SCENARIO = 'scenario',
     SCENARIOGUIDE = 'scenatioguide',
     ERROR = 'error',
-    ROOMJOINING = 'roomjoining',
-    RECPLAYERDATA = 'recplayrdata',
-    RECSCENARIO = 'recscenario',
-    RECSCENARIOGUIDE = 'recscenatioguide',
-    RECERROR = 'recerror'
-
+    JOIN_ROOM = 'join_room',
+    SENDMESSAGE = 'sendmessage',
+    LEAVEROOM = 'leaveroom',
+    MESSAGESENT = 'messagesent',
+    SENARIOSENT = 'senariosent',
+    ROOMLEAVED = 'roomleaved',
+    SEND_MESSAGE = 'send_message',
+    SEND_SCENARIO = 'send_scenario',
+    LEAVE_ROOM = 'leave_room',
+    ROOM_CREATED = 'room_created'
 }
 
 export enum PlatformEvent {}

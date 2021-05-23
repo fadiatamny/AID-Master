@@ -1,0 +1,11 @@
+
+.container {
+    width: 95%;
+}
+
+.title{
+    font-family: 'Rye', cursive;
+    font-size: 3.5vh;
+    text-align: center;
+    color: #ffa3a4;
+}
