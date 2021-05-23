@@ -103,8 +103,7 @@ class ModelBuilder():
         indexlist = resDataFrame.nlargest(3, 'Percision').index
         for i in indexlist:
             os.rename(f'build/fasttextmodel{i}.bin',
-                      f'{savePath}fasttextmodel{i}.bin')
-        input()
+                      f'finModel/fastText/fasttextmodel{i}.bin')
         for i in os.scandir('build'):
             os.remove(i.path)
 
