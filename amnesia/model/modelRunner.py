@@ -1,4 +1,4 @@
-from model.modelUtils import ModelUtils
+from amnesia.model.modelUtils import ModelUtils
 import pandas as pd
 from pandas.core.frame import DataFrame
 import joblib
@@ -10,7 +10,7 @@ import time
 from functools import wraps
 from collections import Counter
 from pandas.core.series import Series
-from model.modelException import ModelException
+from amnesia.model.modelException import ModelException
 import os
 import sys
 import json

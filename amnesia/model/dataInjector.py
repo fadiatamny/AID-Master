@@ -1,59 +1,59 @@
+from amnesia.model.modelUtils import ModelUtils
 from pandas.core.frame import DataFrame
-from crawler import Crawler
+from amnesia.model.crawler import Crawler
 import pandas as pd
 import json
-from modelRunner import ModelRunner
+from amnesia.model.modelRunner import ModelRunner
 import texthero as hero
 
-class dataimport():
+class DataInjector():
     @staticmethod
-    def runing():
-        runner = ModelRunner('finModel/fastText','finModel/knn/knnmodel.pkl')
-        data = pd.read_csv("./data/data.csv")
-        fleg =0
-        f = open('dataset.headers.json')
-        lines =  f.read()
-        
+    def fetchCrawledData(): 
         urls = [
             'https://www.kassoon.com/dnd/random-plot-hooks-generator/',
             'https://www.kassoon.com/dnd/plot-twist-generator/',
             'https://www.kassoon.com/dnd/puzzle-generator/'
         ]
         crawler = Crawler(urls, 10)
-        res = crawler.crawl()
-        modeRes = []
-        for i in range(len(res)):
+        return crawler.crawl()
+
+    @staticmethod
+    def runing():
+        fleg =0
+        headers = ModelUtils.fetchDatasetHeaders()
+        crawledData = DataInjector.fetchCrawledData()
+        predictions = []
+        for i in range(len(crawledData)):
             try:
                 print('\n\n\n\n________________________________________________________________')
-                print(res[i])
-                series = pd.Series(res[i])
+                print(crawledData[i])
+                series = pd.Series(crawledData[i])
                 print(series)
                 series = hero.clean(series)
                 print(series)
                 toString = pd.Series.to_string(series,index=False)
                 print(f'String:   {toString}')
-                modeRes.append(runner.fastPredict(toString))
+                predictions.append(ModelUtils.fastPredict(toString))
             except:
                 input()
-        print(len(modeRes))
 
-        for j in range(len(modeRes)):
-            for i in range(len(modeRes[j])):
-                dataframe = pd.DataFrame(json.loads(lines))
-                new = modeRes[j][i].replace('__label__', '')
+        print(len(predictions))
+
+        resFrame = pd.DataFrame()
+        for i in range(len(predictions)):
+            for j in range(len(predictions[i])):
+                dataframe = headers.copy()
+                new = predictions[i][j].replace('__label__', '')
                 dataframe[new] = [1]
-                dataframe["TEXT"] = res[j]
-            if fleg == 0:
-                finalframe = dataframe
-                fleg = 1
-            else:
-                finalframe = pd.concat(
-                        [finalframe, dataframe], ignore_index=True)
+                dataframe["TEXT"] = crawledData[i]
+                resFrame = pd.concat([resFrame, dataframe], ignore_index=True)
+
         # for label in categorieslist:
         #     dataframe[label] = ['0']
-        print(finalframe)
+        print(resFrame)
         input()
 
+        data = pd.read_csv("./data/data.csv")
         newdata = pd.concat([data,finalframe], ignore_index=True)
         newdata.to_csv('temp.csv',index=False)
         
@@ -67,6 +67,6 @@ if __name__ == '__main__':
     #                      f'{modelPath}/build/{knnName}', f'{modelPath}/data/data.csv')
     # dataPath = f'{modelPath}/data/data.csv'
     # headersPath = 'dataset.headers.json'
-    dataimport.runing()
+    DataInjector.runing()
 
 

@@ -3,7 +3,7 @@ import json
 import pandas as pd
 import fasttext
 from collections import Counter
-from model.modelException import ModelException
+from amnesia.model.modelException import ModelException
 
 class ModelUtils():
     @staticmethod
@@ -16,7 +16,7 @@ class ModelUtils():
             return json.loads(text)
 
     @staticmethod
-    def loadCategories():        
+    def fetchDatasetHeaders():        
         if not os.path.isfile('dataset.headers.json'):
             raise ModelException('runner:load_categories','Please make sure that the dataset.headers.json file exist.')
 

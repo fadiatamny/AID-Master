@@ -9,8 +9,8 @@ import requests
 import texthero as hero
 import logging
 from collections import Counter
-from model.modelException import ModelException
-from model.modelUtils import ModelUtils
+from amnesia.model.modelException import ModelException
+from amnesia.model.modelUtils import ModelUtils
 
 logger = logging.getLogger(__name__)
 logger.setLevel("DEBUG")
