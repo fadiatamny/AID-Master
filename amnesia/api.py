@@ -7,8 +7,8 @@ import json
 modelPath = './model'
 fastTextName = 'fasttextmodel.bin'
 knnName = 'knnmodel.pkl'
-model = ModelRunner(f'{modelPath}/build/{fastTextName}',
-                    f'{modelPath}/build/{knnName}', f'{modelPath}/data/data.xls')
+model = ModelRunner(f'{modelPath}/finModel/fastText/{fastTextName}',
+                    f'{modelPath}/finModel/knn/{knnName}', f'{modelPath}/data/data.xls')
 
 router = Blueprint('api', __name__, url_prefix='/api')
 

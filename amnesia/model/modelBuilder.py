@@ -10,8 +10,8 @@ import datetime
 import texthero as hero
 import logging
 import json
-from model.modelException import ModelException
-from model.modelUtils import ModelUtils
+from modelException import ModelException
+from modelUtils import ModelUtils
 
 logger = logging.getLogger(__name__)
 logger.setLevel("DEBUG")
@@ -61,15 +61,15 @@ class ModelBuilder():
 
     @staticmethod
     # read the data file and creat the fasttext
-    def createFastText(filePath: str, hashbase: str = '', debug: bool = False) -> None:
+    def createFastText(filePath: str,savePath:str, hashbase: str = '',time:str = 5400, debug: bool = False) -> None:
         try:
-            raw_data = ModelBuilder.readRawData(filePath)
+            raw_data = ModelBuilder._readRawData(filePath)
         except Exception as e:
             raise ModelException('builder', str(e))
 
         cleandata = ModelBuilder._formatText(raw_data)
 
-        # removing validate for now until we have mode data. split is 80 - 20
+        # removing validate for now until we have more data. split is 80 - 20
         train, test = np.split(cleandata.sample(
             frac=1), [int(.8*len(cleandata))])
 
@@ -80,14 +80,14 @@ class ModelBuilder():
         except:
             raise ModelException('builder', 'unable to save the testing and training data files')
 
-        # creating the 5 base models and performing auto tune for 10 labels and 1h (3600s)
+        # creating the 5 base models and performing auto tune for 10 labels and 1.5h (5400s) and limiting the file size to 1G
         resDataFrame = pd.DataFrame(columns=['exmp', 'Percision', 'Recall'])
         try:
             for i in range(5):
                 fastmodule = fasttext.train_supervised(
                     input=f'training_data{hashbase}.txt',
                     autotuneValidationFile=f'testing_data{hashbase}.txt', autotunePredictions=10,
-                    autotuneDuration=120, autotuneModelSize='1500M')
+                    autotuneDuration=time, autotuneModelSize='1000M')
 
                 restest = fastmodule.test(f'testing_data{hashbase}.txt', 10)
                 resDataFrame = resDataFrame.append(
