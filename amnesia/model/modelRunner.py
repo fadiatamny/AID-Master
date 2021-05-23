@@ -39,7 +39,8 @@ class ModelRunner():
     def __init__(self, fastText: str, knn: str) -> None:
         self.fastTextPath = fastText
         self.knnPath = knn
-        self.categories = ModelRunner.loadCategories()
+        self.categories = ModelUtils.fetchDatasetHeaders()
+        self.forDf =pd.read_csv('data/data.csv')
         self.fastTextModels = None
         self._loadModels()
 
@@ -67,6 +68,7 @@ class ModelRunner():
 
  # convert the data frame to text
     def _dfToText(self, df: DataFrame) -> Series:
+        print('hiiiiiiiiiii')
         raw_frame = df.replace(0, np.nan)
         raw_frame = raw_frame.dropna(axis='columns', how='all')
         del raw_frame['TEXT']
@@ -97,16 +99,18 @@ class ModelRunner():
         cleanText = self._cleanText(text)
         try:
             fastTextRes = ModelUtils.fastPredict(cleanText, self.fastTextModels)
+            
         except:
             raise ModelException('runner:predict', "unable to predict")
         
-        for i in range(len(fastTextRes[0])):
-            new = fastTextRes[0][i].replace('__label__', '')
+        for i in range(len(fastTextRes)):
+            new = fastTextRes[i].replace('__label__', '')
             tempDataframe[new] = ['1']
         del tempDataframe['TEXT']
+        
 
         knnRes = self.knnModel.kneighbors(tempDataframe, return_distance=False)
-        textObj = self._dfToText(self.categories.loc[knnRes[0], :])
+        textObj = self._dfToText(self.forDf.loc[knnRes[0], :])
         jsonPayload = self._normalize(textObj).to_json()
 
         return jsonPayload
@@ -133,7 +137,7 @@ if __name__ == '__main__':
             fastText = str(sys.argv[index + 1])
 
     try:
-        runner = ModelRunner(fasttext, knn)
+        runner = ModelRunner(fastText, knn)
 
         text = input('Please insert text to be predicted')
         prediction = runner.predict(text)

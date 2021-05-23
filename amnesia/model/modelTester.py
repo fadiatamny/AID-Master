@@ -9,8 +9,8 @@ import requests
 import texthero as hero
 import logging
 from collections import Counter
-from amnesia.model.modelException import ModelException
-from amnesia.model.modelUtils import ModelUtils
+from modelException import ModelException
+from modelUtils import ModelUtils
 
 logger = logging.getLogger(__name__)
 logger.setLevel("DEBUG")
@@ -24,7 +24,7 @@ class ModelTester:
     def fastTextTest(dataPath: str, fastTextPath: str) -> None:
         fleg = 0
         tempDataframe = pd.DataFrame()
-        data = pd.read_excel(dataPath)
+        data = pd.read_csv(dataPath)
         finalres = np.zeros([data.index.size])
         categorieslist = list(data.columns)
         data["TEXT"] = hero.clean(data["TEXT"])

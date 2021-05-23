@@ -61,9 +61,9 @@ class ModelBuilder():
 
     @staticmethod
     # read the data file and creat the fasttext
-    def createFastText(filePath: str, hashbase: str = '',time:str = '5400', debug: bool = False) -> None:
+    def createFastText(filePath: str,savePath:str, hashbase: str = '',time:str = 5400, debug: bool = False) -> None:
         try:
-            raw_data = ModelBuilder.readRawData(filePath)
+            raw_data = ModelBuilder._readRawData(filePath)
         except Exception as e:
             raise ModelException('builder', str(e))
 
@@ -103,7 +103,8 @@ class ModelBuilder():
         indexlist = resDataFrame.nlargest(3, 'Percision').index
         for i in indexlist:
             os.rename(f'build/fasttextmodel{i}.bin',
-                      f'finModel/fastText/fasttextmodel{i}.bin')
+                      f'{savePath}fasttextmodel{i}.bin')
+        input()
         for i in os.scandir('build'):
             os.remove(i.path)
 
