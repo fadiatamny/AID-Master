@@ -23,7 +23,9 @@ const GameScreen = ({ location }: any) => {
     const [roomid, setRoomid] = useState('')
     const [messages, setMessages] = useState<MessageType[]>([])
     const eventsManager = EventsManager.instance
-
+    const [uname, setUname] = useState('')
+    const [pname, setPname] = useState('')
+    const [ptype, setPtype] = useState('')
     const connected = () => {
         console.log('GameScreen: connected')
     }
@@ -88,9 +90,16 @@ const GameScreen = ({ location }: any) => {
         eventsManager.on(SocketEvents.SCENARIO, 'game-componment', (obj: any) => handleScenario(obj))
         eventsManager.on(SocketEvents.SCENARIO_GUIDE, 'game-componment', (obj: any) => handleScenarioGuide(obj))
         //get room id from url
-        const { rid } = queryString.parse(location.search)
+        const { rid, playerName, username, type } = queryString.parse(location.search)
         //@ts-ignore
         setRoomid(rid)
+        //@ts-ignore
+        setUname(username)
+        //@ts-ignore
+        setPname(playerName)
+        //@ts-ignore
+        setPtype(type)
+
     }, [])
 
     return (
@@ -98,7 +107,7 @@ const GameScreen = ({ location }: any) => {
             <Header />
             <div className={`${styles.container}`}>
                 {/*@ts-ignore*/}
-                <Chat messages={messages} rid={roomid} />
+                <Chat messages={messages} rid={roomid} username={uname} playerName={pname} type={ptype} />
             </div>
         </div>
     )

@@ -12,10 +12,12 @@ export interface ChatWindowProps {
     activeChat: string
     messages: any
     setMessages: any
+    username: string
+    playerName: string
     rid: string
 }
 
-const ChatWindow = ({ data, activeChat, rid, messages, setMessages }: ChatWindowProps) => {
+const ChatWindow = ({ data, activeChat, username, playerName, rid, messages, setMessages }: ChatWindowProps) => {
     const eventsManager = EventsManager.instance
     const [message, setMessage] = React.useState('')
 
@@ -40,8 +42,8 @@ const ChatWindow = ({ data, activeChat, rid, messages, setMessages }: ChatWindow
 
     const sendMessage = () => {
         if (activeChat === 'AID Master') {
-            eventsManager.trigger(SocketEvents.SEND_SCENARIO, { id: rid, username: 'DM', message: message })
-        } else eventsManager.trigger(SocketEvents.SEND_MESSAGE, { id: rid, username: 'DM', message: message })
+            eventsManager.trigger(SocketEvents.SEND_SCENARIO, { id: rid, username: username, message: message })
+        } else eventsManager.trigger(SocketEvents.SEND_MESSAGE, { id: rid, username: username, message: message })
     }
     return (
         <div className="col justify-content-center">

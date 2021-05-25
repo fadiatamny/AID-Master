@@ -17,8 +17,10 @@ const HomaPage = (props: any) => {
     }
 
     const clickDM = () => {
+        const playerName = "Game Master"
+        const username = "DM"
         eventsManager.on(SocketEvents.ROOM_CREATED, 'home-screen', ({ id }: any) => {
-            props.history.push(`/game?rid=${id}`)
+            props.history.push(`/game?rid=${id}&playerName=${playerName}&username=${username}&type=dm`)
         })
         eventsManager.trigger(SocketEvents.CREATE_ROOM, { playerId: 'blablablablabl', username: 'bladvblaslblasdbfla' })
     }

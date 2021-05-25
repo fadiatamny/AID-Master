@@ -64,12 +64,12 @@ export default class SocketManager {
         this._socket.emit(SocketEvents.HI, {})
     }
 
-    private _createRoom({playerId, username}: any) {
+    private _createRoom({ playerId, username }: any) {
         this._socket.emit(SocketEvents.CREATE_ROOM, playerId, username)
     }
 
-    private _joinRoom(id: string, userId: string, data: IPlayer) {
-        this._socket.emit(SocketEvents.JOIN_ROOM, { id, userId, data })
+    private _joinRoom({ id, userId, data }: any) {
+        this._socket.emit(SocketEvents.JOIN_ROOM, id, userId, data)
     }
 
     private _sendMessage({ id, username, message, target }: any) {
@@ -91,7 +91,6 @@ export default class SocketManager {
     }
 
     private _roomCreated(id: string) {
-        console.log('hola')
         EventsManager.instance.trigger(SocketEvents.ROOM_CREATED, { id })
     }
 
@@ -103,7 +102,7 @@ export default class SocketManager {
         EventsManager.instance.trigger(SocketEvents.PLAYER_DATA, { playerid, playerdata })
     }
 
-    private _roomJoined(username: string, type: PlayerType) {
+    private _roomJoined(username: string, type: string) {
         EventsManager.instance.trigger(SocketEvents.ROOM_JOINED, { username, type })
     }
 
