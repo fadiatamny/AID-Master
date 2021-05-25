@@ -7,6 +7,7 @@ import EventsManager from './services/EventsManager'
 import SocketManager from './services/SocketManager'
 import AdvLoginScreen from './pages/StartingPages/AdvLogin'
 import { SocketEvents } from './models/SocketEvents.model'
+import { v4 as uuid } from 'uuid'
 
 export default function App() {
     const eventsManager = EventsManager.instance
@@ -20,7 +21,10 @@ export default function App() {
         console.error('Error Occured: ', e)
     })
 
-    
+    if (!localStorage.getItem('userId')) {
+        localStorage.setItem('userId', uuid())
+    }
+
     return (
         <Router>
             <Route path="/" exact component={StartingScreen} />
