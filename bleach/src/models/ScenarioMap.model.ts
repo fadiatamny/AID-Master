@@ -49,7 +49,7 @@ const generateWeapons = () => {
 }
 
 const generateRaces = () => {
-    const value = 'Misc / Statues Condition'
+    const value = 'Races'
     return {
         animal: value,
         'demi-human': value,
@@ -152,7 +152,7 @@ const generateActions = () => {
 const generateGeneralMood = () => {
     const value = 'General Mood'
     return {
-        neutral: value,
+        'neutral_mood': value,
         friendly: value,
         intense: value,
         relaxed: value,
@@ -176,11 +176,11 @@ const generateDmActions = () => {
 const generateEncounterType = () => {
     const value = 'Encounter Type'
     return {
-        'special encounter': value,
-        'exposition encounter': value,
-        'combat encounter': value,
-        'boss encounter': value,
-        'exploration encounter': value
+        'special_encounter': value,
+        'exposition_encounter': value,
+        'combat_encounter': value,
+        'boss_encounter': value,
+        'exploration_encounter': value
     }
 }
 

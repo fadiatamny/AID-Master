@@ -64,20 +64,20 @@ export default class SocketManager {
         this._socket.emit(SocketEvents.HI, {})
     }
 
-    private _createRoom() {
-        this._socket.emit(SocketEvents.CREATE_ROOM, {})
+    private _createRoom({playerId, username}: any) {
+        this._socket.emit(SocketEvents.CREATE_ROOM, playerId, username)
     }
 
     private _joinRoom(id: string, userId: string, data: IPlayer) {
         this._socket.emit(SocketEvents.JOIN_ROOM, { id, userId, data })
     }
 
-    private _sendMessage(id: string, username: string, messege: string, target: string) {
-        this._socket.emit(SocketEvents.SEND_MESSAGE, { id, username, messege, target })
+    private _sendMessage({ id, username, message, target }: any) {
+        this._socket.emit(SocketEvents.SEND_MESSAGE, id, username, message, target)
     }
 
-    private _sendScenario(username: string, message: string) {
-        this._socket.emit(SocketEvents.SEND_SCENARIO, { username, message })
+    private _sendScenario({ id, username, message }: any) {
+        this._socket.emit(SocketEvents.SEND_SCENARIO, id, username, message)
     }
 
     private _leaveRoom(id: string, userId: string) {
@@ -106,16 +106,17 @@ export default class SocketManager {
         EventsManager.instance.trigger(SocketEvents.ROOM_JOINED, { username, type })
     }
 
-    private _message(id: string, username: string, messege: string, target: string) {
-        EventsManager.instance.trigger(SocketEvents.MESSAGE, { id, username, messege, target })
+    private _message(username: string, message: string, target: string) {
+        EventsManager.instance.trigger(SocketEvents.MESSAGE, { username, message, target, playerName: '' })
     }
 
-    private _scenario(username: string, message: string) {
-        EventsManager.instance.trigger(SocketEvents.SCENARIO, { username, message })
+    private _scenario(message: string) {
+        console.log(message)
+        EventsManager.instance.trigger(SocketEvents.SCENARIO, { message })
     }
 
-    private _scenarioGuide(username: string, message: string) {
-        EventsManager.instance.trigger(SocketEvents.SCENARIO_GUIDE, { username, message })
+    private _scenarioGuide(username: string, organized: any, theme: string) {
+        EventsManager.instance.trigger(SocketEvents.SCENARIO_GUIDE, { username, organized, theme })
     }
 
     private _error(username: string, message: string) {

@@ -9,8 +9,8 @@ import requests
 import texthero as hero
 import logging
 from collections import Counter
-from modelException import ModelException
-from modelUtils import ModelUtils
+from .modelException import ModelException
+from .modelUtils import ModelUtils
 
 logger = logging.getLogger(__name__)
 logger.setLevel("DEBUG")
