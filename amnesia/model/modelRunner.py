@@ -1,5 +1,5 @@
 
-from modelUtils import ModelUtils
+from .modelUtils import ModelUtils
 import pandas as pd
 from pandas.core.frame import DataFrame
 import joblib
@@ -11,7 +11,7 @@ import time
 from functools import wraps
 from collections import Counter
 from pandas.core.series import Series
-from modelException import ModelException
+from .modelException import ModelException
 import os
 import sys
 import json
@@ -40,7 +40,7 @@ class ModelRunner():
         self.fastTextPath = fastText
         self.knnPath = knn
         self.categories = ModelUtils.fetchDatasetHeaders()
-        self.forDf =pd.read_csv('data/data.csv')
+        self.forDf =pd.read_csv('./model/data/data.csv')
         self.fastTextModels = None
         self._loadModels()
 
@@ -95,19 +95,26 @@ class ModelRunner():
         if self.fastTextModels is None or self.knnModel is None:
             self._loadModels()
 
+        print('2.1')
         tempDataframe = ModelUtils.fetchDatasetHeaders()
         cleanText = self._cleanText(text)
+        
+        print('2.1')
         try:
             fastTextRes = ModelUtils.fastPredict(cleanText, self.fastTextModels)
             
         except:
             raise ModelException('runner:predict', "unable to predict")
         
+        
+        print('2.1')
+
         for i in range(len(fastTextRes)):
             new = fastTextRes[i].replace('__label__', '')
             tempDataframe[new] = ['1']
         del tempDataframe['TEXT']
         
+        print('2.1')
 
         knnRes = self.knnModel.kneighbors(tempDataframe, return_distance=False)
         textObj = self._dfToText(self.forDf.loc[knnRes[0], :])

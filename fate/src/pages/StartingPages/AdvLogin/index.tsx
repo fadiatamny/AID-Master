@@ -1,8 +1,8 @@
-import styles from './StartingPages.module.css'
-import Input from '../../components/Input/Input'
-import AdvCircle from '../../assets/images/CircleAdventurer.png'
+import styles from '../StartingPages.module.css'
+import AdvCircle from '../../../assets/images/CircleAdventurer.png'
 import { useState } from 'react'
-import Header from '../../components/Header/Header'
+import Header from '../../../components/Header/Header'
+import Input from '../../../components/Input/Input'
 
 const AdvLoginScreen = () => {
     const [roomNumber, setRoomNumber] = useState('')

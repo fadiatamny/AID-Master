@@ -6,13 +6,15 @@ export default class ScenarioUtils {
     public static organizeByCategory(scenario: Dictionary) {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const organized: Record<string, { [key: string]: any }> = {}
-
-        for (const feature in Object.keys(scenario)) {
+        console.log(ScenarioMap['special_encounter'])
+        for (const feature of Object.keys(scenario)) {
+            if (feature === 'Encounter Type')
+                console.log('found')
             const category = ScenarioMap[feature]
             if (!organized[category]) {
                 organized[category] = [{ [feature]: scenario[feature] }]
             } else {
-                organized[category].push([{ [feature]: scenario[feature] }])
+                organized[category].push({ [feature]: scenario[feature] })
             }
         }
         return organized
@@ -30,9 +32,9 @@ export default class ScenarioUtils {
         const map = generateScenarioThemeMap()
         const featuresCount = Object.keys(scenario).length
 
-        for (const sFeature in Object.keys(scenario)) {
-            for (const key in Object.keys(map)) {
-                for (const feature in Object.keys(map[key])) {
+        for (const sFeature of Object.keys(scenario)) {
+            for (const key of Object.keys(map)) {
+                for (const feature of Object.keys(map[key])) {
                     if (feature === sFeature) {
                         ++map[key][feature]
                     }
@@ -40,11 +42,12 @@ export default class ScenarioUtils {
             }
         }
 
+
         let max = -Infinity
         let theme = ''
-        for (const key in Object.keys(map)) {
+        for (const key of Object.keys(map)) {
             let count = 0
-            for (const feature in Object.keys(map[key])) {
+            for (const feature of Object.keys(map[key])) {
                 if (map[key][feature] !== 0) {
                     ++count
                 }

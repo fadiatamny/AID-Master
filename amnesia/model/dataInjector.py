@@ -1,11 +1,11 @@
-from modelUtils import ModelUtils
+from .modelUtils import ModelUtils
 from pandas.core.frame import DataFrame
-from crawler import Crawler
+from .crawler import Crawler
 import pandas as pd
 import json
-from modelRunner import ModelRunner
+from .modelRunner import ModelRunner
 import texthero as hero
-from modelBuilder import ModelBuilder
+from .modelBuilder import ModelBuilder
 
 class DataInjector():
     @staticmethod
