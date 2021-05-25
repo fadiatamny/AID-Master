@@ -13,7 +13,6 @@ export default class GameService {
         new GameService(io, socket)
     }
 
-
     public static getGameSession(id: string) {
         return GameService._activeGames[id]
     }
@@ -55,16 +54,19 @@ export default class GameService {
         delete GameService._activeGames[roomId]
     }
 
-    private _createRoom(pId: string, username: string, data?: GameDump) {
+    private _createRoom(pId: string, username: string, playername: string, data?: GameDump) {
         const id = uniqid()
+        let dm: any
         if (data) {
             GameService._activeGames[id.toString()] = GameSession.fromDump(data)
+            dm = data.playerList.find((p) => p.username === username)
         } else {
-            const dm = new Player(PlayerType.DM, pId, username)
+            dm = new Player(PlayerType.DM, pId, username, playername)
             GameService._activeGames[id.toString()] = new GameSession(dm, this._onGameEnd)
         }
         this._socket.join(id.toString())
         this._socket.emit(SocketEvents.ROOM_CREATED, id.toString())
+        this.io.sockets.in(id.toString()).emit(SocketEvents.PLAYER_DATA, username, dm)
     }
 
     private _roomExists(roomId: string) {
