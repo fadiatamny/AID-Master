@@ -13,26 +13,26 @@ const HomaPage = (props: any) => {
     const eventsManager = EventsManager.instance
 
     const clickAdv = () => {
-        console.log('Adv')
+        props.history.push(`/AdventurerLogin`)
     }
 
     const clickDM = () => {
         eventsManager.on(SocketEvents.ROOM_CREATED, 'home-screen', ({ id }: any) => {
             props.history.push(`/game?rid=${id}`)
         })
-        eventsManager.trigger(SocketEvents.CREATE_ROOM, {playerId: 'blablablablabl', username:'bladvblaslblasdbfla'})
+        eventsManager.trigger(SocketEvents.CREATE_ROOM, { playerId: 'blablablablabl', username: 'bladvblaslblasdbfla' })
     }
 
     return (
         <div>
             <Header />
             <div className={styles.container}>
-                <Link to="/AdventurerLogin">
-                    <img src={AdvCircle} className={styles.roundImage} onClick={clickAdv} />
-                </Link>
+                <Clickable onClick={clickAdv}>
+                    <img src={AdvCircle} className={styles.roundImage} />
+                </Clickable>
                 <img src={logo} alt="AID Master logo" className={styles.logo} />
                 <Clickable onClick={clickDM}>
-                    <img src={DMCircle} className={styles.roundImage} onClick={clickDM} />
+                    <img src={DMCircle} className={styles.roundImage} />
                 </Clickable>
             </div>
         </div>

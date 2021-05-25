@@ -91,6 +91,7 @@ export default class SocketManager {
     }
 
     private _roomCreated(id: string) {
+        console.log('hola')
         EventsManager.instance.trigger(SocketEvents.ROOM_CREATED, { id })
     }
 

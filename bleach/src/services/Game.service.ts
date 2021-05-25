@@ -20,15 +20,15 @@ export default class GameService {
 
     constructor(private io: Server, private _socket: Socket) {
         const emitsHandler = {
-            ['connected']: this._connected.bind(this)
+            [SocketEvents.CONNECTED]: this._connected.bind(this)
         }
         const onsHandler = {
-            ['hi']: this._hi.bind(this),
-            ['createRoom']: this._createRoom.bind(this),
-            ['joinRoom']: this._joinRoom.bind(this),
-            ['sendMessage']: this._sendMessage.bind(this),
-            ['sendScenario']: this._sendScenario.bind(this),
-            ['leaveRoom']: this._leaveRoom.bind(this)
+            [SocketEvents.HI]: this._hi.bind(this),
+            [SocketEvents.CREATE_ROOM]: this._createRoom.bind(this),
+            [SocketEvents.JOIN_ROOM]: this._joinRoom.bind(this),
+            [SocketEvents.SEND_MESSAGE]: this._sendMessage.bind(this),
+            [SocketEvents.SEND_SCENARIO]: this._sendScenario.bind(this),
+            [SocketEvents.LEAVE_ROOM]: this._leaveRoom.bind(this)
         }
 
         Object.entries(onsHandler).forEach(([key, value]) => this._socket.on(key, value))
@@ -64,7 +64,7 @@ export default class GameService {
             GameService._activeGames[id.toString()] = new GameSession(dm, this._onGameEnd)
         }
         this._socket.join(id.toString())
-        this._socket.emit('roomCreated', id.toString())
+        this._socket.emit(SocketEvents.ROOM_CREATED, id.toString())
     }
 
     private _roomExists(roomId: string) {
@@ -82,7 +82,7 @@ export default class GameService {
             if (room) {
                 if (session.originalDm.id === playerId) {
                     session.activeDm = playerId
-                    this._socket.emit('dmChanged', playerId)
+                    this._socket.emit(SocketEvents.DM_CHANGED, playerId)
                 }
                 let playerData = session.getPlayer(playerId)
                 if (!playerData && data) {
@@ -90,10 +90,10 @@ export default class GameService {
                     playerData = data
                 } else {
                     session.playerReconnect(playerId)
-                    this.io.sockets.in(roomId).emit('playerData', playerId, playerData)
+                    this.io.sockets.in(roomId).emit(SocketEvents.PLAYER_DATA, playerId, playerData)
                 }
                 this._socket.join(roomId)
-                this.io.sockets.in(roomId).emit('roomJoined', playerData!.username, playerData!.type)
+                this.io.sockets.in(roomId).emit(SocketEvents.ROOM_JOINED, playerData!.username, playerData!.type)
             } else {
                 this._sendError('There was an issue, please try again', `This room ${roomId} does not exist.`)
             }
@@ -108,7 +108,7 @@ export default class GameService {
             this._sendError('There was an issue, please try again', 'Missing Variables')
             return
         }
-        this.io.sockets.in(roomId).emit('message', username, message, target)
+        this.io.sockets.in(roomId).emit(SocketEvents.MESSAGE, username, message, target)
     }
 
     private _sendScenario(roomId: string, username: string, scenario: string) {
@@ -118,7 +118,7 @@ export default class GameService {
             return
         }
 
-        this.io.sockets.in(roomId).emit('scenario', scenario)
+        this.io.sockets.in(roomId).emit(SocketEvents.SCENARIO, scenario)
         axios
             .post(`${process.env.AMNESIA_ENDPOINT}/api/predict`, {
                 text: scenario
@@ -144,13 +144,13 @@ export default class GameService {
             return
         }
         const session = this.getGame(roomId)
-        this.io.sockets.in(roomId).emit('message', 'Server', `${playerId} has left the game`)
+        this.io.sockets.in(roomId).emit(SocketEvents.MESSAGE, 'Server', `${playerId} has left the game`)
         session.playerLeft(playerId)
         this._socket.leave(roomId)
     }
 
     private _sendError(message?: string, error?: unknown) {
-        this._socket.emit('error', {
+        this._socket.emit(SocketEvents.ERROR, {
             message: message ?? `There was an issue`,
             error
         })
