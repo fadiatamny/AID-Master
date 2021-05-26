@@ -1,0 +1,19 @@
+.mymessage{
+    color: #ff6768;
+    background-color: #43454d;
+}
+.otherMessage{
+    color: #ff6768
+}
+
+.title{
+    font-size: 14px;
+}
+
+.subtitle{
+    font-size: 12px;
+}
+
+.content{
+    font-size: 13px;
+}

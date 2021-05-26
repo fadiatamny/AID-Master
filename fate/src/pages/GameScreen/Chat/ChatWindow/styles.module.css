@@ -4,3 +4,15 @@
     border-radius: 15px;
     background-color: #2f313a;
 }
+
+.messageList {
+    height: 85%;
+}
+
+.inputHolder {
+    height: 5%;
+}
+
+.input {
+    width: 95%;
+}
