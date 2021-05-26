@@ -68,6 +68,7 @@ class ModelRunner():
 
  # convert the data frame to text
     def _dfToText(self, df: DataFrame) -> Series:
+        print('hiiiiiiiiiii')
         raw_frame = df.replace(0, np.nan)
         raw_frame = raw_frame.dropna(axis='columns', how='all')
         del raw_frame['TEXT']
@@ -96,6 +97,8 @@ class ModelRunner():
 
         tempDataframe = ModelUtils.fetchDatasetHeaders()
         cleanText = self._cleanText(text)
+        
+        print('2.1')
         try:
             fastTextRes = ModelUtils.fastPredict(cleanText, self.fastTextModels)
             

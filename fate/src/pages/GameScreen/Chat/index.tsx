@@ -1,39 +1,31 @@
 import styles from './styles.module.css'
 import React from 'react'
 import ChatTabs from './ChatTabs'
-import EventsManager, { SocketEvent } from '../../../services/EventsManager'
+import EventsManager from '../../../services/EventsManager'
 import ChatWindow from './ChatWindow'
+import { SocketEvents } from '../../../models/SocketEvents.model'
 
-const Chat = () => {
+export interface ChatProps {
+    messages?: any
+    setMessages?: any
+    rid: string
+}
+
+const Chat = ({ messages, rid, setMessages }: ChatProps) => {
     const [activeChat, setActiveChat] = React.useState('All')
     const mockDataMessages = [
         {
-            username: 'Smittens the Unbroken',
+            username: 'Smittens the Unbreakable',
             playerName: 'Blake Holt',
-            messageText:
-                'He removes his tall black hat to reveal a balding pate. “I apologize for disturbing you,” he says in a deep, monotone voice. “I assume you are adventurers for hire, and I seek your expertise for a small matter.”',
+            messageText: 'A member of the Zhentarim, following a lead that Cult activity was spotted in the area, entered the cave to investigate. He was waylaid by the goblins. Now the goblins are raiding the countryside at the behest of the Cult, ensuring that no more Zhentarim operatives happen across the area.',
             myMessage: false
         },
         {
             username: 'DM',
             playerName: 'Kyra Warner',
-            messageText:
-                "This character is much like the Master Villain of the same name, but he's not in charge of all this villainy, and he's definitely an enemy of one of the player-characters. You'll have to decide who he is and why he hates one of the heroes; he could be anything from a recurring villain to someone who simply lost a fight to the hero once.",
+            messageText: 'If the goblins are alerted, they shoot through the holes at anyone in the passageway between their wall and the cave entrance. Treat the holes as arrow slits, giving the goblins three-quarters cover.',
             myMessage: true
-        },
-        {
-            username: 'Zor Fallwanderer',
-            playerName: 'Tara Jackson',
-            messageText:
-                'This can occur in either the shop of the master craftsman of a palace or manor, or the guild-area of a city.',
-            myMessage: false
-        },
-        {
-            username: 'Smitters the Unbroken',
-            playerName: 'Blake Holter',
-            messageText:
-                'He may alert the enemy when the heroes are planning a raid; he may steal the artifact and take it to the villain; he may stab a hero or important NPC in the back (literally) before departing.',
-            myMessage: false
+
         }
     ]
 
@@ -61,12 +53,6 @@ const Chat = () => {
         })
     }
 
-    React.useEffect(() => {
-        EventsManager.instance.on(SocketEvent.MESSAGE, 'Chat', () => {
-            console.log('im here')
-        })
-    }, [])
-
     const switchActive = (name: string) => setActiveChat(name)
 
     return (
@@ -76,7 +62,13 @@ const Chat = () => {
                     <ChatTabs users={generateChatTabs()} general={generateGeneralTabs()} switchActive={switchActive} />
                 </div>
                 <div className={`col-md-5 col-xl-6`}>
-                    <ChatWindow data={mockDataMessages} activeChat={activeChat} />
+                    <ChatWindow
+                        data={[...mockDataMessages, ...messages]}
+                        messages={messages}
+                        setMessages={setMessages}
+                        activeChat={activeChat}
+                        rid={rid}
+                    />
                 </div>
             </div>
         </div>

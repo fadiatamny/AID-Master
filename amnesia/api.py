@@ -1,14 +1,19 @@
+from model.modelException import ModelException
 from flask import Blueprint, request, abort
 from apiException import ApiException
 from model.modelRunner import ModelRunner
 from flask_cors import cross_origin
 import json
+import os
 
 modelPath = './model'
-fastTextName = 'fasttextmodel.bin'
+fastTextName = ''
 knnName = 'knnmodel.pkl'
-model = ModelRunner(f'{modelPath}/finModel/fastText/{fastTextName}',
-                    f'{modelPath}/finModel/knn/{knnName}', f'{modelPath}/data/data.xls')
+
+# os.chdir('./model')
+model = ModelRunner(f'{modelPath}/finModel/fastText',
+                    f'{modelPath}/finModel/knn/{knnName}')
+# os.chdir('../')
 
 router = Blueprint('api', __name__, url_prefix='/api')
 
@@ -17,12 +22,19 @@ router = Blueprint('api', __name__, url_prefix='/api')
 @router.route('/predict', methods=['POST'])
 def predict():
     try:
+        print('1')
         text = request.json['text']
+        
+        print('2')
         res = model.predict(text)
+        
+        print('3')
         return json.dumps(res)
-    except ApiException as e:
-        abort(e.errorCode, {'message': str(e.message)})
+    except ModelException as e:
+        print(str(e))
+        abort(500, {'message': str(e.message)})
     except Exception as e:
+        print(str(e))
         abort(500, {'message': str(e)})
 
 

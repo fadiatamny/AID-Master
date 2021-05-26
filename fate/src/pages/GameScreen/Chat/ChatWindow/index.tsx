@@ -3,13 +3,46 @@ import Input from '../../../../components/Input/Input'
 import ChatTitle from './ChatTitle'
 import MessagesList from './MessageList'
 import { MessageProps } from './MessageList/Message'
+import React from 'react'
+import EventsManager from '../../../../services/EventsManager'
+import { SocketEvents } from '../../../../models/SocketEvents.model'
 
 export interface ChatWindowProps {
     data: Array<MessageProps>
     activeChat: string
+    messages: any
+    setMessages: any
+    rid: string
 }
 
-const ChatWindow = ({ data, activeChat }: ChatWindowProps) => {
+const ChatWindow = ({ data, activeChat, rid, messages, setMessages }: ChatWindowProps) => {
+    const eventsManager = EventsManager.instance
+    const [message, setMessage] = React.useState('')
+
+    React.useEffect(() => {
+        // eventsManager.on(SocketEvents.MESSAGE, 'chat-component', (obj: any) => {
+        //     const object = {
+        //         username: obj.username,
+        //         playerName: obj.username == 'DM' ? 'Kyra Warner' : 'Blake Holt',
+        //         messageText: obj.message,
+        //         myMessage: obj.username == 'DM' ? true : false
+        //     }
+        //     console.log(messages)
+        //     const tmp = [...messages, object]
+        //     console.log(tmp)
+        //     setMessages(tmp)
+        // })
+    }, [])
+
+    const inputChange = (e: any) => {
+        setMessage(e.target.value)
+    }
+
+    const sendMessage = () => {
+        if (activeChat === 'AID Master') {
+            eventsManager.trigger(SocketEvents.SEND_SCENARIO, { id: rid, username: 'DM', message: message })
+        } else eventsManager.trigger(SocketEvents.SEND_MESSAGE, { id: rid, username: 'DM', message: message })
+    }
     return (
         <div className="col justify-content-center">
             <div className={`${styles.container}`}>
@@ -24,9 +57,8 @@ const ChatWindow = ({ data, activeChat }: ChatWindowProps) => {
                         placeholder="Enter text here..."
                         id="chatResponse"
                         className={styles.input}
-                        onSubmit={() => {
-                            console.log('lol')
-                        }}
+                        onChange={inputChange}
+                        onSubmit={sendMessage}
                         submitLabel=">"
                     />
                 </div>

@@ -7,6 +7,7 @@ from modelRunner import ModelRunner
 import texthero as hero
 from modelBuilder import ModelBuilder
 from modelTester import ModelTester
+import os
 
 class DataInjector():
     @staticmethod
@@ -21,6 +22,9 @@ class DataInjector():
 
     @staticmethod
     def runing():
+        cwd = os.getcwd()
+        os.chdir(f'{cwd}/amnesia/model/')
+        print(os.getcwd())
         models = ModelUtils.loadFasttextModels('finModel/fastText')
         headers = ModelUtils.fetchDatasetHeaders()
         crawledData = DataInjector.fetchCrawledData()
@@ -53,6 +57,7 @@ class DataInjector():
         newdata.to_csv('data/injectordata/injecteddata.csv',index=False)
         ModelBuilder.createFastText('data/injectordata/injecteddata.csv','finModel/injectorModels/', '1234',10)
         ModelTester.fastTextTest('/Users/oreitan/Desktop/Github/AID-Master/amnesia/model/data/injectordata/injecteddata.csv','/Users/oreitan/Desktop/Github/AID-Master/amnesia/model/finModel/injectorModels')
+        os.chdir(cwd)
         
 
 
