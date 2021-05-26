@@ -68,7 +68,7 @@ class ModelRunner():
 
  # convert the data frame to text
     def _dfToText(self, df: DataFrame) -> Series:
-        print('hiiiiiiiiiii')
+        
         raw_frame = df.replace(0, np.nan)
         raw_frame = raw_frame.dropna(axis='columns', how='all')
         del raw_frame['TEXT']
@@ -92,13 +92,14 @@ class ModelRunner():
 
     @timed
     def predict(self, text: str):
+        cwd = os.getcwd()
+        os.chdir(f'{cwd}/amnesia/model/')
         if self.fastTextModels is None or self.knnModel is None:
             self._loadModels()
 
         tempDataframe = ModelUtils.fetchDatasetHeaders()
         cleanText = self._cleanText(text)
         
-        print('2.1')
         try:
             fastTextRes = ModelUtils.fastPredict(cleanText, self.fastTextModels)
             
@@ -114,6 +115,7 @@ class ModelRunner():
         knnRes = self.knnModel.kneighbors(tempDataframe, return_distance=False)
         textObj = self._dfToText(self.forDf.loc[knnRes[0], :])
         jsonPayload = self._normalize(textObj).to_json()
+        os.chdir(cwd)
 
         return jsonPayload
 

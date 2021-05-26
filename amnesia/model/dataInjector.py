@@ -24,7 +24,6 @@ class DataInjector():
     def runing():
         cwd = os.getcwd()
         os.chdir(f'{cwd}/amnesia/model/')
-        print(os.getcwd())
         models = ModelUtils.loadFasttextModels('finModel/fastText')
         headers = ModelUtils.fetchDatasetHeaders()
         crawledData = DataInjector.fetchCrawledData()
@@ -40,8 +39,6 @@ class DataInjector():
             except:
                 input()
 
-        print(len(predictions))
-        print(len(crawledData))
         resFrame = pd.DataFrame()
         for i in range(len(predictions)):
             for j in range(len(predictions[i])):
