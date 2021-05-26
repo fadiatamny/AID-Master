@@ -27,6 +27,7 @@ class ModelTester:
         data = pd.read_csv(dataPath)
         finalres = np.zeros([data.index.size])
         categorieslist = list(data.columns)
+
         data["TEXT"] = hero.clean(data["TEXT"])
         models = ModelUtils.loadFasttextModels(fastTextPath)
         for i in data.index:
@@ -42,12 +43,12 @@ class ModelTester:
             else:
                 finalframe = pd.concat(
                     [finalframe, tempDataframe], ignore_index=True)
+        finalframe.to_csv('data/injectordata/finleframe.csv',index=False)
         compareres = finalframe.compare(data, keep_shape=True, keep_equal=True)
         for i in compareres.index:
             for j in categorieslist:
                 if compareres[j]["self"][i] == 1 and compareres[j]["self"][i] == compareres[j]["other"][i]:
                     finalres[i] = finalres[i]+1
-        print(finalres.size)
         finalres = finalres/10
         finalres = ((np.sum(finalres))/(data.index.size))*100
         logger.debug(f'the accuracy of the model is {finalres}')

@@ -6,6 +6,7 @@ import json
 from modelRunner import ModelRunner
 import texthero as hero
 from modelBuilder import ModelBuilder
+from modelTester import ModelTester
 
 class DataInjector():
     @staticmethod
@@ -51,6 +52,7 @@ class DataInjector():
         newdata = pd.concat([data,resFrame,data], ignore_index=True)
         newdata.to_csv('data/injectordata/injecteddata.csv',index=False)
         ModelBuilder.createFastText('data/injectordata/injecteddata.csv','finModel/injectorModels/', '1234',10)
+        ModelTester.fastTextTest('/Users/oreitan/Desktop/Github/AID-Master/amnesia/model/data/injectordata/injecteddata.csv','/Users/oreitan/Desktop/Github/AID-Master/amnesia/model/finModel/injectorModels')
         
 
 

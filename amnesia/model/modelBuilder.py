@@ -12,6 +12,7 @@ import logging
 import json
 from modelException import ModelException
 from modelUtils import ModelUtils
+import shutil
 
 logger = logging.getLogger(__name__)
 logger.setLevel("DEBUG")
@@ -102,8 +103,8 @@ class ModelBuilder():
         # save the bast 3 fasttext models
         indexlist = resDataFrame.nlargest(3, 'Percision').index
         for i in indexlist:
-            os.rename(f'build/fasttextmodel{i}.bin',
-                      f'finModel/fastText/fasttextmodel{i}.bin')
+            shutil.move(f'build/fasttextmodel{i}.bin',
+                      f'{savePath}fasttextmodel{i}.bin')
         for i in os.scandir('build'):
             os.remove(i.path)
 
@@ -112,7 +113,7 @@ class ModelBuilder():
         # saving the model
 
         ModelBuilder.cleanFiles(hash)
-        logger.log('Generated FastText Model Successfully')
+        logger.debug('Generated FastText Model Successfully')
 
     @staticmethod
     def createKNN(filePath: str, k: int, hash: str = '') -> None:
@@ -126,22 +127,22 @@ class ModelBuilder():
         knn = NearestNeighbors(n_neighbors=k, algorithm='auto').fit(knnData)
         # saving the model
         joblib.dump(knn, f'./finModel/knn/knnmodel{hash}.pkl')
-        logger.log('Generated KNN Model Successfully')
+        logger.debug('Generated KNN Model Successfully')
 
     @staticmethod
     def createModels(self, filePath: str, k: int = 3, hash: str = '', debug: bool = False) -> None:
         try:
             ModelBuilder.createFastText(filePath, hash, debug)
             ModelBuilder.createKNN(filePath, k, hash)
-            logger.log('Generated Models Successfully')
+            logger.debug('Generated Models Successfully')
         except:
             raise ModelException('Builder', "unable to create the models")
         finally:
             self.cleanFiles(hash)
-            for i in os.scandir('build'):
-                os.remove(i.path)
-            for i in os.scandir('finModel'):
-                os.remove(i.path)
+            #for i in os.scandir('build'):
+             #   os.remove(i.path)
+            #for i in os.scandir('finModel'):
+            #    os.remove(i.path)
     
 if __name__ == '__main__':
     if sys.argv[1] == '-h' or sys.argv[1] == '-help':
@@ -169,7 +170,7 @@ if __name__ == '__main__':
         r = requests.get(datasetConfig['url'], allow_redirects=True)
         with open(f'./dataset/{filename}.{datasetConfig["type"]}', 'wb') as f:
             f.write(r.content)
-        logger.log('Successfully downloaded data')
+        logger.debug('Successfully downloaded data')
 
 
     if not os.path.isdir('build'):

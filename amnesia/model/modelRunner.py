@@ -68,7 +68,6 @@ class ModelRunner():
 
  # convert the data frame to text
     def _dfToText(self, df: DataFrame) -> Series:
-        print('hiiiiiiiiiii')
         raw_frame = df.replace(0, np.nan)
         raw_frame = raw_frame.dropna(axis='columns', how='all')
         del raw_frame['TEXT']
@@ -76,8 +75,8 @@ class ModelRunner():
         div = self._creatDiv(raw_frame)
         res = res.divide(div)
         return res
+        
     # normolize the % of the payload
-
     def _normalize(self, textObj: Series) -> Series:
         for key in textObj.keys():
             textObj[key] = round(textObj[key], 2)
