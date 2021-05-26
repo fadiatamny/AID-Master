@@ -106,8 +106,8 @@ export default class SocketManager {
         EventsManager.instance.trigger(SocketEvents.ROOM_JOINED, { username, type })
     }
 
-    private _message(username: string, message: string, target: string) {
-        EventsManager.instance.trigger(SocketEvents.MESSAGE, { username, message, target, playerName: '' })
+    private _message(username: string, message: string, target: string, playername: string) {
+        EventsManager.instance.trigger(SocketEvents.MESSAGE, { username, message, target, playername })
     }
 
     private _scenario(message: string) {

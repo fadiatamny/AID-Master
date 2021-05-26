@@ -23,34 +23,31 @@ const GameScreen = ({ location }: any) => {
     const [roomid, setRoomid] = useState('')
     const [messages, setMessages] = useState<MessageType[]>([])
     const eventsManager = EventsManager.instance
-    const [uname, setUname] = useState('')
-    const [pname, setPname] = useState('')
-    const [ptype, setPtype] = useState('')
     const connected = () => {
-        console.log('GameScreen: connected')
+        console.log('connected')
     }
 
-    console.log('Loading page')
-
     const handleMessages = (obj: any) => {
+        // console.log('obj username ' + obj.username)
+        // console.log('state uname ' + uname)
+        let myMessage: boolean
+        if (obj.username === localStorage.getItem('username')) myMessage = true
+        else myMessage = false
         const object: MessageType = {
             username: obj.username,
-            playerName: obj.username == 'DM' ? 'Kyra Warner' : 'Blake Holt',
+            playerName: obj.username,
             messageText: obj.message,
-            myMessage: obj.username == 'DM' ? true : false
+            myMessage: myMessage
         }
-        console.log('Recieving message:', messages)
-        const tmp = [...messages, object]
         globalMessages.push(object)
-        console.log('Tmp after messages', tmp)
         // @ts-ignore
         setMessages((messages) => [
             ...messages,
             {
                 username: obj.username,
-                playerName: obj.username == 'DM' ? 'Kyra Warner' : 'Blake Holt',
+                playerName: obj.username,
                 messageText: obj.message,
-                myMessage: obj.username == 'DM' ? true : false
+                myMessage: myMessage
             }
         ])
     }
@@ -63,7 +60,7 @@ const GameScreen = ({ location }: any) => {
     const handleScenarioGuide = (obj: any) => {
         const message = generate(obj.organized)
         const object = { username: 'AID Master', playerName: 'Help', messageText: message, myMessage: false }
-        // PRETTIFY THIS USING A CODEBLOCK ELEMENT
+        // PRETTIFY % FROM MODEL
         const js = {
             username: 'AID Master',
             playerName: 'Help',
@@ -73,10 +70,10 @@ const GameScreen = ({ location }: any) => {
         let prettyText = ''
         Object.keys(obj.organized).map((key: string) => {
             const no = obj.organized[key]
-            prettyText = prettyText + `${key} \n `
+            prettyText = prettyText + `${key}‏‏‎ ‎‎‎‎‎‎‎‎‎‎‎‎`
             no.map((key: object) => {
                 for (const [k, v] of Object.entries(key)) {
-                    prettyText = prettyText + `${k} : ${v * 100} % \n`
+                    prettyText = prettyText + `${k} : ${v * 100} %‏‏‎‎`
                 }
             })
         })
@@ -84,30 +81,51 @@ const GameScreen = ({ location }: any) => {
         setMessages([...messages, object, js])
     }
 
+    const sendRoomMessage = () => {
+        eventsManager.trigger(SocketEvents.SEND_MESSAGE, {
+            id: roomid,
+            username: 'Game Bot',
+            message: `Invite other player using code          ${roomid}`,
+            target: { username: localStorage.getItem('username'), playername: localStorage.getItem('playerName') }
+        })
+    }
+
     useEffect(() => {
         eventsManager.on(SocketEvents.MESSAGE, 'game-component', (obj: any) => handleMessages(obj))
-        eventsManager.on(SocketEvents.CONNECTED, 'game-screen', (obj: any) => connected())
+        eventsManager.on(SocketEvents.CONNECTED, 'game-screen', () => connected())
         eventsManager.on(SocketEvents.SCENARIO, 'game-componment', (obj: any) => handleScenario(obj))
         eventsManager.on(SocketEvents.SCENARIO_GUIDE, 'game-componment', (obj: any) => handleScenarioGuide(obj))
-        //get room id from url
-        const { rid, playerName, username, type } = queryString.parse(location.search)
         //@ts-ignore
-        setRoomid(rid)
-        //@ts-ignore
-        setUname(username)
-        //@ts-ignore
-        setPname(playerName)
-        //@ts-ignore
-        setPtype(type)
-
+        setRoomid(localStorage.getItem('rid'))
+        // const tmpun = localStorage.getItem('username')
+        // //@ts-ignore
+        // setUname(tmpun)
+        // // console.log('local: ' + localStorage.getItem('username') + ' state: ' + uname)
+        // //@ts-ignore
+        // setPname(localStorage.getItem('playerName'))
+        // //@ts-ignore
+        // setPtype(localStorage.getItem('type'))
     }, [])
+
+    useEffect(() => {
+        sendRoomMessage()
+    }, [roomid])
 
     return (
         <div>
             <Header />
             <div className={`${styles.container}`}>
                 {/*@ts-ignore*/}
-                <Chat messages={messages} rid={roomid} username={uname} playerName={pname} type={ptype} />
+                <Chat
+                    messages={messages}
+                    rid={roomid}
+                    //@ts-ignore
+                    username={localStorage.getItem('username')}
+                    //@ts-ignore
+                    playerName={localStorage.getItem('playerName')}
+                    //@ts-ignore
+                    type={localStorage.getItem('type')}
+                />
             </div>
         </div>
     )

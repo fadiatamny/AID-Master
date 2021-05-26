@@ -17,7 +17,11 @@ const AdvLoginScreen = (props: any) => {
     const handleSubmit = () => {
         eventsManager.on(SocketEvents.ROOM_JOINED, 'home-screen', (obj: any) => {
             console.log('lol')
-            props.history.push(`/game?rid=${roomNumber}&playerName=${playerName}&username=${username}&type=${obj.type}`)
+            localStorage.setItem('rid',`${roomNumber}`)
+            localStorage.setItem('playerName', `${playerName}`)
+            localStorage.setItem('username', `${username}`)
+            localStorage.setItem('type', obj.type)
+            props.history.push(`/game`)
         })
         eventsManager.trigger(SocketEvents.JOIN_ROOM, {
             id: roomNumber,
