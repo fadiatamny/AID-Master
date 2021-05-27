@@ -9,8 +9,6 @@ import { generate } from '../../services/ScenarioGuide'
 
 // export interface GameScreenProps{}
 
-const globalMessages: any[] = []
-
 type MessageType = {
     username: string
     playerName: string
@@ -19,6 +17,9 @@ type MessageType = {
 }
 
 const GameScreen = () => {
+    const username = localStorage.getItem('username')
+    const playername = localStorage.getItem('playerName')
+
     const [roomid, setRoomid] = useState('')
     const [messages, setMessages] = useState<MessageType[]>([])
     const eventsManager = EventsManager.instance
@@ -27,18 +28,14 @@ const GameScreen = () => {
     }
 
     const handleMessages = (obj: any) => {
-        // console.log('obj username ' + obj.username)
-        // console.log('state uname ' + uname)
+        if (obj.target && obj.target.username !== username) {
+            return
+        }
+
         let myMessage: boolean
         if (obj.username === localStorage.getItem('username')) myMessage = true
         else myMessage = false
-        const object: MessageType = {
-            username: obj.username,
-            playerName: obj.username,
-            messageText: obj.message,
-            myMessage: myMessage
-        }
-        globalMessages.push(object)
+
         // @ts-ignore
         setMessages((messages) => [
             ...messages,
@@ -54,7 +51,6 @@ const GameScreen = () => {
     const handleScenario = (obj: any) => {
         const mess = `loading scenario guide for:\n "${obj.message}"`
         const object = { username: 'AID Master', playerName: 'Help', messageText: mess, myMessage: false }
-        globalMessages.push(object)
         setMessages((messages) => [...messages, object])
     }
 
@@ -79,25 +75,25 @@ const GameScreen = () => {
             })
         })
         js.messageText = prettyText
-        globalMessages.push(object, js)
         setMessages((messages) => [...messages, object, js])
     }
 
     const sendRoomMessage = () => {
-        if (localStorage.getItem('type') === 'dm')
+        if (localStorage.getItem('type') === 'dm') {
             eventsManager.trigger(SocketEvents.SEND_MESSAGE, {
                 id: roomid,
                 username: 'Game Bot',
-                message: `Invite other player using code          ${roomid}`,
-                target: { username: localStorage.getItem('username'), playername: localStorage.getItem('playerName') }
+                message: `Invite other player using code\t${roomid}`,
+                target: { username, playername }
             })
-        else
+        } else {
             eventsManager.trigger(SocketEvents.SEND_MESSAGE, {
                 id: roomid,
                 username: 'Game Bot',
                 message: `${localStorage.getItem('username')} has joined the chat`,
-                target: { username: localStorage.getItem('username'), playername: localStorage.getItem('playerName') }
+                target: { username, playername }
             })
+        }
     }
 
     useEffect(() => {
