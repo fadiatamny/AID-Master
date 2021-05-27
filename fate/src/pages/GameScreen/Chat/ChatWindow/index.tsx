@@ -43,7 +43,11 @@ const ChatWindow = ({ data, activeChat, username, playerName, rid, messages, set
     const sendMessage = () => {
         if (activeChat === 'AID Master') {
             eventsManager.trigger(SocketEvents.SEND_SCENARIO, { id: rid, username: username, message: message })
-        } else eventsManager.trigger(SocketEvents.SEND_MESSAGE, { id: rid, username: username, message: message })
+            setMessage('')
+        } else {
+            eventsManager.trigger(SocketEvents.SEND_MESSAGE, { id: rid, username: username, message: message })
+            setMessage('')
+        }
     }
     return (
         <div className="col justify-content-center">
@@ -61,6 +65,8 @@ const ChatWindow = ({ data, activeChat, username, playerName, rid, messages, set
                         className={styles.input}
                         onChange={inputChange}
                         onSubmit={sendMessage}
+                        submitOnEnter={true}
+                        value={message}
                         submitLabel=">"
                     />
                 </div>

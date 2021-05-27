@@ -6,6 +6,8 @@ export interface InputProps {
     placeholder: string
     id: string
     className?: string
+    value?: string
+    autocomplete?: string
     onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void
     onSubmit?: () => void
     submitLabel?: string
@@ -16,6 +18,7 @@ const defaultProps: InputProps = {
     id: '',
     placeholder: 'placeholder',
     className: '',
+    autocomplete: 'on',
     onChange: (event: React.ChangeEvent<HTMLInputElement>) => {
         return event.target.value
     }
@@ -26,9 +29,11 @@ const Input = ({
     placeholder,
     id,
     className,
+    value,
     onChange,
     onSubmit,
     submitLabel,
+    autocomplete,
     submitOnEnter
 }: InputProps = defaultProps) => {
     const onKeyUpHandler = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -53,7 +58,9 @@ const Input = ({
                     aria-describedby="basic-addon1"
                     id={id}
                     onChange={onChange}
+                    value={value}
                     onKeyUp={submitOnEnter ? onKeyUpHandler : undefined}
+                    autoComplete={autocomplete}
                 />
                 {label ? (
                     <div className="input-group-prepend">
