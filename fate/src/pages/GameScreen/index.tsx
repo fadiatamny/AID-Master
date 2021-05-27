@@ -5,7 +5,6 @@ import Chat from './Chat'
 import { useEffect, useState } from 'react'
 import { SocketEvents } from '../../models/SocketEvents.model'
 import EventsManager from '../../services/EventsManager'
-import queryString from 'query-string'
 import { generate } from '../../services/ScenarioGuide'
 
 // export interface GameScreenProps{}
@@ -19,7 +18,7 @@ type MessageType = {
     myMessage: boolean
 }
 
-const GameScreen = ({ location }: any) => {
+const GameScreen = () => {
     const [roomid, setRoomid] = useState('')
     const [messages, setMessages] = useState<MessageType[]>([])
     const eventsManager = EventsManager.instance
@@ -53,8 +52,10 @@ const GameScreen = ({ location }: any) => {
     }
 
     const handleScenario = (obj: any) => {
-        const object = { username: 'AID Master', playerName: 'Help', messageText: obj.message, myMessage: false }
-        setMessages([...messages, object])
+        const mess = `loading scenario guide for:\n "${obj.message}"`
+        const object = { username: 'AID Master', playerName: 'Help', messageText: mess, myMessage: false }
+        globalMessages.push(object)
+        setMessages((messages) => [...messages, object])
     }
 
     const handleScenarioGuide = (obj: any) => {
@@ -73,28 +74,39 @@ const GameScreen = ({ location }: any) => {
             prettyText = prettyText + `${key}‏‏‎ ‎‎‎‎‎‎‎‎‎‎‎‎`
             no.map((key: object) => {
                 for (const [k, v] of Object.entries(key)) {
-                    prettyText = prettyText + `${k} : ${v * 100} %‏‏‎‎`
+                    prettyText = prettyText + `${k} : ${v * 100} %    ‏‏‎‎`
                 }
             })
         })
         js.messageText = prettyText
-        setMessages([...messages, object, js])
+        globalMessages.push(object, js)
+        setMessages((messages) => [...messages, object, js])
     }
 
     const sendRoomMessage = () => {
-        eventsManager.trigger(SocketEvents.SEND_MESSAGE, {
-            id: roomid,
-            username: 'Game Bot',
-            message: `Invite other player using code          ${roomid}`,
-            target: { username: localStorage.getItem('username'), playername: localStorage.getItem('playerName') }
-        })
+        if (localStorage.getItem('type') === 'dm')
+            eventsManager.trigger(SocketEvents.SEND_MESSAGE, {
+                id: roomid,
+                username: 'Game Bot',
+                message: `Invite other player using code          ${roomid}`,
+                target: { username: localStorage.getItem('username'), playername: localStorage.getItem('playerName') }
+            })
+        else
+            eventsManager.trigger(SocketEvents.SEND_MESSAGE, {
+                id: roomid,
+                username: 'Game Bot',
+                message: `${localStorage.getItem('username')} has joined the chat`,
+                target: { username: localStorage.getItem('username'), playername: localStorage.getItem('playerName') }
+            })
     }
 
     useEffect(() => {
         eventsManager.on(SocketEvents.MESSAGE, 'game-component', (obj: any) => handleMessages(obj))
         eventsManager.on(SocketEvents.CONNECTED, 'game-screen', () => connected())
-        eventsManager.on(SocketEvents.SCENARIO, 'game-componment', (obj: any) => handleScenario(obj))
-        eventsManager.on(SocketEvents.SCENARIO_GUIDE, 'game-componment', (obj: any) => handleScenarioGuide(obj))
+        if (localStorage.getItem('type') === 'dm') {
+            eventsManager.on(SocketEvents.SCENARIO, 'game-componment', (obj: any) => handleScenario(obj))
+            eventsManager.on(SocketEvents.SCENARIO_GUIDE, 'game-componment', (obj: any) => handleScenarioGuide(obj))
+        }
         //@ts-ignore
         setRoomid(localStorage.getItem('rid'))
         // const tmpun = localStorage.getItem('username')
@@ -110,6 +122,20 @@ const GameScreen = ({ location }: any) => {
     useEffect(() => {
         sendRoomMessage()
     }, [roomid])
+
+    useEffect(
+        () => () => {
+            eventsManager.trigger(SocketEvents.LEAVE_ROOM, {
+                id: localStorage.getItem('rid'),
+                userId: localStorage.getItem('userId')
+            })
+            // eventsManager.off(SocketEvents.MESSAGE, 'game-component')
+            // eventsManager.off(SocketEvents.CONNECTED, 'game-screen')
+            // eventsManager.off(SocketEvents.SCENARIO, 'game-componment')
+            // eventsManager.off(SocketEvents.SCENARIO_GUIDE, 'game-componment')
+        },
+        []
+    )
 
     return (
         <div>

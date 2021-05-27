@@ -17,17 +17,7 @@ const HomaPage = (props: any) => {
     }
 
     const clickDM = () => {
-        const playerName = "Game Master"
-        const username = "DM"
-        
-        eventsManager.on(SocketEvents.ROOM_CREATED, 'home-screen', ({ id }: any) => {
-            localStorage.setItem('rid',`${id}`)
-            localStorage.setItem('playerName', `${playerName}`)
-            localStorage.setItem('username', `${username}`)
-            localStorage.setItem('type', 'dm')
-            props.history.push(`/game`)
-        })
-        eventsManager.trigger(SocketEvents.CREATE_ROOM, { playerId: localStorage.getItem('userId'), username: username })
+        props.history.push(`/DMLogin`)
     }
 
     return (
