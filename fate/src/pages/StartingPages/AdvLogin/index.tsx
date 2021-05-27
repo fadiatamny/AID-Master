@@ -25,8 +25,8 @@ const AdvLoginScreen = (props: any) => {
         })
         eventsManager.trigger(SocketEvents.JOIN_ROOM, {
             id: roomNumber,
-            userId: 'blablabla',
-            data: { type: 'player', id: 'blablabla', username: username }
+            userId: localStorage.getItem('userId'),
+            data: { type: 'player', id: roomNumber, username: username }
         })
     }
 
@@ -52,21 +52,21 @@ const AdvLoginScreen = (props: any) => {
                 <div className="col">
                     <Input
                         id="AdvUsername"
-                        className={styles.advRoomCode}
+                        className={styles.RoomCode}
                         label="Character Name"
                         placeholder="Smitten the Unbreakable"
                         onChange={handleUsernameChange}
                     />
                     <Input
                         id="AdvName"
-                        className={styles.advRoomCode}
+                        className={styles.RoomCode}
                         label="Your Name"
                         placeholder="Blake Holt"
                         onChange={handleNameChange}
                     />
                     <Input
                         id="AdvRoomEnter"
-                        className={styles.advRoomCode}
+                        className={styles.RoomCode}
                         submitLabel="Enter Room"
                         placeholder="Enter room number"
                         onChange={handleRoomChange}

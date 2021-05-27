@@ -21,7 +21,7 @@
     width: 30vw;
 }
 
-.advRoomCode {
+.RoomCode {
     width: 60vw;
 }
 
@@ -32,4 +32,13 @@
 
 .textarea{
     flex-basis: 70%;
+}
+
+.submit{
+    background-color: #2f313a;
+    height: 40px;
+    margin: 0 auto;
+    text-align: center;
+    color: #ff6768;
+    border-radius: 5px;
 }

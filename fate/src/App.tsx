@@ -8,6 +8,7 @@ import SocketManager from './services/SocketManager'
 import AdvLoginScreen from './pages/StartingPages/AdvLogin'
 import { SocketEvents } from './models/SocketEvents.model'
 import { v4 as uuid } from 'uuid'
+import DMLoginScreen from './pages/StartingPages/DMLogin'
 
 export default function App() {
     const eventsManager = EventsManager.instance
@@ -30,6 +31,7 @@ export default function App() {
             <Route path="/" exact component={StartingScreen} />
             <Route path="/game" component={GameScreen} />
             <Route path="/AdventurerLogin" component={AdvLoginScreen} />
+            <Route path="/DMLogin" component={DMLoginScreen} />
         </Router>
     )
 }
