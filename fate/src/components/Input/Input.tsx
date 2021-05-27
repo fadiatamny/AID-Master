@@ -9,6 +9,7 @@ export interface InputProps {
     onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void
     onSubmit?: () => void
     submitLabel?: string
+    submitOnEnter?: boolean
 }
 
 const defaultProps: InputProps = {
@@ -20,7 +21,27 @@ const defaultProps: InputProps = {
     }
 }
 
-const Input = ({ label, placeholder, id, className, onChange, onSubmit, submitLabel }: InputProps = defaultProps) => {
+const Input = ({
+    label,
+    placeholder,
+    id,
+    className,
+    onChange,
+    onSubmit,
+    submitLabel,
+    submitOnEnter
+}: InputProps = defaultProps) => {
+    const onKeyUpHandler = (e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === 'Enter') {
+            e.preventDefault()
+            e.stopPropagation()
+
+            if (onSubmit) {
+                onSubmit()
+            }
+        }
+    }
+
     return (
         <div className={className}>
             <div className={`input-group mb-3 ml-5 mr-5 ${styles.container}`}>
@@ -32,6 +53,7 @@ const Input = ({ label, placeholder, id, className, onChange, onSubmit, submitLa
                     aria-describedby="basic-addon1"
                     id={id}
                     onChange={onChange}
+                    onKeyUp={submitOnEnter ? onKeyUpHandler : undefined}
                 />
                 {label ? (
                     <div className="input-group-prepend">
