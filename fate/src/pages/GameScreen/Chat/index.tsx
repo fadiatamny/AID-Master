@@ -44,6 +44,12 @@ const Chat = ({ messages, username, playerName, type, rid, setMessages }: ChatPr
 
     const generateChatTabs = () => {
         const tabs = []
+        if (sessionStorage.getItem('playerlist')) {
+            //@ts-ignore
+            const list = sessionStorage.getItem('playerlist')
+            const obj = list ? JSON.parse(list) : null
+            //JSON.parse(localStorage.getItem('playerlist')).map((user: any) => console.log(user))
+        }
         tabs.push(...messages.map((m: MessageProps) => ({ username: m.username, playerName: m.playerName })))
         return tabs.map((t) => {
             if (activeChat === t.username) {

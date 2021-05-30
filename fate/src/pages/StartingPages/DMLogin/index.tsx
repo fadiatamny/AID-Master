@@ -16,10 +16,10 @@ const DMLoginScreen = (props: any) => {
 
     const handleSubmit = () => {
         eventsManager.on(SocketEvents.ROOM_CREATED, 'home-screen', ({ id }: any) => {
-            localStorage.setItem('rid', `${id}`)
-            localStorage.setItem('playerName', `${playerName}`)
-            localStorage.setItem('username', `${username}`)
-            localStorage.setItem('type', 'dm')
+            sessionStorage.setItem('rid', `${id}`)
+            sessionStorage.setItem('playerName', `${playerName}`)
+            sessionStorage.setItem('username', `${username}`)
+            sessionStorage.setItem('type', 'dm')
             props.history.push(`/game`)
         })
         eventsManager.trigger(SocketEvents.CREATE_ROOM, {

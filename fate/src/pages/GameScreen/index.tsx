@@ -17,8 +17,8 @@ type MessageType = {
 }
 
 const GameScreen = () => {
-    const username = localStorage.getItem('username')
-    const playername = localStorage.getItem('playerName')
+    const username = sessionStorage.getItem('username')
+    const playername = sessionStorage.getItem('playerName')
 
     const [roomid, setRoomid] = useState('')
     const [messages, setMessages] = useState<MessageType[]>([])
@@ -33,7 +33,7 @@ const GameScreen = () => {
         }
 
         let myMessage: boolean
-        if (obj.username === localStorage.getItem('username')) myMessage = true
+        if (obj.username === sessionStorage.getItem('username')) myMessage = true
         else myMessage = false
 
         // @ts-ignore
@@ -79,7 +79,7 @@ const GameScreen = () => {
     }
 
     const sendRoomMessage = () => {
-        if (localStorage.getItem('type') === 'dm') {
+        if (sessionStorage.getItem('type') === 'dm') {
             eventsManager.trigger(SocketEvents.SEND_MESSAGE, {
                 id: roomid,
                 username: 'Game Bot',
@@ -90,29 +90,27 @@ const GameScreen = () => {
             eventsManager.trigger(SocketEvents.SEND_MESSAGE, {
                 id: roomid,
                 username: 'Game Bot',
-                message: `${localStorage.getItem('username')} has joined the chat`,
+                message: `${sessionStorage.getItem('username')} has joined the chat`,
                 target: { username, playername }
             })
         }
     }
 
+    const handlePlayerJoined = (obj: any) => {
+        const playerlist = sessionStorage.getItem('playerlist') ?? '[]'
+        sessionStorage.setItem('playerlist', JSON.stringify([...JSON.parse(playerlist), obj]))
+    }
+
     useEffect(() => {
         eventsManager.on(SocketEvents.MESSAGE, 'game-component', (obj: any) => handleMessages(obj))
         eventsManager.on(SocketEvents.CONNECTED, 'game-screen', () => connected())
-        if (localStorage.getItem('type') === 'dm') {
+        eventsManager.on(SocketEvents.PLAYER_JOINED, 'game-component', (obj: any) => handlePlayerJoined(obj))
+        if (sessionStorage.getItem('type') === 'dm') {
             eventsManager.on(SocketEvents.SCENARIO, 'game-componment', (obj: any) => handleScenario(obj))
             eventsManager.on(SocketEvents.SCENARIO_GUIDE, 'game-componment', (obj: any) => handleScenarioGuide(obj))
         }
         //@ts-ignore
-        setRoomid(localStorage.getItem('rid'))
-        // const tmpun = localStorage.getItem('username')
-        // //@ts-ignore
-        // setUname(tmpun)
-        // // console.log('local: ' + localStorage.getItem('username') + ' state: ' + uname)
-        // //@ts-ignore
-        // setPname(localStorage.getItem('playerName'))
-        // //@ts-ignore
-        // setPtype(localStorage.getItem('type'))
+        setRoomid(sessionStorage.getItem('rid'))
     }, [])
 
     useEffect(() => {
@@ -122,8 +120,8 @@ const GameScreen = () => {
     useEffect(
         () => () => {
             eventsManager.trigger(SocketEvents.LEAVE_ROOM, {
-                id: localStorage.getItem('rid'),
-                userId: localStorage.getItem('userId')
+                id: sessionStorage.getItem('rid'),
+                userId: sessionStorage.getItem('userId')
             })
             // eventsManager.off(SocketEvents.MESSAGE, 'game-component')
             // eventsManager.off(SocketEvents.CONNECTED, 'game-screen')
@@ -142,11 +140,11 @@ const GameScreen = () => {
                     messages={messages}
                     rid={roomid}
                     //@ts-ignore
-                    username={localStorage.getItem('username')}
+                    username={sessionStorage.getItem('username')}
                     //@ts-ignore
-                    playerName={localStorage.getItem('playerName')}
+                    playerName={sessionStorage.getItem('playerName')}
                     //@ts-ignore
-                    type={localStorage.getItem('type')}
+                    type={sessionStorage.getItem('type')}
                 />
             </div>
         </div>

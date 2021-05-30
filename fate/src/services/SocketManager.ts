@@ -84,8 +84,8 @@ export default class SocketManager {
         this._socket.emit(SocketEvents.SEND_SCENARIO, id, username, message)
     }
 
-    private _leaveRoom(id: string, userId: string) {
-        this._socket.emit(SocketEvents.LEAVE_ROOM, { id, userId })
+    private _leaveRoom({ id, userId }: any) {
+        this._socket.emit(SocketEvents.LEAVE_ROOM, id, userId)
     }
     //#endregion
 
@@ -111,6 +111,7 @@ export default class SocketManager {
         type: string,
         playerlist: Array<{ id: string; username: string; playername: string }>
     ) {
+        console.log(playerlist)
         this._eventsManager.trigger(SocketEvents.ROOM_JOINED, { username, type, playerlist })
     }
 
@@ -136,7 +137,7 @@ export default class SocketManager {
     }
 
     private _playerJoined(playerId: string, username: string, playername: string) {
-        this._eventsManager.trigger(SocketEvents.PLAYER_LEFT, { playerId, username, playername })
+        this._eventsManager.trigger(SocketEvents.PLAYER_JOINED, { playerId, username, playername })
     }
 
     //#endregion

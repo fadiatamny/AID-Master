@@ -12,15 +12,13 @@ const AdvLoginScreen = (props: any) => {
     const [playerName, setPlayerName] = useState('')
     const eventsManager = EventsManager.instance
 
-    
-
     const handleSubmit = () => {
         eventsManager.on(SocketEvents.ROOM_JOINED, 'home-screen', (obj: any) => {
-            console.log('lol')
-            localStorage.setItem('rid',`${roomNumber}`)
-            localStorage.setItem('playerName', `${playerName}`)
-            localStorage.setItem('username', `${username}`)
-            localStorage.setItem('type', obj.type)
+            sessionStorage.setItem('rid', `${roomNumber}`)
+            sessionStorage.setItem('playerName', `${playerName}`)
+            sessionStorage.setItem('username', `${username}`)
+            sessionStorage.setItem('type', obj.type)
+            sessionStorage.setItem('playerlist', JSON.stringify(obj.playerlist))
             props.history.push(`/game`)
         })
         eventsManager.trigger(SocketEvents.JOIN_ROOM, {
