@@ -17,20 +17,21 @@ class DataInjector():
             'https://www.kassoon.com/dnd/plot-twist-generator/',
             'https://www.kassoon.com/dnd/puzzle-generator/'
         ]
-        crawler = Crawler(urls, 10)
+        crawler = Crawler(urls, 30)
         return crawler.crawl()
 
     @staticmethod
     def runing():
         cwd = os.getcwd()
-        os.chdir(f'{cwd}/amnesia/model/')
+        cwdcut = cwd.partition('amnesia')
+        print(cwdcut)
+        os.chdir(f'{cwdcut[0]}/amnesia/model/')
         models = ModelUtils.loadFasttextModels('finModel/fastText')
         headers = ModelUtils.fetchDatasetHeaders()
         crawledData = DataInjector.fetchCrawledData()
         predictions = []
         for i in range(len(crawledData)):
             try:
-                print('\n\n\n\n________________________________________________________________')
                 series = pd.Series(crawledData[i])
                 series = hero.clean(series)
                 toString = pd.Series.to_string(series,index=False)

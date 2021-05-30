@@ -28,7 +28,7 @@ class ModelUtils():
     def loadFasttextModels(path: str) -> list:
         modelsFasttext = []
         dir = os.scandir(path)
-        if not dir or len(os.listdir(path)) != 3:
+        if not dir or len(os.listdir(path)) != 3: #bug in mac adding a hideing folder adding .DS_store to ignore
             raise ModelException('runner:load_ft_model', 'error occured not load model')
 
         for j in dir:

@@ -62,7 +62,7 @@ class ModelBuilder():
 
     @staticmethod
     # read the data file and creat the fasttext
-    def createFastText(filePath: str,savePath:str, hashbase: str = '',time:str = 5400, debug: bool = False) -> None:
+    def createFastText(filePath: str,savePath:str ='finModel/fastText', hashbase: str = '',time:int = 10, debug: bool = False) -> None:
         try:
             raw_data = ModelBuilder._readRawData(filePath)
         except Exception as e:
@@ -95,16 +95,16 @@ class ModelBuilder():
                     {'exmp': restest[0], 'Percision': restest[1], 'Recall': restest[2]}, ignore_index=True)
                 fastmodule.save_model(f'build/fasttextmodel{i}.bin')
         except:
-            raise ModelException('builder', 'unable to create models')
-        finally:
             for i in os.scandir('build'):
                 os.remove(i.path)
+            raise ModelException('builder', 'unable to create models')
+
 
         # save the bast 3 fasttext models
         indexlist = resDataFrame.nlargest(3, 'Percision').index
         for i in indexlist:
             shutil.move(f'build/fasttextmodel{i}.bin',
-                      f'{savePath}fasttextmodel{i}.bin')
+                      f'{savePath}/fasttextmodel{i}.bin')
         for i in os.scandir('build'):
             os.remove(i.path)
 
@@ -118,7 +118,7 @@ class ModelBuilder():
     @staticmethod
     def createKNN(filePath: str, k: int, hash: str = '') -> None:
         try:
-            raw_data = ModelBuilder.readRawData(filePath)
+            raw_data = ModelBuilder._readRawData(filePath)
         except Exception as e:
             raise ModelException('builder', str(e))
 
@@ -130,19 +130,26 @@ class ModelBuilder():
         logger.debug('Generated KNN Model Successfully')
 
     @staticmethod
-    def createModels(self, filePath: str, k: int = 3, hash: str = '', debug: bool = False) -> None:
+    def createModels(filePath: str, k: int = 3, hash: str = '', debug: bool = False) -> None:
+        cwd = os.getcwd()
+        cwdcat = cwd.partition('amnesia')
+        os.chdir(f'{cwdcat[0]}/amnesia/model/')
         try:
-            ModelBuilder.createFastText(filePath, hash, debug)
-            ModelBuilder.createKNN(filePath, k, hash)
+            ModelBuilder.createFastText(filePath = filePath, hashbase = hash, debug = debug)
+            input()
+            ModelBuilder.createKNN(filePath = filePath, k = k, hash = hash)
             logger.debug('Generated Models Successfully')
         except:
+            for i in os.scandir('build'):
+                os.remove(i.path)
+            for i in os.scandir('finModel'):
+                os.remove(i.path)
             raise ModelException('Builder', "unable to create the models")
+
         finally:
-            self.cleanFiles(hash)
-            #for i in os.scandir('build'):
-             #   os.remove(i.path)
-            #for i in os.scandir('finModel'):
-            #    os.remove(i.path)
+            ModelBuilder.cleanFiles(hash)
+            os.chdir(cwd)
+        
     
 if __name__ == '__main__':
     if sys.argv[1] == '-h' or sys.argv[1] == '-help':

@@ -22,6 +22,9 @@ logger.addHandler(handler)
 class ModelTester:
     @staticmethod
     def fastTextTest(dataPath: str, fastTextPath: str) -> None:
+        cwd = os.getcwd()
+        cwdcat = cwd.partition('amnesia')
+        os.chdir(f'{cwdcat[0]}/amnesia/model/')
         fleg = 0
         tempDataframe = pd.DataFrame()
         data = pd.read_csv(dataPath)
@@ -52,6 +55,7 @@ class ModelTester:
         finalres = finalres/10
         finalres = ((np.sum(finalres))/(data.index.size))*100
         logger.debug(f'the accuracy of the model is {finalres}')
+        os.chdir(cwd)
 
 
 if __name__ == '__main__':
