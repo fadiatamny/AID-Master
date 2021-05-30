@@ -3,34 +3,76 @@ import AdvCircle from '../../../assets/images/CircleAdventurer.png'
 import { useState } from 'react'
 import Header from '../../../components/Header/Header'
 import Input from '../../../components/Input/Input'
+import EventsManager from '../../../services/EventsManager'
+import { SocketEvents } from '../../../models/SocketEvents.model'
 
-const AdvLoginScreen = () => {
+const AdvLoginScreen = (props: any) => {
     const [roomNumber, setRoomNumber] = useState('')
+    const [username, setUsername] = useState('')
+    const [playerName, setPlayerName] = useState('')
+    const eventsManager = EventsManager.instance
 
-    const handleSubmit = (event: React.FormEvent) => {
-        event.preventDefault()
-        alert(roomNumber)
+    
+
+    const handleSubmit = () => {
+        eventsManager.on(SocketEvents.ROOM_JOINED, 'home-screen', (obj: any) => {
+            console.log('lol')
+            localStorage.setItem('rid',`${roomNumber}`)
+            localStorage.setItem('playerName', `${playerName}`)
+            localStorage.setItem('username', `${username}`)
+            localStorage.setItem('type', obj.type)
+            props.history.push(`/game`)
+        })
+        eventsManager.trigger(SocketEvents.JOIN_ROOM, {
+            id: roomNumber,
+            userId: localStorage.getItem('userId'),
+            data: { type: 'player', id: roomNumber, username: username }
+        })
     }
 
-    const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const handleRoomChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setRoomNumber(event.target.value)
+    }
+
+    const handleUsernameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setUsername(event.target.value)
+    }
+
+    const handleNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setPlayerName(event.target.value)
     }
 
     return (
         <div>
             <Header />
-            <div className={styles.container}>
-                <img src={AdvCircle} className={styles.roundImage} />
-                <form onSubmit={handleSubmit}>
+            <div className={`row ${styles.container}`}>
+                <div className="col">
+                    <img src={AdvCircle} className={styles.roundImage} />
+                </div>
+                <div className="col">
+                    <Input
+                        id="AdvUsername"
+                        className={styles.RoomCode}
+                        label="Character Name"
+                        placeholder="Smitten the Unbreakable"
+                        onChange={handleUsernameChange}
+                    />
+                    <Input
+                        id="AdvName"
+                        className={styles.RoomCode}
+                        label="Your Name"
+                        placeholder="Blake Holt"
+                        onChange={handleNameChange}
+                    />
                     <Input
                         id="AdvRoomEnter"
-                        className={styles.advRoomCode}
-                        label="Enter Room Code"
-                        placeholder="xxxx-xxxx-xxxx-xxxx"
-                        onChange={handleChange}
+                        className={styles.RoomCode}
+                        submitLabel="Enter Room"
+                        placeholder="Enter room number"
+                        onChange={handleRoomChange}
+                        onSubmit={handleSubmit}
                     />
-                    <input type="submit" value="submit" />
-                </form>
+                </div>
             </div>
         </div>
     )

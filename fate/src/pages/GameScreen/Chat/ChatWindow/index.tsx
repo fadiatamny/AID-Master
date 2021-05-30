@@ -12,10 +12,12 @@ export interface ChatWindowProps {
     activeChat: string
     messages: any
     setMessages: any
+    username: string
+    playerName: string
     rid: string
 }
 
-const ChatWindow = ({ data, activeChat, rid, messages, setMessages }: ChatWindowProps) => {
+const ChatWindow = ({ data, activeChat, username, playerName, rid, messages, setMessages }: ChatWindowProps) => {
     const eventsManager = EventsManager.instance
     const [message, setMessage] = React.useState('')
 
@@ -40,8 +42,12 @@ const ChatWindow = ({ data, activeChat, rid, messages, setMessages }: ChatWindow
 
     const sendMessage = () => {
         if (activeChat === 'AID Master') {
-            eventsManager.trigger(SocketEvents.SEND_SCENARIO, { id: rid, username: 'DM', message: message })
-        } else eventsManager.trigger(SocketEvents.SEND_MESSAGE, { id: rid, username: 'DM', message: message })
+            eventsManager.trigger(SocketEvents.SEND_SCENARIO, { id: rid, username: username, message: message })
+            setMessage('')
+        } else {
+            eventsManager.trigger(SocketEvents.SEND_MESSAGE, { id: rid, username: username, message: message })
+            setMessage('')
+        }
     }
     return (
         <div className="col justify-content-center">
@@ -59,6 +65,8 @@ const ChatWindow = ({ data, activeChat, rid, messages, setMessages }: ChatWindow
                         className={styles.input}
                         onChange={inputChange}
                         onSubmit={sendMessage}
+                        submitOnEnter={true}
+                        value={message}
                         submitLabel=">"
                     />
                 </div>

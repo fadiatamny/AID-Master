@@ -17,10 +17,7 @@ const HomaPage = (props: any) => {
     }
 
     const clickDM = () => {
-        eventsManager.on(SocketEvents.ROOM_CREATED, 'home-screen', ({ id }: any) => {
-            props.history.push(`/game?rid=${id}`)
-        })
-        eventsManager.trigger(SocketEvents.CREATE_ROOM, { playerId: 'blablablablabl', username: 'bladvblaslblasdbfla' })
+        props.history.push(`/DMLogin`)
     }
 
     return (
