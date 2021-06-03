@@ -123,10 +123,10 @@ const GameScreen = () => {
                 userId: localStorage.getItem('userId'),
                 username: sessionStorage.getItem('username')
             })
-            // eventsManager.off(SocketEvents.MESSAGE, 'game-component')
-            // eventsManager.off(SocketEvents.CONNECTED, 'game-screen')
-            // eventsManager.off(SocketEvents.SCENARIO, 'game-componment')
-            // eventsManager.off(SocketEvents.SCENARIO_GUIDE, 'game-componment')
+            eventsManager.off(SocketEvents.MESSAGE, 'game-component')
+            eventsManager.off(SocketEvents.CONNECTED, 'game-screen')
+            eventsManager.off(SocketEvents.SCENARIO, 'game-componment')
+            eventsManager.off(SocketEvents.SCENARIO_GUIDE, 'game-componment')
         },
         []
     )

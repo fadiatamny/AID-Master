@@ -95,13 +95,11 @@ export default class GameService {
                     this.io.sockets.in(roomId).emit(SocketEvents.PLAYER_DATA, playerId, playerData)
                 }
                 this._socket.join(roomId)
-                console.log(session.playerList)
                 const playerList = session.playerList.map((p) => ({
                     id: p.id,
                     username: p.username,
                     playername: p.playername
                 }))
-                console.log(playerList)
                 this.io.sockets
                     .in(roomId)
                     .emit(SocketEvents.ROOM_JOINED, playerData!.username, playerData!.type, playerList)
