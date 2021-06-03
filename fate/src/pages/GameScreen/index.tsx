@@ -91,7 +91,6 @@ const GameScreen = () => {
                 id: roomid,
                 username: 'Game Bot',
                 message: `${sessionStorage.getItem('username')} has joined the chat`,
-                target: { username, playername }
             })
         }
     }
@@ -121,7 +120,8 @@ const GameScreen = () => {
         () => () => {
             eventsManager.trigger(SocketEvents.LEAVE_ROOM, {
                 id: sessionStorage.getItem('rid'),
-                userId: sessionStorage.getItem('userId')
+                userId: localStorage.getItem('userId'),
+                username: sessionStorage.getItem('username')
             })
             // eventsManager.off(SocketEvents.MESSAGE, 'game-component')
             // eventsManager.off(SocketEvents.CONNECTED, 'game-screen')

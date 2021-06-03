@@ -152,13 +152,13 @@ export default class GameService {
             })
     }
 
-    private _leaveRoom(roomId: string, playerId: string) {
+    private _leaveRoom(roomId: string, playerId: string, username: string) {
         if (!this._roomExists(roomId)) {
             this._sendError('There was an issue, please try again', 'Room doesnt exist')
             return
         }
         const session = this.getGame(roomId)
-        this.io.sockets.in(roomId).emit(SocketEvents.MESSAGE, 'Server', `${playerId} has left the game`)
+        this.io.sockets.in(roomId).emit(SocketEvents.MESSAGE, 'Server', `${username} has left the game`)
         this.io.sockets.in(roomId).emit(SocketEvents.PLAYER_LEFT, playerId)
         session.playerLeft(playerId)
         this._socket.leave(roomId)

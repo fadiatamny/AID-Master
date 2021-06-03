@@ -84,8 +84,8 @@ export default class SocketManager {
         this._socket.emit(SocketEvents.SEND_SCENARIO, id, username, message)
     }
 
-    private _leaveRoom({ id, userId }: any) {
-        this._socket.emit(SocketEvents.LEAVE_ROOM, id, userId)
+    private _leaveRoom({ id, userId, username }: any) {
+        this._socket.emit(SocketEvents.LEAVE_ROOM, id, userId, username)
     }
     //#endregion
 
