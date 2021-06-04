@@ -17,7 +17,9 @@ enum EventsSocketSends {
     MESSAGE = 'message',
     SCENARIO = 'scenario',
     SCENARIO_GUIDE = 'scenario_guide',
-    ERROR = 'error'
+    ERROR = 'error',
+    PLAYER_LEFT = 'player_left',
+    PLAYER_JOINED = 'player_joined'
 }
 
 export const SocketEvents = { ...EventsSocketSends, ...EventsSocketRecieves }

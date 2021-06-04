@@ -16,7 +16,9 @@ export default class SocketManager {
     }
 
     private _socket: Socket
+    private _eventsManager: EventsManager
     constructor() {
+        this._eventsManager = EventsManager.instance
         const emitsHandler = {
             [SocketEvents.HI]: this._hi.bind(this),
             [SocketEvents.CREATE_ROOM]: this._createRoom.bind(this),
@@ -35,12 +37,14 @@ export default class SocketManager {
             [SocketEvents.MESSAGE]: this._message.bind(this),
             [SocketEvents.SCENARIO]: this._scenario.bind(this),
             [SocketEvents.SCENARIO_GUIDE]: this._scenarioGuide.bind(this),
-            [SocketEvents.ERROR]: this._error.bind(this)
+            [SocketEvents.ERROR]: this._error.bind(this),
+            [SocketEvents.PLAYER_LEFT]: this._playerLeft.bind(this),
+            [SocketEvents.PLAYER_JOINED]: this._playerJoined.bind(this)
         }
 
         Object.entries(emitsHandler).forEach(([key, value]) =>
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            EventsManager.instance.on(key, 'socket-manager', value)
+            this._eventsManager.on(key, 'socket-manager', value)
         )
 
         this._socket = io(endpoint)
@@ -56,7 +60,7 @@ export default class SocketManager {
     }
 
     private _connected() {
-        EventsManager.instance.trigger(SocketEvents.CONNECTED, {})
+        this._eventsManager.trigger(SocketEvents.CONNECTED, {})
     }
 
     //#region emits
@@ -64,12 +68,12 @@ export default class SocketManager {
         this._socket.emit(SocketEvents.HI, {})
     }
 
-    private _createRoom({playerId, username}: any) {
+    private _createRoom({ playerId, username }: any) {
         this._socket.emit(SocketEvents.CREATE_ROOM, playerId, username)
     }
 
-    private _joinRoom(id: string, userId: string, data: IPlayer) {
-        this._socket.emit(SocketEvents.JOIN_ROOM, { id, userId, data })
+    private _joinRoom({ id, userId, data }: any) {
+        this._socket.emit(SocketEvents.JOIN_ROOM, id, userId, data)
     }
 
     private _sendMessage({ id, username, message, target }: any) {
@@ -87,41 +91,52 @@ export default class SocketManager {
 
     //#region ons
     private _hello() {
-        EventsManager.instance.trigger(SocketEvents.HELLO, {})
+        this._eventsManager.trigger(SocketEvents.HELLO, {})
     }
 
     private _roomCreated(id: string) {
-        console.log('hola')
-        EventsManager.instance.trigger(SocketEvents.ROOM_CREATED, { id })
+        this._eventsManager.trigger(SocketEvents.ROOM_CREATED, { id })
     }
 
     private _dmChanged(playerid: string) {
-        EventsManager.instance.trigger(SocketEvents.DM_CHANGED, { playerid })
+        this._eventsManager.trigger(SocketEvents.DM_CHANGED, { playerid })
     }
 
     private _playerData(playerid: string, playerdata: string) {
-        EventsManager.instance.trigger(SocketEvents.PLAYER_DATA, { playerid, playerdata })
+        this._eventsManager.trigger(SocketEvents.PLAYER_DATA, { playerid, playerdata })
     }
 
-    private _roomJoined(username: string, type: PlayerType) {
-        EventsManager.instance.trigger(SocketEvents.ROOM_JOINED, { username, type })
+    private _roomJoined(
+        username: string,
+        type: string,
+        playerlist: Array<{ id: string; username: string; playername: string }>
+    ) {
+        this._eventsManager.trigger(SocketEvents.ROOM_JOINED, { username, type, playerlist })
     }
 
-    private _message(username: string, message: string, target: string) {
-        EventsManager.instance.trigger(SocketEvents.MESSAGE, { username, message, target, playerName: '' })
+    private _message(username: string, message: string, target: string, playername: string) {
+        this._eventsManager.trigger(SocketEvents.MESSAGE, { username, message, target, playername })
     }
 
     private _scenario(message: string) {
         console.log(message)
-        EventsManager.instance.trigger(SocketEvents.SCENARIO, { message })
+        this._eventsManager.trigger(SocketEvents.SCENARIO, { message })
     }
 
     private _scenarioGuide(username: string, organized: any, theme: string) {
-        EventsManager.instance.trigger(SocketEvents.SCENARIO_GUIDE, { username, organized, theme })
+        this._eventsManager.trigger(SocketEvents.SCENARIO_GUIDE, { username, organized, theme })
     }
 
     private _error(username: string, message: string) {
-        EventsManager.instance.trigger(SocketEvents.ERROR, { username, message })
+        this._eventsManager.trigger(SocketEvents.ERROR, { username, message })
+    }
+
+    private _playerLeft(playerId: string) {
+        this._eventsManager.trigger(SocketEvents.PLAYER_LEFT, { playerId })
+    }
+
+    private _playerJoined(playerId: string, username: string, playername: string) {
+        this._eventsManager.trigger(SocketEvents.PLAYER_LEFT, { playerId, username, playername })
     }
 
     //#endregion

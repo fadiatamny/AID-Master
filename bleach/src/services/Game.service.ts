@@ -95,7 +95,17 @@ export default class GameService {
                     this.io.sockets.in(roomId).emit(SocketEvents.PLAYER_DATA, playerId, playerData)
                 }
                 this._socket.join(roomId)
-                this.io.sockets.in(roomId).emit(SocketEvents.ROOM_JOINED, playerData!.username, playerData!.type)
+                const playerList = session.playerList.map((p) => ({
+                    id: p.id,
+                    username: p.username,
+                    playername: p.playername
+                }))
+                this.io.sockets
+                    .in(roomId)
+                    .emit(SocketEvents.ROOM_JOINED, playerData!.username, playerData!.type, playerList)
+                this.io.sockets
+                    .in(roomId)
+                    .emit(SocketEvents.PLAYER_JOINED, playerData?.id, playerData?.username, playerData?.playername)
             } else {
                 this._sendError('There was an issue, please try again', `This room ${roomId} does not exist.`)
             }
@@ -106,7 +116,7 @@ export default class GameService {
     }
 
     private _sendMessage(roomId: string, username: string, message: string, target?: string) {
-        if (!roomId || !username || !message ) {
+        if (!roomId || !username || !message) {
             this._sendError('There was an issue, please try again', 'Missing Variables')
             return
         }
@@ -147,6 +157,7 @@ export default class GameService {
         }
         const session = this.getGame(roomId)
         this.io.sockets.in(roomId).emit(SocketEvents.MESSAGE, 'Server', `${playerId} has left the game`)
+        this.io.sockets.in(roomId).emit(SocketEvents.PLAYER_LEFT, playerId)
         session.playerLeft(playerId)
         this._socket.leave(roomId)
     }
