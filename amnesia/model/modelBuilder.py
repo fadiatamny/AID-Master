@@ -93,7 +93,7 @@ class ModelBuilder():
                 restest = fastmodule.test(f'testing_data{hashbase}.txt', 10)
                 resDataFrame = resDataFrame.append(
                     {'exmp': restest[0], 'Percision': restest[1], 'Recall': restest[2]}, ignore_index=True)
-                fastmodule.save_model(f'build/fasttextmodel{i}.bin')
+                fastmodule.save_model(f'build/fasttextmodel_{hashbase}_{i}.bin')
         except:
             for i in os.scandir('build'):
                 os.remove(i.path)
@@ -103,8 +103,8 @@ class ModelBuilder():
         # save the bast 3 fasttext models
         indexlist = resDataFrame.nlargest(3, 'Percision').index
         for i in indexlist:
-            shutil.move(f'build/fasttextmodel{i}.bin',
-                      f'{savePath}/fasttextmodel{i}.bin')
+            shutil.move(f'build/fasttextmodel_{hashbase}_{i}.bin',
+                      f'{savePath}/fasttextmodel_{hashbase}_{i}.bin')
         for i in os.scandir('build'):
             os.remove(i.path)
 
