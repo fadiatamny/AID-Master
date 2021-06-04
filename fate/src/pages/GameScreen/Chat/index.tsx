@@ -47,16 +47,18 @@ const Chat = ({ messages, username, playerName, type, rid, setMessages }: ChatPr
         if (sessionStorage.getItem('playerlist')) {
             //@ts-ignore
             const list = sessionStorage.getItem('playerlist')
+            console.log(list)
             const obj = list ? JSON.parse(list) : null
+            console.log(obj, typeof obj)
             obj.map((user: any) => console.log(user))
+            tabs.push(obj.map((user: any) => ({ username: user.username, playerName: user.playerName })))
+            return tabs.map((t) => {
+                if (activeChat === t.username) {
+                    t = Object.assign({}, t, { isActive: true })
+                }
+                return t
+            })
         }
-        tabs.push(...messages.map((m: MessageProps) => ({ username: m.username, playerName: m.playerName })))
-        return tabs.map((t) => {
-            if (activeChat === t.username) {
-                t = Object.assign({}, t, { isActive: true })
-            }
-            return t
-        })
     }
 
     const switchActive = (name: string) => setActiveChat(name)
@@ -65,6 +67,7 @@ const Chat = ({ messages, username, playerName, type, rid, setMessages }: ChatPr
         <div className="container-fluid">
             <div className={`row justify-content-center ${styles.container}`}>
                 <div className={`col-md-3 col-xl-2`}>
+                    {/* @ts-ignore */}
                     <ChatTabs users={generateChatTabs()} general={generateGeneralTabs()} switchActive={switchActive} />
                 </div>
                 <div className={`col-md-5 col-xl-6`}>

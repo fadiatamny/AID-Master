@@ -28,6 +28,7 @@ const ChatTabs = ({ users, general, switchActive }: ChatTabsProps) => {
                 ))}
             </div>
         </div>
+        // <div>hi</div>
     )
 }
 

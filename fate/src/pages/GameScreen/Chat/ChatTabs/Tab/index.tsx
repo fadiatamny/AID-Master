@@ -8,10 +8,11 @@ export interface TabProps {
 
 const Tab = ({ username, charactername, isActive }: TabProps) => {
     const shortifyString = (s: string) => {
+        if(s){
         if (s.length >= 15) {
             return s.substring(0, 15) + '...'
         }
-        return s
+        return s}
     }
     return (
         <div className={`${styles.container} ${isActive ? styles.selected : ''}`}>

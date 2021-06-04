@@ -11,8 +11,7 @@ const DMLoginScreen = (props: any) => {
     const [username, setUsername] = useState('Game Master')
     const [playerName, setPlayerName] = useState('DM')
     const eventsManager = EventsManager.instance
-
-    
+    const uid = localStorage.getItem('userId')
 
     const handleSubmit = () => {
         eventsManager.on(SocketEvents.ROOM_CREATED, 'home-screen', ({ id }: any) => {
@@ -20,10 +19,13 @@ const DMLoginScreen = (props: any) => {
             sessionStorage.setItem('playerName', `${playerName}`)
             sessionStorage.setItem('username', `${username}`)
             sessionStorage.setItem('type', 'dm')
+            const playerlist = JSON.stringify([{ playerId: uid, username, playername: playerName }])
+            console.log(playerlist)
+            sessionStorage.setItem('playerlist', playerlist)
             props.history.push(`/game`)
         })
         eventsManager.trigger(SocketEvents.CREATE_ROOM, {
-            playerId: localStorage.getItem('userId'),
+            playerId: uid,
             username: username
         })
     }
@@ -47,7 +49,7 @@ const DMLoginScreen = (props: any) => {
                     <Input
                         id="DMUsername"
                         className={styles.RoomCode}
-                       label="Character Name"
+                        label="Character Name"
                         placeholder="Dungeon Master"
                         onChange={handleUsernameChange}
                     />
