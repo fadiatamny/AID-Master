@@ -126,7 +126,7 @@ class ModelBuilder():
         knnData = raw_data.drop(['TEXT'], axis=1)
         knn = NearestNeighbors(n_neighbors=k, algorithm='auto').fit(knnData)
         # saving the model
-        joblib.dump(knn, f'./finModel/knn/knnmodel{hash}.pkl')
+        joblib.dump(knn, f'./newModels/knn/knnmodel_{hash}.pkl')
         logger.debug('Generated KNN Model Successfully')
 
     @staticmethod
@@ -140,10 +140,10 @@ class ModelBuilder():
             ModelBuilder.createKNN(filePath = filePath, k = k, hash = hash)
             logger.debug('Generated Models Successfully')
         except:
-            for i in os.scandir('build'):
-                os.remove(i.path)
-            for i in os.scandir('finModel'):
-                os.remove(i.path)
+            for file in os.scandir('build'):
+                os.remove(file.path)
+            for file in os.scandir('newModels'):
+                os.remove(file.path)
             raise ModelException('Builder', "unable to create the models")
 
         finally:
