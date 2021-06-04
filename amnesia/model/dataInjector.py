@@ -53,8 +53,8 @@ class DataInjector():
         data = pd.read_csv("./data/data.csv")
         newdata = pd.concat([data,resFrame,data], ignore_index=True)
         newdata.to_csv('data/injectordata/injecteddata.csv',index=False)
-        ModelBuilder.createFastText('data/injectordata/injecteddata.csv','finModel/injectorModels/', '1234',10)
-        ModelTester.fastTextTest('/Users/oreitan/Desktop/Github/AID-Master/amnesia/model/data/injectordata/injecteddata.csv','/Users/oreitan/Desktop/Github/AID-Master/amnesia/model/finModel/injectorModels')
+        ModelBuilder.createFastText('data/injectordata/injecteddata.csv','finModel/injectorModels/', '1234',5400)
+        ModelTester.fastTextTest('/Users/oreitan/Desktop/Github/AID-Master/amnesia/model/data/injectordata/injecteddata.csv','amnesia/model/newModels/injectModels')
         os.chdir(cwd)
         
 
