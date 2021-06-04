@@ -79,18 +79,22 @@ const GameScreen = () => {
     }
 
     const sendRoomMessage = () => {
+        if (!roomid) {
+            return
+        }
+
         if (sessionStorage.getItem('type') === 'dm') {
-            eventsManager.trigger(SocketEvents.SEND_MESSAGE, {
-                id: roomid,
+            eventsManager.trigger(SocketEvents.MESSAGE, {
                 username: 'Game Bot',
                 message: `Invite other player using code\t${roomid}`,
-                target: { username, playername }
+                target: { username, playername },
+                playername: 'System'
             })
         } else {
-            eventsManager.trigger(SocketEvents.SEND_MESSAGE, {
-                id: roomid,
+            eventsManager.trigger(SocketEvents.MESSAGE, {
                 username: 'Game Bot',
                 message: `${sessionStorage.getItem('username')} has joined the chat`,
+                playername: 'System'
             })
         }
     }

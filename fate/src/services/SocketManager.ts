@@ -76,8 +76,8 @@ export default class SocketManager {
         this._socket.emit(SocketEvents.JOIN_ROOM, id, userId, data)
     }
 
-    private _sendMessage({ id, username, message, target }: any) {
-        this._socket.emit(SocketEvents.SEND_MESSAGE, id, username, message, target)
+    private _sendMessage(params: { id: string, username: string, message: string, target?: string }) {
+        this._socket.emit(SocketEvents.SEND_MESSAGE, params.id, params.username, params.message, params.target)
     }
 
     private _sendScenario({ id, username, message }: any) {
@@ -111,7 +111,6 @@ export default class SocketManager {
         type: string,
         playerlist: Array<{ id: string; username: string; playername: string }>
     ) {
-        console.log(playerlist)
         this._eventsManager.trigger(SocketEvents.ROOM_JOINED, { username, type, playerlist })
     }
 
@@ -128,8 +127,8 @@ export default class SocketManager {
         this._eventsManager.trigger(SocketEvents.SCENARIO_GUIDE, { username, organized, theme })
     }
 
-    private _error(username: string, message: string) {
-        this._eventsManager.trigger(SocketEvents.ERROR, { username, message })
+    private _error(where: string, message: string, error: any) {
+        this._eventsManager.trigger(SocketEvents.ERROR, { where, message, error })
     }
 
     private _playerLeft(playerId: string) {

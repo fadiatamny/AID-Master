@@ -19,9 +19,7 @@ const DMLoginScreen = (props: any) => {
             sessionStorage.setItem('playerName', `${playerName}`)
             sessionStorage.setItem('username', `${username}`)
             sessionStorage.setItem('type', 'dm')
-            const playerlist = JSON.stringify([{ playerId: uid, username, playername: playerName }])
-            console.log(playerlist)
-            sessionStorage.setItem('playerlist', playerlist)
+            sessionStorage.setItem('playerlist', JSON.stringify([{ playerId: uid, username, playername: playerName }]))
             props.history.push(`/game`)
         })
         eventsManager.trigger(SocketEvents.CREATE_ROOM, {
