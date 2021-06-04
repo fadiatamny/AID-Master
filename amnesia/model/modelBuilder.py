@@ -62,7 +62,7 @@ class ModelBuilder():
 
     @staticmethod
     # read the data file and creat the fasttext
-    def createFastText(filePath: str,savePath:str ='finModel/fastText', hashbase: str = '',time:int = 10, debug: bool = False) -> None:
+    def createFastText(filePath: str,savePath:str ='finModel/fastText', hashbase: str = '',time:int = 5400, debug: bool = False) -> None:
         try:
             raw_data = ModelBuilder._readRawData(filePath)
         except Exception as e:
