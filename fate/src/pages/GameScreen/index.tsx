@@ -21,37 +21,49 @@ const GameScreen = () => {
     const playername = sessionStorage.getItem('playerName')
 
     const [roomid, setRoomid] = useState('')
-    const [messages, setMessages] = useState<MessageType[]>([])
+    const [messages, setMessages] = useState<{ [key: string]: MessageType[] }>({})
     const eventsManager = EventsManager.instance
     const connected = () => {
         console.log('connected')
     }
 
     const handleMessages = (obj: any) => {
-        if (obj.target && obj.target.username !== username) {
+        if (obj.target && obj.target.username !== username && obj.username !== username) {
             return
         }
 
-        let myMessage: boolean
-        if (obj.username === sessionStorage.getItem('username')) myMessage = true
-        else myMessage = false
+        const messagesCopy = Object.assign({}, messages)
+        const id = !obj.target ? '*' : obj.username === username ? obj.target.username ?? '*' : obj.username
 
-        // @ts-ignore
-        setMessages((messages) => [
-            ...messages,
-            {
-                username: obj.username,
-                playerName: obj.username,
-                messageText: obj.message,
-                myMessage: myMessage
-            }
-        ])
+        if (!messagesCopy[id]) {
+            messagesCopy[id] = []
+        }
+        messagesCopy[id].push({
+            username: obj.username,
+            playerName: obj.username,
+            messageText: obj.message,
+            myMessage: obj.username === username
+        })
+
+        setMessages((messages) => Object.assign({}, messages, messagesCopy))
     }
 
     const handleScenario = (obj: any) => {
         const mess = `loading scenario guide for:\n "${obj.message}"`
-        const object = { username: 'AID Master', playerName: 'Help', messageText: mess, myMessage: false }
-        setMessages((messages) => [...messages, object])
+        const messagesCopy = Object.assign({}, messages)
+        const id = 'AID Master'
+
+        if (!messagesCopy[id]) {
+            messagesCopy[id] = []
+        }
+        messagesCopy[id].push({
+            username: 'AID Master',
+            playerName: 'Help',
+            messageText: `loading scenario guide for:\n "${obj.message}"`,
+            myMessage: false
+        })
+
+        setMessages((messages) => Object.assign({}, messages, messagesCopy))
     }
 
     const handleScenarioGuide = (obj: any) => {
@@ -75,6 +87,7 @@ const GameScreen = () => {
             })
         })
         js.messageText = prettyText
+        //@ts-ignore
         setMessages((messages) => [...messages, object, js])
     }
 

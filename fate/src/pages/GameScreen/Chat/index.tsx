@@ -69,15 +69,17 @@ const Chat = ({ messages, username, playerName, type, rid, setMessages }: ChatPr
                     <ChatTabs users={generateChatTabs()} general={generateGeneralTabs()} switchActive={switchActive} />
                 </div>
                 <div className={`col-md-5 col-xl-6`}>
-                    <ChatWindow
-                        data={[...mockDataMessages, ...messages]}
-                        messages={messages}
-                        setMessages={setMessages}
-                        username={username}
-                        playerName={playerName}
-                        activeChat={activeChat}
-                        rid={rid}
-                    />
+                    {messages.map((id: number, message: any) => {
+                        <ChatWindow
+                            data={[...mockDataMessages, message[id]]}
+                            messages={messages}
+                            setMessages={setMessages}
+                            username={username}
+                            playerName={playerName}
+                            activeChat={activeChat}
+                            rid={rid}
+                        />
+                    })}
                 </div>
             </div>
         </div>
