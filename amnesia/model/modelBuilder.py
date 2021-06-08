@@ -62,7 +62,7 @@ class ModelBuilder():
 
     @staticmethod
     # read the data file and creat the fasttext
-    def createFastText(filePath: str,savePath:str ='finModel/fastText', hashbase: str = '',time:int = 5400, debug: bool = False) -> None:
+    def createFastText(filePath: str,savePath:str ='finModel/fastText', hashbase: str = '',time:int = 10, debug: bool = False) -> None:
         try:
             raw_data = ModelBuilder._readRawData(filePath)
         except Exception as e:
@@ -93,7 +93,7 @@ class ModelBuilder():
                 restest = fastmodule.test(f'testing_data{hashbase}.txt', 10)
                 resDataFrame = resDataFrame.append(
                     {'exmp': restest[0], 'Percision': restest[1], 'Recall': restest[2]}, ignore_index=True)
-                fastmodule.save_model(f'build/fasttextmodel{i}.bin')
+                fastmodule.save_model(f'build/fasttextmodel_{hashbase}_{i}.bin')
         except:
             for i in os.scandir('build'):
                 os.remove(i.path)
@@ -102,9 +102,11 @@ class ModelBuilder():
 
         # save the bast 3 fasttext models
         indexlist = resDataFrame.nlargest(3, 'Percision').index
+        print(indexlist)
         for i in indexlist:
-            shutil.move(f'build/fasttextmodel{i}.bin',
-                      f'{savePath}/fasttextmodel{i}.bin')
+            input('1')
+            shutil.move(f'build/fasttextmodel_{hashbase}_{i}.bin',
+                      f'{savePath}/fasttextmodel_{hashbase}_{i}.bin')
         for i in os.scandir('build'):
             os.remove(i.path)
 
@@ -126,7 +128,7 @@ class ModelBuilder():
         knnData = raw_data.drop(['TEXT'], axis=1)
         knn = NearestNeighbors(n_neighbors=k, algorithm='auto').fit(knnData)
         # saving the model
-        joblib.dump(knn, f'./finModel/knn/knnmodel{hash}.pkl')
+        joblib.dump(knn, f'finModel/knn/knnmodel{hash}.pkl')
         logger.debug('Generated KNN Model Successfully')
 
     @staticmethod
@@ -192,7 +194,7 @@ if __name__ == '__main__':
 
     for index, item in enumerate(sys.argv, 0):
         if item == '-h' and index + 1 < len(sys.argv):
-            h = f'_{sys.argv[index + 1]}'
+            h = f'{sys.argv[index + 1]}'
         if item == '-k' and index + 1 < len(sys.argv):
             k = int(sys.argv[index + 1])
         if item == '-d':
