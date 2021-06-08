@@ -118,7 +118,7 @@ class ModelBuilder():
         logger.debug('Generated FastText Model Successfully')
 
     @staticmethod
-    def createKNN(filePath: str, k: int, hash: str = '') -> None:
+    def createKNN(filePath: str,savePath:str, k: int, hash: str = '') -> None:
         try:
             raw_data = ModelBuilder._readRawData(filePath)
         except Exception as e:
@@ -128,7 +128,7 @@ class ModelBuilder():
         knnData = raw_data.drop(['TEXT'], axis=1)
         knn = NearestNeighbors(n_neighbors=k, algorithm='auto').fit(knnData)
         # saving the model
-        joblib.dump(knn, f'finModel/knn/knnmodel{hash}.pkl')
+        joblib.dump(knn, f'{savePath}/knn/knnmodel{hash}.pkl')
         logger.debug('Generated KNN Model Successfully')
 
     @staticmethod
@@ -185,10 +185,29 @@ if __name__ == '__main__':
     if not os.path.isdir('build'):
         os.mkdir('build')
 
-    if not os.path.isdir('finModel'):
-        os.mkdir('finModel')
+    if not os.path.isdir('currentModels'):
+        os.mkdir('currentModels')
 
-    k: int = 3
+    if not os.path.isdir('currentModels/knn'):
+        os.mkdir('currentModels/knn')
+
+    if not os.path.isdir('oldModels'):
+        os.mkdir('oldModels')
+
+    if not os.path.isdir('newModels'):
+        os.mkdir('newModels')
+
+    if not os.path.isdir('newModels/knn'):
+        os.mkdir('newModels/knn')
+
+    if not os.path.isdir('newModels/injectModels'):
+        os.mkdir('newModels/injectModels')
+
+    if not os.path.isdir('newModels/injectModels/knn'):
+        os.mkdir('newModels/injectModels/knn')
+
+
+    k: int = 10
     h: str = ''
     d: bool = False
 
