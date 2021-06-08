@@ -26,7 +26,6 @@ export default function App() {
         localStorage.setItem('userId', uuid())
     }
 
-    console.log("new game")
     return (
         <Router>
             <Route path="/" exact component={StartingScreen} />

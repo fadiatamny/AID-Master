@@ -9,16 +9,17 @@ import Clickable from '../../../components/Clickable/Clickable'
 
 const DMLoginScreen = (props: any) => {
     const [username, setUsername] = useState('Game Master')
-    const [playerName, setPlayerName] = useState('DM')
+    const [playername, setPlayername] = useState('DM')
     const eventsManager = EventsManager.instance
     const uid = localStorage.getItem('userId')
 
     const handleSubmit = () => {
         eventsManager.on(SocketEvents.ROOM_CREATED, 'home-screen', ({ id }: any) => {
             sessionStorage.setItem('rid', `${id}`)
-            sessionStorage.setItem('playerName', `${playerName}`)
+            sessionStorage.setItem('playername', `${playername}`)
             sessionStorage.setItem('username', `${username}`)
             sessionStorage.setItem('type', 'dm')
+            sessionStorage.setItem('playerlist', JSON.stringify([{ id: uid, username, playername }]))
             props.history.push(`/game`)
         })
         eventsManager.trigger(SocketEvents.CREATE_ROOM, {
@@ -32,7 +33,7 @@ const DMLoginScreen = (props: any) => {
     }
 
     const handleNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setPlayerName(event.target.value)
+        setPlayername(event.target.value)
     }
 
     return (

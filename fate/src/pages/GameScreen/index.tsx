@@ -2,7 +2,7 @@
 import styles from './styles.module.css'
 import Header from '../../components/Header/Header'
 import Chat from './Chat'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { SocketEvents } from '../../models/SocketEvents.model'
 import EventsManager from '../../services/EventsManager'
 import { generate } from '../../services/ScenarioGuide'
@@ -11,68 +11,109 @@ import { generate } from '../../services/ScenarioGuide'
 
 type MessageType = {
     username: string
-    playerName: string
+    playername: string
     messageText: string
     myMessage: boolean
 }
 
 const GameScreen = () => {
-    const username = sessionStorage.getItem('username')
-    const playername = sessionStorage.getItem('playerName')
-
-    const [roomid, setRoomid] = useState('')
-    const [messages, setMessages] = useState<{ [key: string]: MessageType[] }>({})
     const eventsManager = EventsManager.instance
-    const connected = () => {
-        console.log('connected')
+    const uid = localStorage.getItem('userId')
+    const username = sessionStorage.getItem('username')
+    const playername = sessionStorage.getItem('playername')
+    const playertype = sessionStorage.getItem('type')
+    const [roomid, setRoomid] = useState(sessionStorage.getItem('rid')!)
+
+    const generateMessages = () => {
+        const messagesObj: { [key: string]: { playername: string; messages: MessageType[] } } = {
+            ['All']: {
+                playername: 'Game Chat',
+                messages:
+                    playertype === 'dm'
+                        ? [
+                              {
+                                  username: 'AID Master',
+                                  playername: 'Help',
+                                  messageText: `Welcome to the AID Master Game chat ${username}`,
+                                  myMessage: false
+                              },
+                              {
+                                  username: 'AID Master',
+                                  playername: 'Help',
+                                  messageText: `Invite other player using code\t${roomid}`,
+                                  myMessage: false
+                              }
+                          ]
+                        : []
+            },
+            ['AID Master']: {
+                playername: 'Help',
+                messages: []
+            }
+        }
+
+        const playerlist = JSON.parse(sessionStorage.getItem('playerlist') ?? '[]')
+        playerlist.map((p: { id: string; username: string; playername: string }) => {
+            if (p.id !== uid && !messagesObj[p.username]) {
+                messagesObj[p.username] = {
+                    playername: p.playername ?? p.username,
+                    messages: []
+                }
+            }
+        })
+
+        return messagesObj
     }
 
+    const [messages, setMessages] = useState<{ [key: string]: { playername: string; messages: MessageType[] } }>(
+        generateMessages()
+    )
+    const messagesRef = useRef<{ [key: string]: { playername: string; messages: MessageType[] } }>()
+    messagesRef.current = messages
+
     const handleMessages = (obj: any) => {
-        if (obj.target && obj.target.username !== username && obj.username !== username) {
+        if (obj.target && obj.target !== username && obj.username !== username) {
             return
         }
 
-        const messagesCopy = Object.assign({}, messages)
-        const id = !obj.target ? '*' : obj.username === username ? obj.target.username ?? '*' : obj.username
+        const messagesCopy = Object.assign({}, messagesRef.current)
+        const id = !obj.target ? 'All' : obj.username === username ? obj.target ?? 'All' : obj.username
 
         if (!messagesCopy[id]) {
-            messagesCopy[id] = []
+            messagesCopy[id] = {
+                playername: obj.playername,
+                messages: []
+            }
         }
-        messagesCopy[id].push({
+        messagesCopy[id].messages.push({
             username: obj.username,
-            playerName: obj.username,
+            playername: obj.playername,
             messageText: obj.message,
             myMessage: obj.username === username
         })
 
-        setMessages((messages) => Object.assign({}, messages, messagesCopy))
+        setMessages(messagesCopy)
     }
 
     const handleScenario = (obj: any) => {
-        const mess = `loading scenario guide for:\n "${obj.message}"`
         const messagesCopy = Object.assign({}, messages)
-        const id = 'AID Master'
-
-        if (!messagesCopy[id]) {
-            messagesCopy[id] = []
-        }
-        messagesCopy[id].push({
+        messagesCopy['AID Master'].messages.push({
             username: 'AID Master',
-            playerName: 'Help',
+            playername: 'Help',
             messageText: `loading scenario guide for:\n "${obj.message}"`,
             myMessage: false
         })
-
-        setMessages((messages) => Object.assign({}, messages, messagesCopy))
+        setMessages(messagesCopy)
     }
 
     const handleScenarioGuide = (obj: any) => {
         const message = generate(obj.organized)
-        const object = { username: 'AID Master', playerName: 'Help', messageText: message, myMessage: false }
+        const object = { username: 'AID Master', playername: 'Help', messageText: message, myMessage: false }
+
         // PRETTIFY % FROM MODEL
         const js = {
             username: 'AID Master',
-            playerName: 'Help',
+            playername: 'Help',
             messageText: JSON.stringify(obj.organized),
             myMessage: false
         }
@@ -80,7 +121,7 @@ const GameScreen = () => {
         Object.keys(obj.organized).map((key: string) => {
             const no = obj.organized[key]
             prettyText = prettyText + `${key}‏‏‎ ‎‎‎‎‎‎‎‎‎‎‎‎`
-            no.map((key: object) => {
+            no.map((key: Object) => {
                 for (const [k, v] of Object.entries(key)) {
                     prettyText = prettyText + `${k} : ${v * 100} %    ‏‏‎‎`
                 }
@@ -91,47 +132,37 @@ const GameScreen = () => {
         setMessages((messages) => [...messages, object, js])
     }
 
-    const sendRoomMessage = () => {
-        if (!roomid) {
-            return
-        }
-
-        if (sessionStorage.getItem('type') === 'dm') {
-            eventsManager.trigger(SocketEvents.MESSAGE, {
-                username: 'Game Bot',
-                message: `Invite other player using code\t${roomid}`,
-                target: { username, playername },
-                playername: 'System'
-            })
-        } else {
-            eventsManager.trigger(SocketEvents.MESSAGE, {
-                username: 'Game Bot',
-                message: `${sessionStorage.getItem('username')} has joined the chat`,
-                playername: 'System'
-            })
-        }
-    }
-
     const handlePlayerJoined = (obj: any) => {
-        const playerlist = sessionStorage.getItem('playerlist') ?? '[]'
-        sessionStorage.setItem('playerlist', JSON.stringify([...JSON.parse(playerlist), obj]))
+        const messagesCopy = Object.assign({}, messagesRef.current)
+        if (obj.id !== uid) {
+            const playerlist = sessionStorage.getItem('playerlist') ?? '[]'
+            sessionStorage.setItem('playerlist', JSON.stringify([...JSON.parse(playerlist), obj]))
+
+            if (!messagesCopy[obj.username]) {
+                messagesCopy[obj.username] = {
+                    playername: obj.playername,
+                    messages: []
+                }
+            }
+        }
+        messagesCopy['All'].messages.push({
+            username: 'AID Master',
+            playername: 'System',
+            messageText: `Welcome to the AID Master Game chat ${obj.username}`,
+            myMessage: false
+        })
+
+        setMessages(messagesCopy)
     }
 
     useEffect(() => {
         eventsManager.on(SocketEvents.MESSAGE, 'game-component', (obj: any) => handleMessages(obj))
-        eventsManager.on(SocketEvents.CONNECTED, 'game-screen', () => connected())
         eventsManager.on(SocketEvents.PLAYER_JOINED, 'game-component', (obj: any) => handlePlayerJoined(obj))
         if (sessionStorage.getItem('type') === 'dm') {
             eventsManager.on(SocketEvents.SCENARIO, 'game-componment', (obj: any) => handleScenario(obj))
             eventsManager.on(SocketEvents.SCENARIO_GUIDE, 'game-componment', (obj: any) => handleScenarioGuide(obj))
         }
-        //@ts-ignore
-        setRoomid(sessionStorage.getItem('rid'))
     }, [])
-
-    useEffect(() => {
-        sendRoomMessage()
-    }, [roomid])
 
     useEffect(
         () => () => {
@@ -159,7 +190,7 @@ const GameScreen = () => {
                     //@ts-ignore
                     username={sessionStorage.getItem('username')}
                     //@ts-ignore
-                    playerName={sessionStorage.getItem('playerName')}
+                    playername={sessionStorage.getItem('playername')}
                     //@ts-ignore
                     type={sessionStorage.getItem('type')}
                 />

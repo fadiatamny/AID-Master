@@ -115,12 +115,12 @@ export default class GameService {
         }
     }
 
-    private _sendMessage(roomId: string, username: string, message: string, target?: string) {
-        if (!roomId || !username || !message) {
+    private _sendMessage(roomId: string, username: string, playername: string, message: string, target?: string) {
+        if (!roomId || !username || !message || !playername) {
             this._sendError('sendMessage', 'There was an issue, please try again', 'Missing Variables')
             return
         }
-        this.io.sockets.in(roomId).emit(SocketEvents.MESSAGE, username, message, target)
+        this.io.sockets.in(roomId).emit(SocketEvents.MESSAGE, username, message, playername, target)
     }
 
     private _sendScenario(roomId: string, username: string, scenario: string) {

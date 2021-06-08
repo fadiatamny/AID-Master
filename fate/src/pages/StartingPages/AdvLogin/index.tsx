@@ -9,14 +9,14 @@ import { SocketEvents } from '../../../models/SocketEvents.model'
 const AdvLoginScreen = (props: any) => {
     const [roomNumber, setRoomNumber] = useState('')
     const [username, setUsername] = useState('')
-    const [playerName, setPlayerName] = useState('')
+    const [playername, setPlayername] = useState('')
     const eventsManager = EventsManager.instance
     const uid = localStorage.getItem('userId')
 
     const handleSubmit = () => {
         eventsManager.on(SocketEvents.ROOM_JOINED, 'home-screen', (obj: any) => {
             sessionStorage.setItem('rid', `${roomNumber}`)
-            sessionStorage.setItem('playerName', `${playerName}`)
+            sessionStorage.setItem('playername', `${playername}`)
             sessionStorage.setItem('username', `${username}`)
             sessionStorage.setItem('type', obj.type)
             sessionStorage.setItem('playerlist', JSON.stringify(obj.playerlist))
@@ -25,7 +25,7 @@ const AdvLoginScreen = (props: any) => {
         eventsManager.trigger(SocketEvents.JOIN_ROOM, {
             id: roomNumber,
             userId: localStorage.getItem('userId'),
-            data: { type: 'player', id: uid, username: username, playername: playerName }
+            data: { type: 'player', id: uid, username: username, playername: playername }
         })
     }
 
@@ -38,7 +38,7 @@ const AdvLoginScreen = (props: any) => {
     }
 
     const handleNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setPlayerName(event.target.value)
+        setPlayername(event.target.value)
     }
 
     return (

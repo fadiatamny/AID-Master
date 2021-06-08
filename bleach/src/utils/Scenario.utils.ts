@@ -6,10 +6,7 @@ export default class ScenarioUtils {
     public static organizeByCategory(scenario: Dictionary) {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const organized: Record<string, { [key: string]: any }> = {}
-        console.log(ScenarioMap['special_encounter'])
         for (const feature of Object.keys(scenario)) {
-            if (feature === 'Encounter Type')
-                console.log('found')
             const category = ScenarioMap[feature]
             if (!organized[category]) {
                 organized[category] = [{ [feature]: scenario[feature] }]

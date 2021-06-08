@@ -3,14 +3,14 @@ import Message, { MessageProps } from './Message'
 import styles from './styles.module.css'
 
 export interface MessagesListProps {
-    data: Array<MessageProps>
+    messages: Array<MessageProps>
     activeChat: string
 }
 
-const MessagesList = ({ data, activeChat }: MessagesListProps) => {
+const MessagesList = ({ messages, activeChat }: MessagesListProps) => {
     return (
         <div className={`col-11 ${styles.container}`}>
-            {data.map((message, i) => {
+            {messages.map((message, i) => {
                 if (activeChat == 'All')
                     return (
                         <div
@@ -20,7 +20,7 @@ const MessagesList = ({ data, activeChat }: MessagesListProps) => {
                             <div className={`${styles.messageContainer} `}>
                                 <Message
                                     username={message.username}
-                                    playerName={message.playerName}
+                                    playername={message.playername}
                                     messageText={message.messageText}
                                     myMessage={message.myMessage}
                                 />
@@ -36,7 +36,7 @@ const MessagesList = ({ data, activeChat }: MessagesListProps) => {
                             <div className={`${styles.messageContainer} `}>
                                 <Message
                                     username={message.username}
-                                    playerName={message.playerName}
+                                    playername={message.playername}
                                     messageText={message.messageText}
                                     myMessage={message.myMessage}
                                 />
@@ -61,7 +61,7 @@ export default MessagesList
 //                         <div key={i} className="mb-4">
 //                             <Message
 //                                 username={message.username}
-//                                 playerName={message.playerName}
+//                                 playername={message.playername}
 //                                 messageText={message.messageText}
 //                                 myMessage={message.myMessage}
 //                             />
@@ -72,7 +72,7 @@ export default MessagesList
 //                         <div key={i} className="mb-4">
 //                             <Message
 //                                 username={message.username}
-//                                 playerName={message.playerName}
+//                                 playername={message.playername}
 //                                 messageText={message.messageText}
 //                                 myMessage={message.myMessage}
 //                             />
@@ -88,7 +88,7 @@ export default MessagesList
 <div className={`${styles.messageContainer} `}>
     <Message
         username="Poop"
-        playerName="Fadi"
+        playername="Fadi"
         messageText="Im a poopy head but a great programmer and am a nice dude"
         myMessage={false}
     />
@@ -96,37 +96,37 @@ export default MessagesList
 </div>
 <div className={`row justify-content-end`}>
 <div className={`${styles.messageContainer} `}>
-    <Message username="Neko" playerName="Annieli" messageText="Fadi is a poopy head" myMessage={true} />
+    <Message username="Neko" playername="Annieli" messageText="Fadi is a poopy head" myMessage={true} />
 </div>
 </div>
 <div className={`row justify-content-start`}>
 <div className={`${styles.messageContainer} `}>
-    <Message username="Poop" playerName="Fadi" messageText="Im a poopy head" myMessage={false} />
+    <Message username="Poop" playername="Fadi" messageText="Im a poopy head" myMessage={false} />
 </div>
 </div>
 <div className={`row justify-content-start`}>
 <div className={`${styles.messageContainer} `}>
-    <Message username="Poop" playerName="Fadi" messageText="Im a poopy head" myMessage={false} />
+    <Message username="Poop" playername="Fadi" messageText="Im a poopy head" myMessage={false} />
 </div>
 </div>
 <div className={`row justify-content-start`}>
 <div className={`${styles.messageContainer} `}>
-    <Message username="Poop" playerName="Fadi" messageText="Im a poopy head" myMessage={false} />
+    <Message username="Poop" playername="Fadi" messageText="Im a poopy head" myMessage={false} />
 </div>
 </div>
 <div className={`row justify-content-start`}>
 <div className={`${styles.messageContainer} `}>
-    <Message username="Poop" playerName="Fadi" messageText="Im a poopy head" myMessage={false} />
+    <Message username="Poop" playername="Fadi" messageText="Im a poopy head" myMessage={false} />
 </div>
 </div>
 <div className={`row justify-content-end`}>
 <div className={`${styles.messageContainer} `}>
-    <Message username="Neko" playerName="Annieli" messageText="Fadi is a poopy head" myMessage={true} />
+    <Message username="Neko" playername="Annieli" messageText="Fadi is a poopy head" myMessage={true} />
 </div>
 </div>
 <div className={`row justify-content-end`}>
 <div className={`${styles.messageContainer} `}>
-    <Message username="Neko" playerName="Annieli" messageText="Fadi is a poopy head" myMessage={true} />
+    <Message username="Neko" playername="Annieli" messageText="Fadi is a poopy head" myMessage={true} />
 </div>
 </div> */
 }

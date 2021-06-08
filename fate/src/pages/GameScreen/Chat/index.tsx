@@ -6,57 +6,57 @@ import ChatWindow from './ChatWindow'
 import { SocketEvents } from '../../../models/SocketEvents.model'
 import { MessageProps } from './ChatWindow/MessageList/Message'
 
+type MessageType = {
+    username: string
+    playername: string
+    messageText: string
+    myMessage: boolean
+}
+
 export interface ChatProps {
-    messages?: any
+    messages: { [key: string]: { playername: string; messages: MessageType[] } }
     setMessages?: any
     rid: string
     username: string
-    playerName: string
+    playername: string
     type: string
 }
 
-const Chat = ({ messages, username, playerName, type, rid, setMessages }: ChatProps) => {
+const Chat = ({ messages, username, playername, type, rid, setMessages }: ChatProps) => {
     const [activeChat, setActiveChat] = React.useState('All')
-    const mockDataMessages = [
-        {
-            username: 'Game Bot',
-            playerName: 'AID Master Team',
-            messageText: `Welcome to the AID Master Game chat ${username}`,
-            myMessage: false
-        }
-    ]
 
     const generateGeneralTabs = () => {
-        let generalTabs = []
-        if (type == 'dm')
-            generalTabs = [
-                { username: 'All', playerName: '' },
-                { username: 'AID Master', playerName: 'get some help' }
-            ]
-        else generalTabs = [{ username: 'All', playerName: '' }]
-        return generalTabs.map((t) => {
-            if (activeChat === t.username) {
-                t = Object.assign({}, t, { isActive: true })
+        const generalTabs: Array<{ username: string; playername: string; isActive?: boolean }> = [
+            {
+                username: 'All',
+                playername: 'Game Chat',
+                isActive: activeChat === 'All'
             }
-            return t
-        })
+        ]
+        if (type === 'dm') {
+            generalTabs.push({
+                username: 'AID Master',
+                playername: 'Help',
+                isActive: activeChat === 'AID Master'
+            })
+        }
+
+        return generalTabs
     }
 
-    const generateChatTabs = () => {
-        const tabs: Array<{ username: string; playerName: string; isActive?: boolean }> = []
-        if (sessionStorage.getItem('playerlist')) {
-            //@ts-ignore
-            const stored = sessionStorage.getItem('playerlist') ?? undefined
-            const list = stored ? JSON.parse(stored) : undefined
-            list?.map((user: any) => {
-                tabs.push({
-                    username: user.username,
-                    playerName: user.playername,
-                    isActive: activeChat === user.username
-                })
+    const generateUserTabs = () => {
+        const tabs: Array<{ username: string; playername: string; isActive?: boolean }> = []
+        for (const key of Object.keys(messages)) {
+            if (key === 'All' || key === 'AID Master' || key === username) {
+                continue
+            }
+            tabs.push({
+                username: key,
+                playername: messages[key].playername,
+                isActive: activeChat === key
             })
-            return tabs
         }
+        return tabs
     }
 
     const switchActive = (name: string) => setActiveChat(name)
@@ -66,20 +66,17 @@ const Chat = ({ messages, username, playerName, type, rid, setMessages }: ChatPr
             <div className={`row justify-content-center ${styles.container}`}>
                 <div className={`col-md-3 col-xl-2`}>
                     {/* @ts-ignore */}
-                    <ChatTabs users={generateChatTabs()} general={generateGeneralTabs()} switchActive={switchActive} />
+                    <ChatTabs users={generateUserTabs()} general={generateGeneralTabs()} switchActive={switchActive} />
                 </div>
                 <div className={`col-md-5 col-xl-6`}>
-                    {messages.map((id: number, message: any) => {
-                        <ChatWindow
-                            data={[...mockDataMessages, message[id]]}
-                            messages={messages}
-                            setMessages={setMessages}
-                            username={username}
-                            playerName={playerName}
-                            activeChat={activeChat}
-                            rid={rid}
-                        />
-                    })}
+                    <ChatWindow
+                        messages={messages[activeChat].messages}
+                        setMessages={setMessages}
+                        username={username}
+                        playername={playername}
+                        activeChat={activeChat}
+                        rid={rid}
+                    />
                 </div>
             </div>
         </div>

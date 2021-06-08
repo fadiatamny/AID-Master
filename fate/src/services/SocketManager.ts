@@ -54,7 +54,6 @@ export default class SocketManager {
 
     private _connect() {
         if (!this._socket) {
-            console.log('connecting')
             this._socket = io(endpoint)
         }
     }
@@ -76,8 +75,21 @@ export default class SocketManager {
         this._socket.emit(SocketEvents.JOIN_ROOM, id, userId, data)
     }
 
-    private _sendMessage(params: { id: string, username: string, message: string, target?: string }) {
-        this._socket.emit(SocketEvents.SEND_MESSAGE, params.id, params.username, params.message, params.target)
+    private _sendMessage(params: {
+        id: string
+        username: string
+        playername: string
+        message: string
+        target?: string
+    }) {
+        this._socket.emit(
+            SocketEvents.SEND_MESSAGE,
+            params.id,
+            params.username,
+            params.playername,
+            params.message,
+            params.target
+        )
     }
 
     private _sendScenario({ id, username, message }: any) {
@@ -114,12 +126,11 @@ export default class SocketManager {
         this._eventsManager.trigger(SocketEvents.ROOM_JOINED, { username, type, playerlist })
     }
 
-    private _message(username: string, message: string, target: string, playername: string) {
-        this._eventsManager.trigger(SocketEvents.MESSAGE, { username, message, target, playername })
+    private _message(username: string, message: string, playername: string, target: string) {
+        this._eventsManager.trigger(SocketEvents.MESSAGE, { username, message, playername, target })
     }
 
     private _scenario(message: string) {
-        console.log(message)
         this._eventsManager.trigger(SocketEvents.SCENARIO, { message })
     }
 
@@ -136,7 +147,7 @@ export default class SocketManager {
     }
 
     private _playerJoined(playerId: string, username: string, playername: string) {
-        this._eventsManager.trigger(SocketEvents.PLAYER_JOINED, { playerId, username, playername })
+        this._eventsManager.trigger(SocketEvents.PLAYER_JOINED, { id: playerId, username, playername })
     }
 
     //#endregion
