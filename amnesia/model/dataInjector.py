@@ -24,7 +24,6 @@ class DataInjector():
     def runing():
         cwd = os.getcwd()
         cwdcut = cwd.partition('amnesia')
-        print(cwdcut)
         os.chdir(f'{cwdcut[0]}/amnesia/model/')
         models = ModelUtils.loadFasttextModels('finModel/fastText')
         headers = ModelUtils.fetchDatasetHeaders()

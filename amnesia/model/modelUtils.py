@@ -25,10 +25,10 @@ class ModelUtils():
             return pd.DataFrame(categoriesDict)
 
     @staticmethod
-    def loadFasttextModels(path: str) -> list:
+    def loadFasttextModels(path: str,numModels:int = 3) -> list:
         modelsFasttext = []
         dir = os.scandir(path)
-        if not dir or len(os.listdir(path)) != 3: #bug in mac adding a hideing folder adding .DS_store to ignore
+        if not dir or len(os.listdir(path)) != numModels: #bug in mac adding a hideing folder adding .DS_store to ignore
             raise ModelException('runner:load_ft_model', 'error occured not load model')
 
         for j in dir:

@@ -3,6 +3,7 @@ import shutil
 import glob
 import sys
 import logging
+from typing import Any
 from modelException import ModelException
 
 logger = logging.getLogger(__name__)
@@ -14,47 +15,57 @@ logger.addHandler(handler)
 
 
 class modelChanger():
-    def __init__(self, newPath: str = 'newModels', currentPath: str = 'currentModels', oldPath: str = 'oldModels', numModels: int = 3) -> None:
+    def __init__(self, newPath: str = 'newModels', currentPath: str = 'currentModels', oldPath: str = 'oldModels') -> None:
         self.newPath = newPath
         self.currentPath = currentPath
         self.oldPath = oldPath
-        self.numOfModels = numModels
 
     def _fileCheck(self, hase: str) -> int:
         newmodels = len(glob.glob1(self.newPath, f'*{hase}*.bin'))
         currentmodels = len(glob.glob1(self.currentPath, f'*{hase}*.bin'))
         return newmodels, currentmodels
 
-    def _moveingFiles(self, originPath: str, destPath: str, hase: str) -> None:
-        for i in range(self.numOfModels):
-            shutil.move(f'{originPath}/fasttextmodel_{hase}_{i}.bin',
-                        f'{destPath}/fasttextmodel_{hase}_{i}.bin')
+    def _moveingFiles(self, originPath: str, destPath: str, hase: str, numofmodels: list) -> None:
+        for i in numofmodels:
+            shutil.move(f'{originPath}/fasttextmodel_{hase}_{i}',
+                        f'{destPath}/fasttextmodel_{hase}_{i}')
+        
         shutil.move(f'{originPath}/knn/knnmodel_{hase}.pkl',
                     f'{destPath}/knn/knnmodel_{hase}.pkl')
+        
 
-
-    def _cleanfolder(self, folderPath: str) -> None:
-        if len(os.scandir(folderPath)) < 1:
+    def _cleanfolder(folderPath: str) -> None:
+        if len(os.listdir(folderPath)) < 1:
             return
         for file in os.scandir(folderPath):
             os.remove(file.path)
 
-    def _gettingHase(self, filePath: str,fileEnd:str) -> str:
+    def _gettingHaseAndNumbers(filePath: str, fileEnd: str) -> Any:
         files = os.listdir(filePath)
+        numberlist = []
         for file in files:
             if file.endswith(fileEnd):
-                return file.split('_')[1]
+                hase = file.split('_')[1]
+                numberlist.append(file.split('_')[2])
+        return hase, numberlist
 
-    @staticmethod
     def modelsMoving(self):
-        numofnewmodels, numofcurrentmodels = modelChanger._fileCheck()
-        modelChanger._cleanfolder(self.oldPath)
-        currentHase = modelChanger._gettingHase(self.currentPath,'bin')
-        newHase = modelChanger._gettingHase(self.newPath)
+        #numofnewmodels, numofcurrentmodels = modelChanger._fileCheck()
+        modelChanger._cleanfolder(folderPath=self.oldPath)
+        input('1')
+        currentHase, currentNumOfModels = modelChanger._gettingHaseAndNumbers(
+            filePath=self.currentPath, fileEnd='bin')
+        input('2')
+        newHase, newNumOfModels = modelChanger._gettingHaseAndNumbers(
+            filePath=self.newPath, fileEnd='bin')
+        print(f'newNumOfModels = {newNumOfModels}')
+        input('3')
         modelChanger._moveingFiles(
-            originPath=self.newPath, destPath=self.currentPath, hase=newHase)
+            self=self, originPath=self.newPath, destPath=self.currentPath, hase=newHase, numofmodels=newNumOfModels)
+        input('4')
         modelChanger._moveingFiles(
-            originPath=self.currentPath, destPath=self.oldPath, hase=currentHase)
+            self=self, originPath=self.currentPath, destPath=self.oldPath, hase=currentHase, numofmodels=currentNumOfModels)
+        input('5')
 
 
 if __name__ == '__main__':
@@ -79,16 +90,17 @@ if __name__ == '__main__':
 
     for index, item in enumerate(sys.argv, 0):
         if item == '-n' and index + 1 < len(sys.argv):
-            n = f'_{sys.argv[index + 1]}'
+            n = f'{sys.argv[index + 1]}'
         if item == '-c' and index + 1 < len(sys.argv):
-            c = f'_{sys.argv[index + 1]}'
-        if item == '-o' and index +1 <len(sys.argv):
-            o = f'_{sys.argv[index+1]}'
-        if item == '-m' and index +1 < len(sys.argv):
-            m = f'_{sys.argv[index+1]}'
+            c = f'{sys.argv[index + 1]}'
+        if item == '-o' and index + 1 < len(sys.argv):
+            o = f'{sys.argv[index+1]}'
+        if item == '-m' and index + 1 < len(sys.argv):
+            m = f'{sys.argv[index+1]}'
 
     try:
-        switch = modelChanger(n,c,o,m)
+
+        switch = modelChanger(n, c, o)
         switch.modelsMoving()
 
         # add http call to server to change model based on name and hash.
@@ -98,4 +110,3 @@ if __name__ == '__main__':
         logger.critical('Stack:', str(e))
     finally:
         print('Please check -h for help.')
-        
