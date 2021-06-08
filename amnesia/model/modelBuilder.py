@@ -46,7 +46,8 @@ class ModelBuilder():
         elif type == 'xls' or type == 'xlsx':
             return pd.read_excel(filePath)
         else:
-            raise Exception('unable to read the dataset file, format not supported')
+            raise Exception(
+                'unable to read the dataset file, format not supported')
 
     @staticmethod
     # removing unnecessary file in the end of the process
@@ -62,7 +63,7 @@ class ModelBuilder():
 
     @staticmethod
     # read the data file and creat the fasttext
-    def createFastText(filePath: str,savePath:str ='finModel/fastText', hashbase: str = '',time:int = 10, debug: bool = False) -> None:
+    def createFastText(filePath: str, savePath: str = 'finModel/fastText', hashbase: str = '', time: int = 10, debug: bool = False) -> None:
         try:
             raw_data = ModelBuilder._readRawData(filePath)
         except Exception as e:
@@ -79,7 +80,8 @@ class ModelBuilder():
             np.savetxt(f'testing_data{hashbase}.txt', test.values, fmt='%s')
             np.savetxt(f'training_data{hashbase}.txt', train.values, fmt='%s')
         except:
-            raise ModelException('builder', 'unable to save the testing and training data files')
+            raise ModelException(
+                'builder', 'unable to save the testing and training data files')
 
         # creating the 5 base models and performing auto tune for 10 labels and 1.5h (5400s) and limiting the file size to 1G
         resDataFrame = pd.DataFrame(columns=['exmp', 'Percision', 'Recall'])
@@ -93,12 +95,12 @@ class ModelBuilder():
                 restest = fastmodule.test(f'testing_data{hashbase}.txt', 10)
                 resDataFrame = resDataFrame.append(
                     {'exmp': restest[0], 'Percision': restest[1], 'Recall': restest[2]}, ignore_index=True)
-                fastmodule.save_model(f'build/fasttextmodel_{hashbase}_{i}.bin')
+                fastmodule.save_model(
+                    f'build/fasttextmodel_{hashbase}_{i}.bin')
         except:
             for i in os.scandir('build'):
                 os.remove(i.path)
             raise ModelException('builder', 'unable to create models')
-
 
         # save the bast 3 fasttext models
         indexlist = resDataFrame.nlargest(3, 'Percision').index
@@ -106,7 +108,7 @@ class ModelBuilder():
         for i in indexlist:
             input('1')
             shutil.move(f'build/fasttextmodel_{hashbase}_{i}.bin',
-                      f'{savePath}/fasttextmodel_{hashbase}_{i}.bin')
+                        f'{savePath}/fasttextmodel_{hashbase}_{i}.bin')
         for i in os.scandir('build'):
             os.remove(i.path)
 
@@ -118,7 +120,7 @@ class ModelBuilder():
         logger.debug('Generated FastText Model Successfully')
 
     @staticmethod
-    def createKNN(filePath: str,savePath:str, k: int, hash: str = '') -> None:
+    def createKNN(filePath: str, savePath: str, k: int, hash: str = '') -> None:
         try:
             raw_data = ModelBuilder._readRawData(filePath)
         except Exception as e:
@@ -132,14 +134,13 @@ class ModelBuilder():
         logger.debug('Generated KNN Model Successfully')
 
     @staticmethod
-    def createModels(filePath: str, k: int = 3, hash: str = '', debug: bool = False) -> None:
-        cwd = os.getcwd()
-        cwdcat = cwd.partition('amnesia')
-        os.chdir(f'{cwdcat[0]}/amnesia/model/')
+    def createModels(filePath: str, savePath: str, k: int = 3, hash: str = '', debug: bool = False) -> None:
         try:
-            ModelBuilder.createFastText(filePath = filePath, hashbase = hash, debug = debug)
+            ModelBuilder.createFastText(
+                filePath=filePath, hashbase=hash, debug=debug)
             input()
-            ModelBuilder.createKNN(filePath = filePath, k = k, hash = hash)
+            ModelBuilder.createKNN(
+                filePath=filePath, savePath=savePath, k=k, hash=hash)
             logger.debug('Generated Models Successfully')
         except:
             for i in os.scandir('build'):
@@ -150,13 +151,15 @@ class ModelBuilder():
 
         finally:
             ModelBuilder.cleanFiles(hash)
-            os.chdir(cwd)
-        
-    
+
+
 if __name__ == '__main__':
+    cwd = os.getcwd()
+    cwdcat = cwd.partition('amnesia')
+    os.chdir(f'{cwdcat[0]}/amnesia/model/')
     if sys.argv[1] == '-h' or sys.argv[1] == '-help':
         print(
-            'Please follow format of modelBuilder.py [datasheet] [k-neighbors? = 3] [hash? = ""]')
+            'Please follow format of modelBuilder.py [datasheet] [save_path] [k-neighbors? = 10] [hash? = ""]')
         print('[datasheet] = the data sheet to build models based on')
         print('[k-neighbors] = k neighbors. default = 3')
         print('[hash] = hash to attach to model names. default = ""')
@@ -165,7 +168,7 @@ if __name__ == '__main__':
 
     if len(sys.argv) < 2:
         logger.error(
-            'Please follow format of modelBuilder.py [datasheet] -k [k-neighbors? = 3] -h [hash? = ""] -d')
+            'Please follow format of modelBuilder.py [datasheet] -s [save_path] -k [k-neighbors? = 3] -h [hash? = ""] -d')
         sys.exit()
 
     if not os.path.isdir('dataset'):
@@ -175,12 +178,11 @@ if __name__ == '__main__':
         # fetch n download it
         path = sys.argv[1].split('/')
         filename = path[len(path) - 1].split('.')[0]
-        datasetConfig = ModelUtils.fetchDatasetConfig()            
+        datasetConfig = ModelUtils.fetchDatasetConfig()
         r = requests.get(datasetConfig['url'], allow_redirects=True)
         with open(f'./dataset/{filename}.{datasetConfig["type"]}', 'wb') as f:
             f.write(r.content)
         logger.debug('Successfully downloaded data')
-
 
     if not os.path.isdir('build'):
         os.mkdir('build')
@@ -206,12 +208,14 @@ if __name__ == '__main__':
     if not os.path.isdir('newModels/injectModels/knn'):
         os.mkdir('newModels/injectModels/knn')
 
-
     k: int = 10
+    s: str = ''
     h: str = ''
     d: bool = False
 
     for index, item in enumerate(sys.argv, 0):
+        if item == '-s' and index + 1 < len(sys.argv):
+            s = f'{sys.argv[index + 1]}'
         if item == '-h' and index + 1 < len(sys.argv):
             h = f'{sys.argv[index + 1]}'
         if item == '-k' and index + 1 < len(sys.argv):
@@ -223,10 +227,12 @@ if __name__ == '__main__':
         ModelBuilder.cleanFiles(h)
         ModelBuilder.createModels(
             filePath=sys.argv[1],
+            savePaths=s,
             k=k,
             hash=h,
             debug=d
         )
+        os.chdir(cwd)
 
         # add http call to server to change model based on name and hash.
     except ModelException as e:
