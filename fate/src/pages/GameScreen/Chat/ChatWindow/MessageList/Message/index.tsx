@@ -4,7 +4,7 @@ import styles from './styles.module.css'
 export interface MessageProps {
     username: string
     playername: string
-    messageText: string
+    messageText: string | string[]
     myMessage: boolean
 }
 

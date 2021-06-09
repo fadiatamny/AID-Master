@@ -1,28 +1,24 @@
 import styles from './styles.module.css'
 import React from 'react'
 import ChatTabs from './ChatTabs'
-import EventsManager from '../../../services/EventsManager'
 import ChatWindow from './ChatWindow'
-import { SocketEvents } from '../../../models/SocketEvents.model'
-import { MessageProps } from './ChatWindow/MessageList/Message'
 
 type MessageType = {
     username: string
     playername: string
-    messageText: string
+    messageText: string | string[]
     myMessage: boolean
 }
 
 export interface ChatProps {
     messages: { [key: string]: { playername: string; messages: MessageType[] } }
-    setMessages?: any
     rid: string
     username: string
     playername: string
     type: string
 }
 
-const Chat = ({ messages, username, playername, type, rid, setMessages }: ChatProps) => {
+const Chat = ({ messages, username, playername, type, rid }: ChatProps) => {
     const [activeChat, setActiveChat] = React.useState('All')
 
     const generateGeneralTabs = () => {
@@ -65,13 +61,11 @@ const Chat = ({ messages, username, playername, type, rid, setMessages }: ChatPr
         <div className="container-fluid">
             <div className={`row justify-content-center ${styles.container}`}>
                 <div className={`col-md-3 col-xl-2`}>
-                    {/* @ts-ignore */}
                     <ChatTabs users={generateUserTabs()} general={generateGeneralTabs()} switchActive={switchActive} />
                 </div>
                 <div className={`col-md-5 col-xl-6`}>
                     <ChatWindow
                         messages={messages[activeChat].messages}
-                        setMessages={setMessages}
                         username={username}
                         playername={playername}
                         activeChat={activeChat}

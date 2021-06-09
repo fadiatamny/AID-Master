@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-this-alias */
 import styles from './styles.module.css'
 import Header from '../../components/Header/Header'
 import Chat from './Chat'
@@ -7,12 +6,10 @@ import { SocketEvents } from '../../models/SocketEvents.model'
 import EventsManager from '../../services/EventsManager'
 import { generate } from '../../services/ScenarioGuide'
 
-// export interface GameScreenProps{}
-
 type MessageType = {
     username: string
     playername: string
-    messageText: string
+    messageText: string | string[]
     myMessage: boolean
 }
 
@@ -20,9 +17,9 @@ const GameScreen = () => {
     const eventsManager = EventsManager.instance
     const uid = localStorage.getItem('userId')
     const username = sessionStorage.getItem('username')
-    const playername = sessionStorage.getItem('playername')
     const playertype = sessionStorage.getItem('type')
-    const [roomid, setRoomid] = useState(sessionStorage.getItem('rid')!)
+    const playername = sessionStorage.getItem('playername')
+    const roomid = sessionStorage.getItem('rid')
 
     const generateMessages = () => {
         const messagesObj: { [key: string]: { playername: string; messages: MessageType[] } } = {
@@ -68,6 +65,7 @@ const GameScreen = () => {
     const [messages, setMessages] = useState<{ [key: string]: { playername: string; messages: MessageType[] } }>(
         generateMessages()
     )
+
     const messagesRef = useRef<{ [key: string]: { playername: string; messages: MessageType[] } }>()
     messagesRef.current = messages
 
@@ -96,7 +94,7 @@ const GameScreen = () => {
     }
 
     const handleScenario = (obj: any) => {
-        const messagesCopy = Object.assign({}, messages)
+        const messagesCopy = Object.assign({}, messagesRef.current)
         messagesCopy['AID Master'].messages.push({
             username: 'AID Master',
             playername: 'Help',
@@ -108,15 +106,6 @@ const GameScreen = () => {
 
     const handleScenarioGuide = (obj: any) => {
         const message = generate(obj.organized)
-        const object = { username: 'AID Master', playername: 'Help', messageText: message, myMessage: false }
-
-        // PRETTIFY % FROM MODEL
-        const js = {
-            username: 'AID Master',
-            playername: 'Help',
-            messageText: JSON.stringify(obj.organized),
-            myMessage: false
-        }
         let prettyText = ''
         Object.keys(obj.organized).map((key: string) => {
             const no = obj.organized[key]
@@ -127,9 +116,22 @@ const GameScreen = () => {
                 }
             })
         })
-        js.messageText = prettyText
-        //@ts-ignore
-        setMessages((messages) => [...messages, object, js])
+        const messagesCopy = Object.assign({}, messagesRef.current)
+        messagesCopy['AID Master'].messages.push(
+            {
+                username: 'AID Master',
+                playername: 'Help',
+                messageText: message,
+                myMessage: false
+            },
+            {
+                username: 'AID Master',
+                playername: 'Help',
+                messageText: prettyText,
+                myMessage: false
+            }
+        )
+        setMessages(messagesCopy)
     }
 
     const handlePlayerJoined = (obj: any) => {
@@ -156,6 +158,7 @@ const GameScreen = () => {
     }
 
     useEffect(() => {
+        //check state
         eventsManager.on(SocketEvents.MESSAGE, 'game-component', (obj: any) => handleMessages(obj))
         eventsManager.on(SocketEvents.PLAYER_JOINED, 'game-component', (obj: any) => handlePlayerJoined(obj))
         if (sessionStorage.getItem('type') === 'dm') {
@@ -183,16 +186,12 @@ const GameScreen = () => {
         <div>
             <Header />
             <div className={`${styles.container}`}>
-                {/*@ts-ignore*/}
                 <Chat
                     messages={messages}
-                    rid={roomid}
-                    //@ts-ignore
-                    username={sessionStorage.getItem('username')}
-                    //@ts-ignore
-                    playername={sessionStorage.getItem('playername')}
-                    //@ts-ignore
-                    type={sessionStorage.getItem('type')}
+                    rid={roomid!}
+                    username={username!}
+                    playername={playername!}
+                    type={playertype!}
                 />
             </div>
         </div>

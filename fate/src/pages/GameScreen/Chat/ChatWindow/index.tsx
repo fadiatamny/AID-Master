@@ -2,7 +2,6 @@ import styles from './styles.module.css'
 import Input from '../../../../components/Input/Input'
 import ChatTitle from './ChatTitle'
 import MessagesList from './MessageList'
-import { MessageProps } from './MessageList/Message'
 import React from 'react'
 import EventsManager from '../../../../services/EventsManager'
 import { SocketEvents } from '../../../../models/SocketEvents.model'
@@ -10,37 +9,21 @@ import { SocketEvents } from '../../../../models/SocketEvents.model'
 type MessageType = {
     username: string
     playername: string
-    messageText: string
+    messageText: string | string[]
     myMessage: boolean
 }
 
 export interface ChatWindowProps {
     activeChat: string
     messages: MessageType[]
-    setMessages: any
     username: string
     playername: string
     rid: string
 }
 
-const ChatWindow = ({ activeChat, username, playername, rid, messages, setMessages }: ChatWindowProps) => {
+const ChatWindow = ({ activeChat, username, playername, rid, messages }: ChatWindowProps) => {
     const eventsManager = EventsManager.instance
     const [message, setMessage] = React.useState('')
-
-    React.useEffect(() => {
-        // eventsManager.on(SocketEvents.MESSAGE, 'chat-component', (obj: any) => {
-        //     const object = {
-        //         username: obj.username,
-        //         playername: obj.username == 'DM' ? 'Kyra Warner' : 'Blake Holt',
-        //         messageText: obj.message,
-        //         myMessage: obj.username == 'DM' ? true : false
-        //     }
-        //     console.log(messages)
-        //     const tmp = [...messages, object]
-        //     console.log(tmp)
-        //     setMessages(tmp)
-        // })
-    }, [])
 
     const inputChange = (e: any) => {
         setMessage(e.target.value)
