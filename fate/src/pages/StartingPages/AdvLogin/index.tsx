@@ -9,24 +9,23 @@ import { SocketEvents } from '../../../models/SocketEvents.model'
 const AdvLoginScreen = (props: any) => {
     const [roomNumber, setRoomNumber] = useState('')
     const [username, setUsername] = useState('')
-    const [playerName, setPlayerName] = useState('')
+    const [playername, setPlayername] = useState('')
     const eventsManager = EventsManager.instance
-
-    
+    const uid = localStorage.getItem('userId')
 
     const handleSubmit = () => {
         eventsManager.on(SocketEvents.ROOM_JOINED, 'home-screen', (obj: any) => {
-            console.log('lol')
-            localStorage.setItem('rid',`${roomNumber}`)
-            localStorage.setItem('playerName', `${playerName}`)
-            localStorage.setItem('username', `${username}`)
-            localStorage.setItem('type', obj.type)
+            sessionStorage.setItem('rid', `${roomNumber}`)
+            sessionStorage.setItem('playername', `${playername}`)
+            sessionStorage.setItem('username', `${username}`)
+            sessionStorage.setItem('type', obj.type)
+            sessionStorage.setItem('playerlist', JSON.stringify(obj.playerlist))
             props.history.push(`/game`)
         })
         eventsManager.trigger(SocketEvents.JOIN_ROOM, {
             id: roomNumber,
             userId: localStorage.getItem('userId'),
-            data: { type: 'player', id: roomNumber, username: username }
+            data: { type: 'player', id: uid, username: username, playername: playername }
         })
     }
 
@@ -39,7 +38,7 @@ const AdvLoginScreen = (props: any) => {
     }
 
     const handleNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setPlayerName(event.target.value)
+        setPlayername(event.target.value)
     }
 
     return (

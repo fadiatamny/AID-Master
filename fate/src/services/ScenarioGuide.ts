@@ -32,8 +32,6 @@ const writeToTextComma = (fm: string, d: any) => {
 export const generate = (data: any) => {
     let fm = ''
     let k = ''
-    console.log(data['Setting'])
-    console.log(data['Alignment'])
     if (checkEmpty(data, 'Encounter Type')) {
         const et = data['Encounter Type']
         fm = fm + 'It is a good time for a '

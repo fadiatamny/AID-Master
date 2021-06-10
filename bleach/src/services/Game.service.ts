@@ -107,26 +107,25 @@ export default class GameService {
                     .in(roomId)
                     .emit(SocketEvents.PLAYER_JOINED, playerData?.id, playerData?.username, playerData?.playername)
             } else {
-                this._sendError('There was an issue, please try again', `This room ${roomId} does not exist.`)
+                this._sendError('joinRoom', 'There was an issue, please try again', `This room ${roomId} does not exist.`)
             }
         } catch (err) {
             console.log(err.message)
-            this._sendError('There was an issue, please try again', err)
+            this._sendError('joinRoom', 'There was an issue, please try again', err)
         }
     }
 
-    private _sendMessage(roomId: string, username: string, message: string, target?: string) {
-        if (!roomId || !username || !message) {
-            this._sendError('There was an issue, please try again', 'Missing Variables')
+    private _sendMessage(roomId: string, username: string, playername: string, message: string, target?: string) {
+        if (!roomId || !username || !message || !playername) {
+            this._sendError('sendMessage', 'There was an issue, please try again', 'Missing Variables')
             return
         }
-        this.io.sockets.in(roomId).emit(SocketEvents.MESSAGE, username, message, target)
+        this.io.sockets.in(roomId).emit(SocketEvents.MESSAGE, username, message, playername, target)
     }
 
     private _sendScenario(roomId: string, username: string, scenario: string) {
-        console.log(roomId, username, scenario)
         if (!this._roomExists(roomId)) {
-            this._sendError('There was an issue, please try again', 'Room doesnt exist')
+            this._sendError('sendScenario', 'There was an issue, please try again', 'Room doesnt exist')
             return
         }
 
@@ -142,7 +141,6 @@ export default class GameService {
 
                 const organized = ScenarioUtils.organizeByCategory(obj)
                 const theme = ScenarioUtils.fetchTheme(obj)
-                console.log(theme, organized)
                 this.io.sockets.in(roomId).emit(SocketEvents.SCENARIO_GUIDE, username, organized, theme)
             })
             .catch((e) => {
@@ -150,22 +148,19 @@ export default class GameService {
             })
     }
 
-    private _leaveRoom(roomId: string, playerId: string) {
+    private _leaveRoom(roomId: string, playerId: string, username: string) {
         if (!this._roomExists(roomId)) {
-            this._sendError('There was an issue, please try again', 'Room doesnt exist')
+            this._sendError('leaveRoom', 'There was an issue, please try again', 'Room doesnt exist')
             return
         }
         const session = this.getGame(roomId)
-        this.io.sockets.in(roomId).emit(SocketEvents.MESSAGE, 'Server', `${playerId} has left the game`)
+        this.io.sockets.in(roomId).emit(SocketEvents.MESSAGE, 'Server', `${username} has left the game`)
         this.io.sockets.in(roomId).emit(SocketEvents.PLAYER_LEFT, playerId)
         session.playerLeft(playerId)
         this._socket.leave(roomId)
     }
 
-    private _sendError(message?: string, error?: unknown) {
-        this._socket.emit(SocketEvents.ERROR, {
-            message: message ?? `There was an issue`,
-            error
-        })
+    private _sendError(where?: string, message?: string, error?: unknown) {
+        this._socket.emit(SocketEvents.ERROR, where, message ?? `There was an issue`, error)
     }
 }

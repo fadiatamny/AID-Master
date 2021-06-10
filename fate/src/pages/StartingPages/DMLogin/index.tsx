@@ -9,21 +9,21 @@ import Clickable from '../../../components/Clickable/Clickable'
 
 const DMLoginScreen = (props: any) => {
     const [username, setUsername] = useState('Game Master')
-    const [playerName, setPlayerName] = useState('DM')
+    const [playername, setPlayername] = useState('DM')
     const eventsManager = EventsManager.instance
-
-    
+    const uid = localStorage.getItem('userId')
 
     const handleSubmit = () => {
         eventsManager.on(SocketEvents.ROOM_CREATED, 'home-screen', ({ id }: any) => {
-            localStorage.setItem('rid', `${id}`)
-            localStorage.setItem('playerName', `${playerName}`)
-            localStorage.setItem('username', `${username}`)
-            localStorage.setItem('type', 'dm')
+            sessionStorage.setItem('rid', `${id}`)
+            sessionStorage.setItem('playername', `${playername}`)
+            sessionStorage.setItem('username', `${username}`)
+            sessionStorage.setItem('type', 'dm')
+            sessionStorage.setItem('playerlist', JSON.stringify([{ id: uid, username, playername }]))
             props.history.push(`/game`)
         })
         eventsManager.trigger(SocketEvents.CREATE_ROOM, {
-            playerId: localStorage.getItem('userId'),
+            playerId: uid,
             username: username
         })
     }
@@ -33,7 +33,7 @@ const DMLoginScreen = (props: any) => {
     }
 
     const handleNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setPlayerName(event.target.value)
+        setPlayername(event.target.value)
     }
 
     return (
@@ -47,7 +47,7 @@ const DMLoginScreen = (props: any) => {
                     <Input
                         id="DMUsername"
                         className={styles.RoomCode}
-                       label="Character Name"
+                        label="Character Name"
                         placeholder="Dungeon Master"
                         onChange={handleUsernameChange}
                     />
