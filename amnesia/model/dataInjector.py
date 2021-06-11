@@ -32,13 +32,14 @@ class DataInjector():
         return crawler.crawl()
 
     @staticmethod
-    def runing(dataPath:str,saveModelsPath:str,saveDataPath:str,hase:str,modelsPath:str,numberCrawler:int):
+    def runing(dataPath: str, saveModelsPath: str, saveDataPath: str, hase: str, modelsPath: str, numberCrawler: int):
         cwd = os.getcwd()
         cwdcut = cwd.partition('amnesia')
         os.chdir(f'{cwdcut[0]}/amnesia/model/')
         models = ModelUtils.loadFasttextModels(f'{modelsPath}')
         headers = ModelUtils.fetchDatasetHeaders()
-        crawledData = DataInjector.fetchCrawledData(numberCrawler = numberCrawler)
+        crawledData = DataInjector.fetchCrawledData(
+            numberCrawler=numberCrawler)
         predictions = []
         for i in range(len(crawledData)):
             try:
@@ -65,11 +66,11 @@ class DataInjector():
         input('1')
         ModelBuilder.createFastText(
             f'{saveDataPath}/injectedData_{hase}.csv', f'{saveModelsPath}', f'{hase}', 5400)
-        ModelBuilder.createKNN(f'{saveDataPath}/injectedData_{hase}.csv', f'{saveModelsPath}', 10, f'{hase}')
+        ModelBuilder.createKNN(
+            f'{saveDataPath}/injectedData_{hase}.csv', f'{saveModelsPath}', 10, f'{hase}')
         ModelTester.fastTextTest(
             f'{saveDataPath}/injectedData_{hase}.csv', f'{saveModelsPath}')
         os.chdir(cwd)
-
 
 
 if __name__ == '__main__':
@@ -107,8 +108,7 @@ if __name__ == '__main__':
 
     try:
 
-        DataInjector.runing(d,s,h,o,n)
-        
+        DataInjector.runing(d, s, h, o, n)
 
         # add http call to server to change model based on name and hash.
     except ModelException as e:

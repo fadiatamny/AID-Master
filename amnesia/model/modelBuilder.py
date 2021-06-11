@@ -138,14 +138,13 @@ class ModelBuilder():
         try:
             ModelBuilder.createFastText(
                 filePath=filePath, hashbase=hash, debug=debug)
-            input()
             ModelBuilder.createKNN(
                 filePath=filePath, savePath=savePath, k=k, hash=hash)
             logger.debug('Generated Models Successfully')
         except:
             for i in os.scandir('build'):
                 os.remove(i.path)
-            for i in os.scandir('finModel'):
+            for i in os.scandir(f'{savePath}'):
                 os.remove(i.path)
             raise ModelException('Builder', "unable to create the models")
 
