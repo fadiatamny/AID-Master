@@ -6,12 +6,10 @@ from flask_cors import cross_origin
 import json
 
 modelPath = './model'
-fastTextName = ''
-knnName = 'knnmodel.pkl'
 
 # os.chdir('./model')
-model = ModelRunner(f'{modelPath}/finModel/fastText',
-                    f'{modelPath}/finModel/knn/{knnName}')
+model = ModelRunner(f'{modelPath}/bin/currentModels',
+                    f'{modelPath}/bin/currentModels/knn')
 # os.chdir('../')
 
 router = Blueprint('api', __name__, url_prefix='/api')
@@ -45,6 +43,9 @@ def switchModels():
         knnPath = request.json['knn']
         model.changeInstance(fasttextPath, knnPath)
         return 'Successfully swapped'
+    except ModelException as e:
+        print(str(e))
+        abort(500, {'message': str(e.message)})
     except ApiException as e:
         abort(e.errorCode, {'message': str(e.message)})
     except Exception as e:

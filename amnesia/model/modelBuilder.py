@@ -61,7 +61,7 @@ class ModelBuilder():
 
     @staticmethod
     # read the data file and creat the fasttext
-    def createFastText(filePath: str,savePath:str ='finModel/fastText', hashbase: str = '',time:int = 5400, debug: bool = False) -> None:
+    def createFastText(filePath: str, savePath:str ='bin/newModels/fasttext', hashbase: str = '',time:int = 5400, debug: bool = False) -> None:
         try:
             raw_data = ModelBuilder._readRawData(filePath)
         except Exception as e:
@@ -116,7 +116,7 @@ class ModelBuilder():
         logger.debug('Generated FastText Model Successfully')
 
     @staticmethod
-    def createKNN(filePath: str, savePath: str, k: int, hash: str = '') -> None:
+    def createKNN(filePath: str, savePath: str = 'bin/newModels/knn', k: int = 10, hash: str = '') -> None:
         try:
             raw_data = ModelBuilder._readRawData(filePath)
         except Exception as e:
@@ -126,7 +126,7 @@ class ModelBuilder():
         knnData = raw_data.drop(['TEXT'], axis=1)
         knn = NearestNeighbors(n_neighbors=k, algorithm='auto').fit(knnData)
         # saving the model
-        joblib.dump(knn, f'./newModels/knn/knnmodel_{hash}.pkl')
+        joblib.dump(knn, f'${savePath}/knnmodel_{hash}.pkl')
         logger.debug('Generated KNN Model Successfully')
 
     @staticmethod
@@ -142,8 +142,8 @@ class ModelBuilder():
         except:
             for file in os.scandir('build'):
                 os.remove(file.path)
-            for file in os.scandir('newModels'):
-                os.remove(file.path)
+            for folder in os.scandir('bin/newModels'):
+                shutil.rmtree(folder.path)
             raise ModelException('Builder', "unable to create the models")
 
         finally:

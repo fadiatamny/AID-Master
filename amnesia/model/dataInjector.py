@@ -60,7 +60,7 @@ class DataInjector():
         data = pd.read_csv(f'{dataPath}')
         newdata = pd.concat([data, resFrame, data], ignore_index=True)
         newdata.to_csv(f'{saveDataPath}/injectedData_{hase}.csv', index=False)
-        input('1')
+
         ModelBuilder.createFastText(
             f'{saveDataPath}/injectedData_{hase}.csv', f'{saveModelsPath}', f'{hase}', 5400)
         ModelBuilder.createKNN(

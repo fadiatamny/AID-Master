@@ -33,11 +33,12 @@ def timed(func):
     return wrapper
 
 class ModelRunner():
-    def __init__(self, fastText: str, knn: str) -> None:
+    def __init__(self, fastText: str, knn: str, fastTextCount: int, dataPath: str) -> None:
         self.fastTextPath = fastText
+        self.fastTextCount = fastTextCount
         self.knnPath = knn
         self.categories = ModelUtils.fetchDatasetHeaders()
-        self.forDf =pd.read_csv('data/data.csv')
+        self.forDf = pd.read_csv(dataPath)
         self.fastTextModels = None
         self._loadModels()
 
@@ -45,7 +46,37 @@ class ModelRunner():
         self.fastTextModels = ModelUtils.loadFasttextModels(self.fastTextPath)
         self.knnModel = joblib.load(self.knnPath)
 
+    def _verifyFastText(self, path: str):
+        fCount: int = 0
+        dir = os.scandir(path)
+        if not dir or len(os.listdir(path)) != self.fastTextCount:
+            raise ModelException('runner:load_ft_model', 'error occured not load model, Too many files in directory')
+        for j in dir:
+            if os.path.splitext(j)[1] == '.bin':
+                fCount+=1
+        if fCount != self.fastTextCount:
+            raise ModelException('runner:load_ft_model', 'error occured not load model, Not enough .bin files in directory')
+
+    def _verifyFastText(self, path: str):
+        fCount: int = 0
+        dir = os.scandir(path)
+        if not dir:
+            raise ModelException('runner:load_ft_model', 'error occured not load model, Too many files in directory')
+        for j in dir:
+            if os.path.splitext(j)[1] == '.pkl':
+                fCount+=1
+        if fCount != 1:
+            raise ModelException('runner:load_ft_model', 'error occured not load model, Not enough .pkl files in directory')
+
+    def _checkPaths(self, fastText=None, knn=None):
+        if fastText:
+            self._verifyFastText(fastText)
+        if knn: 
+            self._verifyKNN(knn)
+
     def changeInstance(self, fastText='', knn='') -> None:
+        self._checkPaths(fastText, knn)
+
         if fastText != '':
             self.fastTextPath = fastText
         if knn != '':
@@ -63,9 +94,8 @@ class ModelRunner():
         s.repeat(n)
         return s.reindex(categorieslist, fill_value=k)
 
- # convert the data frame to text
+    # convert the data frame to text
     def _dfToText(self, df: DataFrame) -> Series:
-        
         raw_frame = df.replace(0, np.nan)
         raw_frame = raw_frame.dropna(axis='columns', how='all')
         del raw_frame['TEXT']
@@ -119,9 +149,11 @@ class ModelRunner():
 
 if __name__ == '__main__':
     if sys.argv[1] == '-h' or sys.argv[1] == '-help':
-        print('Please follow format of modelRunner.py -f [FastText] -k [KNN]')
-        print('[FastText] = the FastText model bin path')
+        print('Please follow format of modelRunner.py -f [FastText] -fn [FastText Number] -k [KNN] -d [Data]')
+        print('[FastText] = the FastText models bin path')
+        print('[FastText Number] = Number of FastText models')
         print('[KNN] = the KNN model bin path')
+        print('[Data] = the location where your data is')
         sys.exit()
 
     if len(sys.argv) < 2:
@@ -131,23 +163,29 @@ if __name__ == '__main__':
 
     fastText: str = ''
     knn: str = ''
+    dataPath: str = ''
+    fastTextCount: int = 3
 
     for index, item in enumerate(sys.argv, 0):
         if item == '-k' and index + 1 < len(sys.argv):
             knn = str(sys.argv[index + 1])
         if item == '-f' and index + 1 < len(sys.argv):
             fastText = str(sys.argv[index + 1])
+        if item == '-fn' and index + 1 < len(sys.argv):
+            fastTextCount = int(sys.argv[index + 1])
+        if item == '-d' and index + 1 < len(sys.argv):
+            dataPath = str(sys.argv[index + 1])
 
     try:
-        runner = ModelRunner(fastText, knn)
+        runner = ModelRunner(fastText, knn, fastTextCount, dataPath)
 
         text = input('Please insert text to be predicted')
         prediction = runner.predict(text)
 
-        print(f'Prediction is:\n{prediction}')
+        logger.debug(f'Prediction is:\n{prediction}')
     except ModelException as e:
         logger.critical(str(e))
+        print('Please check -h for help.')
     except Exception as e:
         logger.critical('Stack:', str(e))
-    finally:
         print('Please check -h for help.')

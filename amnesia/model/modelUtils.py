@@ -25,21 +25,23 @@ class ModelUtils():
             return pd.DataFrame(categoriesDict)
 
     @staticmethod
-    def loadFasttextModels(path: str,numModels:int = 3) -> list:
+    def loadFasttextModels(path: str, numModels:int = 3) -> list:
         modelsFasttext = []
         dir = os.scandir(path)
         if not dir or len(os.listdir(path)) != numModels: #bug in mac adding a hideing folder adding .DS_store to ignore
-            raise ModelException('runner:load_ft_model', 'error occured not load model')
+            raise ModelException('runner:load_ft_model', 'error occured not load model, Too many files in directory')
 
         for j in dir:
             if os.path.splitext(j)[1] == '.bin':
                 modelsFasttext.append(
                     fasttext.load_model(f'{os.path.abspath(j)}'))
+        if len(modelsFasttext) != numModels:
+            raise ModelException('runner:load_ft_model', 'error occured not load model, Not enough .bin files in directory')
+
         return modelsFasttext
     
     @staticmethod
     def fastPredict(text: str, models: list)-> list:
-        
         resF = []
         for i in range(len(models)):
             resF.append(models[i].predict(text, k=10))
