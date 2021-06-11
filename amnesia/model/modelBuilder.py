@@ -6,12 +6,10 @@ import joblib
 import os
 import sys
 import requests
-import datetime
 import texthero as hero
 import logging
-import json
-from modelException import ModelException
-from modelUtils import ModelUtils
+from .modelException import ModelException
+from .modelUtils import ModelUtils
 import shutil
 
 logger = logging.getLogger(__name__)

@@ -1,16 +1,13 @@
-from modelUtils import ModelUtils
-from pandas.core.frame import DataFrame
-from crawler import Crawler
+from .modelUtils import ModelUtils
+from .crawler import Crawler
 import pandas as pd
-import json
-from modelRunner import ModelRunner
 import texthero as hero
-from modelBuilder import ModelBuilder
-from modelTester import ModelTester
+from .modelBuilder import ModelBuilder
+from .modelTester import ModelTester
 import os
 import sys
 import logging
-from modelException import ModelException
+from .modelException import ModelException
 
 logger = logging.getLogger(__name__)
 logger.setLevel("DEBUG")

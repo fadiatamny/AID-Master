@@ -1,10 +1,9 @@
-from model.modelException import ModelException
+from .model.modelException import ModelException
 from flask import Blueprint, request, abort
-from apiException import ApiException
-from model.modelRunner import ModelRunner
+from .apiException import ApiException
+from .model.modelRunner import ModelRunner
 from flask_cors import cross_origin
 import json
-import os
 
 modelPath = './model'
 fastTextName = ''

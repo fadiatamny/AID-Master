@@ -3,7 +3,7 @@ import json
 import pandas as pd
 import fasttext
 from collections import Counter
-from modelException import ModelException
+from .modelException import ModelException
 
 class ModelUtils():
     @staticmethod

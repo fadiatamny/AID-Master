@@ -1,20 +1,17 @@
 
-from modelUtils import ModelUtils
+from .modelUtils import ModelUtils
 import pandas as pd
 from pandas.core.frame import DataFrame
 import joblib
-import fasttext
 import numpy as np
 import texthero as hero
 import logging
 import time
 from functools import wraps
-from collections import Counter
 from pandas.core.series import Series
-from modelException import ModelException
+from .modelException import ModelException
 import os
 import sys
-import json
 
 logger = logging.getLogger(__name__)
 logger.setLevel("DEBUG")
