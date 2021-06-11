@@ -54,7 +54,6 @@ export default class SocketManager {
 
     private _connect() {
         if (!this._socket) {
-            console.log('connecting')
             this._socket = io(endpoint)
         }
     }
@@ -76,16 +75,29 @@ export default class SocketManager {
         this._socket.emit(SocketEvents.JOIN_ROOM, id, userId, data)
     }
 
-    private _sendMessage({ id, username, message, target }: any) {
-        this._socket.emit(SocketEvents.SEND_MESSAGE, id, username, message, target)
+    private _sendMessage(params: {
+        id: string
+        username: string
+        playername: string
+        message: string
+        target?: string
+    }) {
+        this._socket.emit(
+            SocketEvents.SEND_MESSAGE,
+            params.id,
+            params.username,
+            params.playername,
+            params.message,
+            params.target
+        )
     }
 
     private _sendScenario({ id, username, message }: any) {
         this._socket.emit(SocketEvents.SEND_SCENARIO, id, username, message)
     }
 
-    private _leaveRoom(id: string, userId: string) {
-        this._socket.emit(SocketEvents.LEAVE_ROOM, { id, userId })
+    private _leaveRoom({ id, userId, username }: any) {
+        this._socket.emit(SocketEvents.LEAVE_ROOM, id, userId, username)
     }
     //#endregion
 
@@ -114,12 +126,11 @@ export default class SocketManager {
         this._eventsManager.trigger(SocketEvents.ROOM_JOINED, { username, type, playerlist })
     }
 
-    private _message(username: string, message: string, target: string, playername: string) {
-        this._eventsManager.trigger(SocketEvents.MESSAGE, { username, message, target, playername })
+    private _message(username: string, message: string, playername: string, target: string) {
+        this._eventsManager.trigger(SocketEvents.MESSAGE, { username, message, playername, target })
     }
 
     private _scenario(message: string) {
-        console.log(message)
         this._eventsManager.trigger(SocketEvents.SCENARIO, { message })
     }
 
@@ -127,8 +138,8 @@ export default class SocketManager {
         this._eventsManager.trigger(SocketEvents.SCENARIO_GUIDE, { username, organized, theme })
     }
 
-    private _error(username: string, message: string) {
-        this._eventsManager.trigger(SocketEvents.ERROR, { username, message })
+    private _error(where: string, message: string, error: any) {
+        this._eventsManager.trigger(SocketEvents.ERROR, { where, message, error })
     }
 
     private _playerLeft(playerId: string) {
@@ -136,7 +147,7 @@ export default class SocketManager {
     }
 
     private _playerJoined(playerId: string, username: string, playername: string) {
-        this._eventsManager.trigger(SocketEvents.PLAYER_LEFT, { playerId, username, playername })
+        this._eventsManager.trigger(SocketEvents.PLAYER_JOINED, { id: playerId, username, playername })
     }
 
     //#endregion
