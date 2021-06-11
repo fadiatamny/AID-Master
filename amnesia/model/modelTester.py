@@ -46,6 +46,7 @@ class ModelTester:
             else:
                 finalframe = pd.concat(
                     [finalframe, tempDataframe], ignore_index=True)
+        finalframe.to_csv('data/injectordata/finleframe.csv',index=False)
         compareres = finalframe.compare(data, keep_shape=True, keep_equal=True)
         for i in compareres.index:
             for j in categorieslist:

@@ -6,7 +6,6 @@ export default class GameController {
         const id = req.params.id
         try {
             const session = GameService.getGameSession(id)
-            console.log(session)
             const data = JSON.stringify(session.toJson())
             res.setHeader('Content-disposition', `attachment; filename= session_${id}.json`)
             res.setHeader('Content-type', 'application/json')
