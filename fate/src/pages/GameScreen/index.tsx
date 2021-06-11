@@ -6,6 +6,7 @@ import { SocketEvents } from '../../models/SocketEvents.model'
 import EventsManager from '../../services/EventsManager'
 import { generate } from '../../services/ScenarioGuide'
 import CharacterSheet from './CharacterSheet'
+import { Col, Row } from 'react-bootstrap'
 
 type MessageType = {
     username: string
@@ -186,11 +187,11 @@ const GameScreen = () => {
     return (
         <div>
             <Header />
-            <div className={`row justify-content-center`}>
-                <div className="col-3">
+            <Row className="justify-content-center">
+                <Col sm={{ order: 1, span: 12 }} md={5}>
                     <CharacterSheet />
-                </div>
-                <div className="col">
+                </Col>
+                <Col sm={{ order: 2, span: 12 }} md={7}>
                     <Chat
                         messages={messages}
                         rid={roomid!}
@@ -198,8 +199,8 @@ const GameScreen = () => {
                         playername={playername!}
                         type={playertype!}
                     />
-                </div>
-            </div>
+                </Col>
+            </Row>
         </div>
     )
 }

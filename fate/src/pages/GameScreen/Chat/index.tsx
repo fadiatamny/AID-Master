@@ -58,20 +58,18 @@ const Chat = ({ messages, username, playername, type, rid }: ChatProps) => {
     const switchActive = (name: string) => setActiveChat(name)
 
     return (
-        <div className="container-fluid">
-            <div className={`row justify-content-center ${styles.container}`}>
-                <div className={`col-md-3 col-xl-2`}>
-                    <ChatTabs users={generateUserTabs()} general={generateGeneralTabs()} switchActive={switchActive} />
-                </div>
-                <div className={`col-md-5 col-xl-6`}>
-                    <ChatWindow
-                        messages={messages[activeChat].messages}
-                        username={username}
-                        playername={playername}
-                        activeChat={activeChat}
-                        rid={rid}
-                    />
-                </div>
+        <div className={`row justify-content-center ${styles.container}`}>
+            <div className={`col-md-3 col-xl-2`}>
+                <ChatTabs users={generateUserTabs()} general={generateGeneralTabs()} switchActive={switchActive} />
+            </div>
+            <div className={`col`}>
+                <ChatWindow
+                    messages={messages[activeChat].messages}
+                    username={username}
+                    playername={playername}
+                    activeChat={activeChat}
+                    rid={rid}
+                />
             </div>
         </div>
     )
