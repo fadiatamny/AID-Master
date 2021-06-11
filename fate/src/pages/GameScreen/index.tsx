@@ -5,6 +5,7 @@ import { useEffect, useState, useRef } from 'react'
 import { SocketEvents } from '../../models/SocketEvents.model'
 import EventsManager from '../../services/EventsManager'
 import { generate } from '../../services/ScenarioGuide'
+import CharacterSheet from './CharacterSheet'
 
 type MessageType = {
     username: string
@@ -185,14 +186,19 @@ const GameScreen = () => {
     return (
         <div>
             <Header />
-            <div className={`${styles.container}`}>
-                <Chat
-                    messages={messages}
-                    rid={roomid!}
-                    username={username!}
-                    playername={playername!}
-                    type={playertype!}
-                />
+            <div className={`row justify-content-center`}>
+                <div className="col-3">
+                    <CharacterSheet />
+                </div>
+                <div className="col">
+                    <Chat
+                        messages={messages}
+                        rid={roomid!}
+                        username={username!}
+                        playername={playername!}
+                        type={playertype!}
+                    />
+                </div>
             </div>
         </div>
     )

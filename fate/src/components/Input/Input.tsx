@@ -4,7 +4,7 @@ import styles from './Input.module.css'
 export interface InputProps {
     label?: string
     placeholder: string
-    id: string
+    id?: string
     className?: string
     value?: string
     autocomplete?: string
@@ -12,6 +12,7 @@ export interface InputProps {
     onSubmit?: () => void
     submitLabel?: string
     submitOnEnter?: boolean
+    disabled?: boolean
 }
 
 const defaultProps: InputProps = {
@@ -19,6 +20,7 @@ const defaultProps: InputProps = {
     placeholder: 'placeholder',
     className: '',
     autocomplete: 'on',
+    disabled: false,
     onChange: (event: React.ChangeEvent<HTMLInputElement>) => {
         return event.target.value
     }
@@ -34,7 +36,8 @@ const Input = ({
     onSubmit,
     submitLabel,
     autocomplete,
-    submitOnEnter
+    submitOnEnter,
+    disabled
 }: InputProps = defaultProps) => {
     const onKeyUpHandler = (e: React.KeyboardEvent<HTMLInputElement>) => {
         if (e.key === 'Enter') {
@@ -61,6 +64,7 @@ const Input = ({
                     value={value}
                     onKeyUp={submitOnEnter ? onKeyUpHandler : undefined}
                     autoComplete={autocomplete}
+                    disabled={disabled}
                 />
                 {label ? (
                     <div className="input-group-prepend">

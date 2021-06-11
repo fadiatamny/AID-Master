@@ -1,4 +1,4 @@
-import axios from 'axios'
+import axios, { AxiosError } from 'axios'
 import uniqid from 'uniqid'
 import { Server, Socket } from 'socket.io'
 import { GameDump, GameSession } from '../models/GameSession.model'
@@ -143,8 +143,9 @@ export default class GameService {
                 const theme = ScenarioUtils.fetchTheme(obj)
                 this.io.sockets.in(roomId).emit(SocketEvents.SCENARIO_GUIDE, username, organized, theme)
             })
-            .catch((e) => {
-                console.log(e)
+            .catch((e: AxiosError) => {
+                console.error(e.message)
+                console.log(e.stack)
             })
     }
 
