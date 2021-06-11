@@ -3,24 +3,24 @@ import json
 import pandas as pd
 import fasttext
 from collections import Counter
-from .modelException import ModelException
+from modelException import ModelException
 
 class ModelUtils():
     @staticmethod
     def fetchDatasetConfig() -> dict:
-        if not os.path.isfile('./model/dataset.config.json'):
+        if not os.path.isfile('./dataset.config.json'):
             raise ModelException( 'builder:building','ERROR: your data location config does not exist')
         
-        with open('./model/dataset.config.json') as f:
+        with open('./dataset.config.json') as f:
             text = f.read()
             return json.loads(text)
 
     @staticmethod
     def fetchDatasetHeaders():        
-        if not os.path.isfile('./model/dataset.headers.json'):
+        if not os.path.isfile('dataset.headers.json'):
             raise ModelException('runner:load_categories','Please make sure that the dataset.headers.json file exist.')
 
-        with open('./model/dataset.headers.json') as f:
+        with open('dataset.headers.json') as f:
             categoriesDict =  json.loads((f.read()))
             return pd.DataFrame(categoriesDict)
 
@@ -28,7 +28,7 @@ class ModelUtils():
     def loadFasttextModels(path: str) -> list:
         modelsFasttext = []
         dir = os.scandir(path)
-        if not dir or len(os.listdir(path)) != 3:
+        if not dir or len(os.listdir(path)) != 3: #bug in mac adding a hideing folder adding .DS_store to ignore
             raise ModelException('runner:load_ft_model', 'error occured not load model')
 
         for j in dir:
