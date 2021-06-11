@@ -65,6 +65,7 @@ class DataInjector():
         input('1')
         ModelBuilder.createFastText(
             f'{saveDataPath}/injectedData_{hase}.csv', f'{saveModelsPath}', f'{hase}', 5400)
+        ModelBuilder.createKNN(f'{saveDataPath}/injectedData_{hase}.csv', f'{saveModelsPath}', 10, f'{hase}')
         ModelTester.fastTextTest(
             f'{saveDataPath}/injectedData_{hase}.csv', f'{saveModelsPath}')
         os.chdir(cwd)
