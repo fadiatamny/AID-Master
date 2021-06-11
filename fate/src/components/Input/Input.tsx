@@ -12,7 +12,8 @@ export interface InputProps {
     onSubmit?: () => void
     submitLabel?: string
     submitOnEnter?: boolean
-    disabled?: boolean
+    disabled?: boolean,
+    key?: number
 }
 
 const defaultProps: InputProps = {
@@ -37,7 +38,8 @@ const Input = ({
     submitLabel,
     autocomplete,
     submitOnEnter,
-    disabled
+    disabled,
+    key
 }: InputProps = defaultProps) => {
     const onKeyUpHandler = (e: React.KeyboardEvent<HTMLInputElement>) => {
         if (e.key === 'Enter') {
@@ -55,7 +57,7 @@ const Input = ({
             <div className={`input-group mb-3 ml-5 mr-5 ${styles.container}`}>
                 <input
                     type="text"
-                    className={`form-control ${styles.input}`}
+                    className={`form-control ${disabled ? styles.disabled : ''}`}
                     placeholder={placeholder}
                     aria-label="Username"
                     aria-describedby="basic-addon1"
@@ -68,7 +70,7 @@ const Input = ({
                 />
                 {label ? (
                     <div className="input-group-prepend">
-                        <span className={`input-group-text ${styles.input}`} id="basic-addon1">
+                        <span className={`input-group-text`} id="basic-addon1">
                             {label}
                         </span>
                     </div>
