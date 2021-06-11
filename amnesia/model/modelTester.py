@@ -4,8 +4,8 @@ import os
 import sys
 import texthero as hero
 import logging
-from .modelException import ModelException
-from .modelUtils import ModelUtils
+from modelException import ModelException
+from modelUtils import ModelUtils
 
 logger = logging.getLogger(__name__)
 logger.setLevel("DEBUG")
@@ -14,9 +14,10 @@ formatter = "%(asctime)s %(levelname)s -- %(message)s"
 handler.setFormatter(logging.Formatter(formatter))
 logger.addHandler(handler)
 
+
 class ModelTester:
     @staticmethod
-    def fastTextTest(dataPath: str, fastTextPath: str) -> None:
+    def fastTextTest(dataPath: str, fastTextPath: str):
         cwd = os.getcwd()
         cwdcat = cwd.partition('amnesia')
         os.chdir(f'{cwdcat[0]}/amnesia/model/')
@@ -41,7 +42,7 @@ class ModelTester:
             else:
                 finalframe = pd.concat(
                     [finalframe, tempDataframe], ignore_index=True)
-        finalframe.to_csv('data/injectordata/finleframe.csv',index=False)
+        finalframe.to_csv('data/injectordata/finleframe.csv', index=False)
         compareres = finalframe.compare(data, keep_shape=True, keep_equal=True)
         for i in compareres.index:
             for j in categorieslist:
@@ -51,11 +52,13 @@ class ModelTester:
         finalres = ((np.sum(finalres))/(data.index.size))*100
         logger.debug(f'the accuracy of the model is {finalres}')
         os.chdir(cwd)
+        return finalres
 
 
 if __name__ == '__main__':
     if sys.argv[1] == '-h' or sys.argv[1] == '-help':
-        print( 'Please follow format of modelBuilder.py [datasheet] -f [fastText]')
+        print(
+            'Please follow format of modelBuilder.py [datasheet] -f [fastText]')
         print('[datasheet] = the data sheet to build models based on')
         sys.exit()
 
@@ -69,12 +72,11 @@ if __name__ == '__main__':
         if item == '-f' and index + 1 < len(sys.argv):
             fastText = str(sys.argv[index + 1])
 
-    try: 
+    try:
         ModelTester.fastTextTest(sys.argv[1], fastText)
     except ModelException as e:
+        print('Please check -h for help.')
         logger.critical(str(e))
     except Exception as e:
-        logger.critical('Stack:', str(e))
-    finally:
         print('Please check -h for help.')
-    
+        logger.critical('Stack:', str(e))

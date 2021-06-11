@@ -1,5 +1,5 @@
 
-from .modelUtils import ModelUtils
+from modelUtils import ModelUtils
 import pandas as pd
 from pandas.core.frame import DataFrame
 import joblib
@@ -9,7 +9,7 @@ import logging
 import time
 from functools import wraps
 from pandas.core.series import Series
-from .modelException import ModelException
+from modelException import ModelException
 import os
 import sys
 
@@ -19,6 +19,7 @@ handler = logging.FileHandler("Runner_Model.log")
 formatter = "%(asctime)s %(levelname)s -- %(message)s"
 handler.setFormatter(logging.Formatter(formatter))
 logger.addHandler(handler)
+
 
 def timed(func):
     @wraps(func)
@@ -31,6 +32,7 @@ def timed(func):
         return res
 
     return wrapper
+
 
 class ModelRunner():
     def __init__(self, fastText: str, knn: str, fastTextCount: int, dataPath: str) -> None:
@@ -50,28 +52,32 @@ class ModelRunner():
         fCount: int = 0
         dir = os.scandir(path)
         if not dir or len(os.listdir(path)) != self.fastTextCount:
-            raise ModelException('runner:load_ft_model', 'error occured not load model, Too many files in directory')
+            raise ModelException(
+                'runner:load_ft_model', 'error occured not load model, Too many files in directory')
         for j in dir:
             if os.path.splitext(j)[1] == '.bin':
-                fCount+=1
+                fCount += 1
         if fCount != self.fastTextCount:
-            raise ModelException('runner:load_ft_model', 'error occured not load model, Not enough .bin files in directory')
+            raise ModelException(
+                'runner:load_ft_model', 'error occured not load model, Not enough .bin files in directory')
 
     def _verifyFastText(self, path: str):
         fCount: int = 0
         dir = os.scandir(path)
         if not dir:
-            raise ModelException('runner:load_ft_model', 'error occured not load model, Too many files in directory')
+            raise ModelException(
+                'runner:load_ft_model', 'error occured not load model, Too many files in directory')
         for j in dir:
             if os.path.splitext(j)[1] == '.pkl':
-                fCount+=1
+                fCount += 1
         if fCount != 1:
-            raise ModelException('runner:load_ft_model', 'error occured not load model, Not enough .pkl files in directory')
+            raise ModelException(
+                'runner:load_ft_model', 'error occured not load model, Not enough .pkl files in directory')
 
     def _checkPaths(self, fastText=None, knn=None):
         if fastText:
             self._verifyFastText(fastText)
-        if knn: 
+        if knn:
             self._verifyKNN(knn)
 
     def changeInstance(self, fastText='', knn='') -> None:
@@ -103,7 +109,7 @@ class ModelRunner():
         div = self._creatDiv(raw_frame)
         res = res.divide(div)
         return res
-        
+
     # normolize the % of the payload
     def _normalize(self, textObj: Series) -> Series:
         for key in textObj.keys():
@@ -127,18 +133,18 @@ class ModelRunner():
 
         tempDataframe = ModelUtils.fetchDatasetHeaders()
         cleanText = self._cleanText(text)
-        
+
         try:
-            fastTextRes = ModelUtils.fastPredict(cleanText, self.fastTextModels)
-            
+            fastTextRes = ModelUtils.fastPredict(
+                cleanText, self.fastTextModels)
+
         except:
             raise ModelException('runner:predict', "unable to predict")
-        
+
         for i in range(len(fastTextRes)):
             new = fastTextRes[i].replace('__label__', '')
             tempDataframe[new] = ['1']
         del tempDataframe['TEXT']
-        
 
         knnRes = self.knnModel.kneighbors(tempDataframe, return_distance=False)
         textObj = self._dfToText(self.forDf.loc[knnRes[0], :])
@@ -147,9 +153,11 @@ class ModelRunner():
 
         return jsonPayload
 
+
 if __name__ == '__main__':
     if sys.argv[1] == '-h' or sys.argv[1] == '-help':
-        print('Please follow format of modelRunner.py -f [FastText] -fn [FastText Number] -k [KNN] -d [Data]')
+        print(
+            'Please follow format of modelRunner.py -f [FastText] -fn [FastText Number] -k [KNN] -d [Data]')
         print('[FastText] = the FastText models bin path')
         print('[FastText Number] = Number of FastText models')
         print('[KNN] = the KNN model bin path')

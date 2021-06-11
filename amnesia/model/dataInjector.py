@@ -1,13 +1,13 @@
-from .modelUtils import ModelUtils
+from modelUtils import ModelUtils
 from .crawler import Crawler
 import pandas as pd
 import texthero as hero
-from .modelBuilder import ModelBuilder
-from .modelTester import ModelTester
+from modelBuilder import ModelBuilder
+from modelTester import ModelTester
 import os
 import sys
 import logging
-from .modelException import ModelException
+from modelException import ModelException
 
 logger = logging.getLogger(__name__)
 logger.setLevel("DEBUG")
@@ -27,26 +27,15 @@ class DataInjector():
         ]
         crawler = Crawler(urls, numberCrawler)
         return crawler.crawl()
-
+    
     @staticmethod
-    def runing(dataPath: str, saveModelsPath: str, saveDataPath: str, hase: str, modelsPath: str, numberCrawler: int):
-        cwd = os.getcwd()
-        cwdcut = cwd.partition('amnesia')
-        os.chdir(f'{cwdcut[0]}/amnesia/model/')
-        models = ModelUtils.loadFasttextModels(f'{modelsPath}')
-        headers = ModelUtils.fetchDatasetHeaders()
-        crawledData = DataInjector.fetchCrawledData(
-            numberCrawler=numberCrawler)
+    def preProcess(crawledData: list, models, headers):
         predictions = []
         for i in range(len(crawledData)):
-            try:
-                series = pd.Series(crawledData[i])
-                series = hero.clean(series)
-                toString = pd.Series.to_string(series, index=False)
-                predictions.append(ModelUtils.fastPredict(toString, models))
-
-            except:
-                input()
+            series = pd.Series(crawledData[i])
+            series = hero.clean(series)
+            toString = pd.Series.to_string(series, index=False)
+            predictions.append(ModelUtils.fastPredict(toString, models))
 
         resFrame = pd.DataFrame()
         for i in range(len(predictions)):
@@ -57,39 +46,65 @@ class DataInjector():
             dataframe["TEXT"] = crawledData[i]
             resFrame = pd.concat([resFrame, dataframe], ignore_index=True)
 
+        return resFrame
+
+    @staticmethod
+    def inject(dataPath: str, saveModelsPath: str, hash: str, modelsPath: str, numberCrawler: int):
+        models = ModelUtils.loadFasttextModels(f'{modelsPath}')
+        currentAccuracy = ModelTester.fastTextTest(dataPath, modelsPath)
+        headers = ModelUtils.fetchDatasetHeaders()
+        crawledData = DataInjector.fetchCrawledData(numberCrawler)
+        processed  = DataInjector.preProcess(crawledData, models, headers)
+                
         data = pd.read_csv(f'{dataPath}')
-        newdata = pd.concat([data, resFrame, data], ignore_index=True)
-        newdata.to_csv(f'{saveDataPath}/injectedData_{hase}.csv', index=False)
+        newdata = pd.concat([data, processed, data], ignore_index=True)
+        newdata.to_csv(f'{dataPath}/injectedData/injectedData_{hash}.csv', index=False)
 
         ModelBuilder.createFastText(
-            f'{saveDataPath}/injectedData_{hase}.csv', f'{saveModelsPath}', f'{hase}', 5400)
+            f'{dataPath}/injectedData/injectedData_{hash}.csv', f'{saveModelsPath}', f'{hash}', 5400)
         ModelBuilder.createKNN(
-            f'{saveDataPath}/injectedData_{hase}.csv', f'{saveModelsPath}', 10, f'{hase}')
-        ModelTester.fastTextTest(
-            f'{saveDataPath}/injectedData_{hase}.csv', f'{saveModelsPath}')
+            f'{dataPath}/injectedData/injectedData_{hash}.csv', f'{saveModelsPath}', 10, f'{hash}')
+        accuracy = ModelTester.fastTextTest(
+            f'{dataPath}/injectedData/injectedData_{hash}.csv', f'{saveModelsPath}')
+
+        if accuracy > currentAccuracy:
+            # swap the model
+            # swap the data
+            pass
+        
+        #clean the csv
+        #clean the temp model files
+
         os.chdir(cwd)
 
+    @staticmethod
+    def injectionLoop(dataPath: str, saveModelsPath: str, hash: str, modelsPath: str, numberCrawler: int, loopCount: int = 1):
+        for i in range(loopCount):
+            DataInjector.inject(dataPath=dataPath,saveModelsPath=saveModelsPath,hash=hash,modelsPath=modelsPath,numberCrawler=numberCrawler)
 
 if __name__ == '__main__':
     if sys.argv[1] == '-h' or sys.argv[1] == '-help':
         print(
-            'Please follow format of datainjector.py [data_path] [save_models_path] [hase] [original_models_path] [number of crawler rounds]')
-        print('[new_models_path] = new models folder path')
-        print('[current_models_path] = new models folder path')
-        print('[old_models_path] = old models folder path')
-        print('[number of crawler rounds] = the number of crawler rounds, diffult = 10')
+            'Please follow format of datainjector.py -d [data_path] -sm [save_models_path] -h [hash] -on [original_models_path] -n [number of crawler rounds] -l [LOOP]')
+        print('[data_Path] = new models folder path')
+        print('[save_Models_Path] = new models folder path')
+        print('[hash] = hash for new models = 10')
+        print('[original_models_path] = current models path')
+        print('[number_Crawler] = the number of crawler rounds, diffult = 10')
+        print('[loop] = number of loops')
         sys.exit()
 
     if len(sys.argv) < 2:
         logger.error(
-            'Please follow format of modeslChanger.py -d [data_path] -s [save_models_path] -h [hase] -o [original_models_path] -n [number of crawler rounds]')
+            'Please follow format of modeslChanger.py -d [data_path] -s [save_models_path] -h [hash] -o [original_models_path] -n [number of crawler rounds] -l [LOOP]')
         sys.exit()
 
-    d: int = 3
-    s: str = ''
+    data: int = 3
+    save: str = ''
     h: str = ''
     n: str = ''
     o: str = ''
+    l: int = 1
 
     for index, item in enumerate(sys.argv, 0):
         if item == '-d' and index + 1 < len(sys.argv):
@@ -102,15 +117,25 @@ if __name__ == '__main__':
             o = f'{sys.argv[index+1]}'
         if item == '-n' and index + 1 < len(sys.argv):
             n = f'{sys.argv[index+1]}'
+        if item == '-l' and index + 1 < len(sys.argv):
+            l = int(sys.argv[index+1])
+
+    cwd = os.getcwd()
+    cwdcut = cwd.partition('amnesia')
+    os.chdir(f'{cwdcut[0]}/amnesia/model/')
+
+    if not os.path.isdir(f'{d}/injectedData'):
+        os.mkdir(f'{d}/injectedData')
 
     try:
-
-        DataInjector.runing(d, s, h, o, n)
-
+        DataInjector.injectionLoop(d, s, h, o, n, l)
         # add http call to server to change model based on name and hash.
     except ModelException as e:
+        print('Please check -h for help.')
         logger.critical(str(e))
     except Exception as e:
+        print('Please check -h for help.')
         logger.critical('Stack:', str(e))
     finally:
-        print('Please check -h for help.')
+        os.chdir(cwd)
+

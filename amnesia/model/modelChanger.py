@@ -1,10 +1,11 @@
 import os
+from posix import listdir
 import shutil
 import glob
 import sys
 import logging
 from typing import Any
-from .modelException import ModelException
+from modelException import ModelException
 
 logger = logging.getLogger(__name__)
 logger.setLevel("DEBUG")
@@ -20,45 +21,58 @@ class ModelChanger():
         self.currentPath = currentPath
         self.oldPath = oldPath
 
-    def _fileCheck(self, hase: str) -> int:
-        newmodels = len(glob.glob1(self.newPath, f'*{hase}*.bin'))
-        currentmodels = len(glob.glob1(self.currentPath, f'*{hase}*.bin'))
+    def _fileCheck(self, hash: str) -> int:
+        newmodels = len(glob.glob1(self.newPath, f'*{hash}*.bin'))
+        currentmodels = len(glob.glob1(self.currentPath, f'*{hash}*.bin'))
         return newmodels, currentmodels
 
-    def _moveingFiles(self, originPath: str, destPath: str, hase: str, numofmodels: list) -> None:
+    def _moveingFiles(self, originPath: str, destPath: str, hash: str, numofmodels: list) -> None:
         for i in numofmodels:
-            shutil.move(f'{originPath}/fasttext/fasttextmodel_{hase}_{i}',
-                        f'{destPath}/fasttext/fasttextmodel_{hase}_{i}')
-        
-        shutil.move(f'{originPath}/knn/knnmodel_{hase}.pkl',
-                    f'{destPath}/knn/knnmodel_{hase}.pkl')
-        
+            shutil.move(f'{originPath}/fasttext/fasttextmodel_{hash}_{i}',
+                        f'{destPath}/fasttext/fasttextmodel_{hash}_{i}')
 
-    def _cleanfolder(folderPath: str) -> None:
+        shutil.move(f'{originPath}/knn/knnmodel_{hash}.pkl',
+                    f'{destPath}/knn/knnmodel_{hash}.pkl')
+
+    def _cleanfolder(self, folderPath: str) -> None:
         if len(os.listdir(folderPath)) < 1:
             return
-        for file in os.scandir(folderPath):
+        for file in os.scandir(f'{folderPath}/fasttext'):
+            os.remove(file.path)
+        for file in os.scandir(f'{folderPath}/knn'):
             os.remove(file.path)
 
-    def _gettingHaseAndNumbers(filePath: str, fileEnd: str) -> Any:
-        files = os.listdir(filePath)
+    def _gettingHashAndNumbers(self, filePath: str, fileEnd: str) -> Any:
         numberlist = []
+        hash = ''
+
+        files = os.listdir(f'{filePath}/fasttext')
         for file in files:
             if file.endswith(fileEnd):
-                hase = file.split('_')[1]
+                hash = file.split('_')[1]
                 numberlist.append(file.split('_')[2])
-        return hase, numberlist
+        return hash, numberlist
+
+    def _isEmptyDirectory(self, path: str, newModelCount: int):
+        if len(os.listdir(f'{path}/fasttext')) != newModelCount:
+            return False
+
+        if len(os.listdir(f'{path}/knn')) != 1:
+            return False
+
+        return True
 
     def modelsMoving(self):
-        ModelChanger._cleanfolder(folderPath=self.oldPath)
-        currentHase, currentNumOfModels = ModelChanger._gettingHaseAndNumbers(
+        self._cleanfolder(folderPath=self.oldPath)
+        currentHash, currentNumListOfModels = self._gettingHashAndNumbers(
             filePath=self.currentPath, fileEnd='bin')
-        newHase, newNumOfModels = ModelChanger._gettingHaseAndNumbers(
+        newHash, newNumListOfModels = self._gettingHashAndNumbers(
             filePath=self.newPath, fileEnd='bin')
-        ModelChanger._moveingFiles(
-            self=self, originPath=self.newPath, destPath=self.currentPath, hase=newHase, numofmodels=newNumOfModels)
-        ModelChanger._moveingFiles(
-            self=self, originPath=self.currentPath, destPath=self.oldPath, hase=currentHase, numofmodels=currentNumOfModels)
+        self._moveingFiles(originPath=self.newPath, destPath=self.currentPath,
+                           hash=newHash, numofmodels=newNumListOfModels)
+        if not self._isEmptyDirectory(self.currentPath, newModelCount=len(newNumListOfModels)):
+            self._moveingFiles(originPath=self.currentPath, destPath=self.oldPath,
+                               hash=currentHash, numofmodels=currentNumListOfModels)
 
 
 if __name__ == '__main__':
@@ -86,7 +100,6 @@ if __name__ == '__main__':
             currentPath = f'{sys.argv[index + 1]}'
         if item == '-o' and index + 1 < len(sys.argv):
             oldPath = f'{sys.argv[index+1]}'
-
     try:
         switch = ModelChanger(newPath, currentPath, oldPath)
         switch.modelsMoving()
@@ -96,3 +109,4 @@ if __name__ == '__main__':
     except Exception as e:
         logger.critical('Stack:', str(e))
         print('Please check -h for help.')
+# python modelChanger.py -n bin/newModels -c bin/currentModels -o bin/oldModels

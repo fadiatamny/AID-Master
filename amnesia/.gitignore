@@ -1,7 +1,6 @@
 __pycache__
 .config.json
 model/build
-model/data
 model/dataset
 model/tests
 model/logs
@@ -12,3 +11,4 @@ model/validate_data.txt
 model/testRes.txt
 model/modelTestercopy.py
 model/*.log
+model/bin
