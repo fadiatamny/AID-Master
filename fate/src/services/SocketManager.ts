@@ -1,6 +1,6 @@
 import io, { Socket } from 'socket.io-client'
 import { GameDump } from '../models/GameSession.model'
-import { PlayerType, IPlayer } from '../models/Player.model'
+import { PlayerType, IPlayer, PlayerDump } from '../models/Player.model'
 import { SocketEvents } from '../models/SocketEvents.model'
 import EventsManager from './EventsManager'
 const endpoint = 'http://localhost:5069'
@@ -114,8 +114,8 @@ export default class SocketManager {
         this._eventsManager.trigger(SocketEvents.DM_CHANGED, { playerid })
     }
 
-    private _playerData(playerid: string, playerdata: string) {
-        this._eventsManager.trigger(SocketEvents.PLAYER_DATA, { playerid, playerdata })
+    private _playerData(player: PlayerDump) {
+        this._eventsManager.trigger(SocketEvents.PLAYER_DATA, player)
     }
 
     private _roomJoined(
@@ -146,8 +146,8 @@ export default class SocketManager {
         this._eventsManager.trigger(SocketEvents.PLAYER_LEFT, { playerId })
     }
 
-    private _playerJoined(playerId: string, username: string, playername: string) {
-        this._eventsManager.trigger(SocketEvents.PLAYER_JOINED, { id: playerId, username, playername })
+    private _playerJoined(player: PlayerDump) {
+        this._eventsManager.trigger(SocketEvents.PLAYER_JOINED, player)
     }
 
     //#endregion

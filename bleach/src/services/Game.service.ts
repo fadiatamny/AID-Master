@@ -92,7 +92,7 @@ export default class GameService {
                     playerData = data
                 } else {
                     session.playerReconnect(playerId)
-                    this.io.sockets.in(roomId).emit(SocketEvents.PLAYER_DATA, playerId, playerData)
+                    this.io.sockets.in(roomId).emit(SocketEvents.PLAYER_DATA, playerData?.toJson())
                 }
                 this._socket.join(roomId)
                 const playerList = session.playerList.map((p) => ({
@@ -103,11 +103,13 @@ export default class GameService {
                 this.io.sockets
                     .in(roomId)
                     .emit(SocketEvents.ROOM_JOINED, playerData!.username, playerData!.type, playerList)
-                this.io.sockets
-                    .in(roomId)
-                    .emit(SocketEvents.PLAYER_JOINED, playerData?.id, playerData?.username, playerData?.playername)
+                this.io.sockets.in(roomId).emit(SocketEvents.PLAYER_JOINED, playerData?.toJson())
             } else {
-                this._sendError('joinRoom', 'There was an issue, please try again', `This room ${roomId} does not exist.`)
+                this._sendError(
+                    'joinRoom',
+                    'There was an issue, please try again',
+                    `This room ${roomId} does not exist.`
+                )
             }
         } catch (err) {
             console.log(err.message)
