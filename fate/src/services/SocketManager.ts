@@ -106,8 +106,8 @@ export default class SocketManager {
         this._eventsManager.trigger(SocketEvents.HELLO, {})
     }
 
-    private _roomCreated(id: string) {
-        this._eventsManager.trigger(SocketEvents.ROOM_CREATED, { id })
+    private _roomCreated(id: string, playerList: Partial<PlayerDump>[]) {
+        this._eventsManager.trigger(SocketEvents.ROOM_CREATED, { id, playerList })
     }
 
     private _dmChanged(playerid: string) {
@@ -118,11 +118,7 @@ export default class SocketManager {
         this._eventsManager.trigger(SocketEvents.PLAYER_DATA, player)
     }
 
-    private _roomJoined(
-        username: string,
-        type: string,
-        playerlist: Array<{ id: string; username: string; playername: string }>
-    ) {
+    private _roomJoined(username: string, type: string, playerlist: Partial<PlayerDump>[]) {
         this._eventsManager.trigger(SocketEvents.ROOM_JOINED, { username, type, playerlist })
     }
 
