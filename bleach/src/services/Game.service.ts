@@ -57,17 +57,21 @@ export default class GameService {
 
     private _createRoom(pId: string, username: string, playername: string, data?: GameDump) {
         const id = uniqid()
-        let dm: any
+        const dm = new Player(PlayerType.DM, pId, username, playername)
+
         if (data) {
-            GameService._activeGames[id.toString()] = GameSession.fromDump(data)
-            dm = data.playerList.find((p) => p.username === username)
+            try {
+                GameService._activeGames[id.toString()] = GameSession.fromDump(dm, data, this._onGameEnd)
+            } catch (e) {
+                this._sendError('createRoom', 'There was an issue with the given gameDump, please try again', e.message)
+            }
         } else {
-            dm = new Player(PlayerType.DM, pId, username, playername)
             GameService._activeGames[id.toString()] = new GameSession(dm, this._onGameEnd)
         }
+
+        const playerList = GameService._activeGames[id.toString()].playerList
         this._socket.join(id.toString())
-        this._socket.emit(SocketEvents.ROOM_CREATED, id.toString())
-        this.io.sockets.in(id.toString()).emit(SocketEvents.PLAYER_DATA, username, dm)
+        this._socket.emit(SocketEvents.ROOM_CREATED, id.toString(), playerList)
     }
 
     private _roomExists(roomId: string) {
@@ -161,6 +165,7 @@ export default class GameService {
             .catch((e: AxiosError) => {
                 console.error(e.message)
                 console.log(e.stack)
+                this._sendError('scenarioGuide', 'There was an issue, please try again', e.message)
             })
     }
 
