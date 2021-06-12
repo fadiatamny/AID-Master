@@ -3,7 +3,7 @@ import uniqid from 'uniqid'
 import { Server, Socket } from 'socket.io'
 import { GameDump, GameSession } from '../models/GameSession.model'
 import ScenarioUtils from '../utils/Scenario.utils'
-import { Player, PlayerType } from '../models/Player.model'
+import { Player, PlayerDump, PlayerType } from '../models/Player.model'
 import { SocketEvents } from '../models/SocketEvents.model'
 
 export default class GameService {
@@ -27,7 +27,8 @@ export default class GameService {
             [SocketEvents.JOIN_ROOM]: this._joinRoom.bind(this),
             [SocketEvents.SEND_MESSAGE]: this._sendMessage.bind(this),
             [SocketEvents.SEND_SCENARIO]: this._sendScenario.bind(this),
-            [SocketEvents.LEAVE_ROOM]: this._leaveRoom.bind(this)
+            [SocketEvents.LEAVE_ROOM]: this._leaveRoom.bind(this),
+            [SocketEvents.NEW_PLAYER_REGISTER]: this._newPlayerRegister.bind(this)
         }
 
         Object.entries(onsHandler).forEach(([key, value]) => this._socket.on(key, value))
@@ -73,48 +74,60 @@ export default class GameService {
         return this.rooms.get(roomId)
     }
 
-    private _joinRoom(roomId: string, playerId: string, data?: Player) {
-        try {
-            const session = this.getGame(roomId)
-            if (!session || session.playerCount <= 0) {
-                throw new Error('Room is Closed')
-            }
+    private _socketJoin(roomId: string, session: GameSession, player: Player) {
+        session.playerReconnect(player.id)
+        this._socket.join(roomId)
 
-            const room = this.rooms.get(roomId)
-            if (room) {
-                if (session.originalDm.id === playerId) {
-                    session.activeDm = playerId
-                    this._socket.emit(SocketEvents.DM_CHANGED, playerId)
-                }
-                let playerData = session.getPlayer(playerId)
-                if (!playerData && data) {
-                    session.addPlayer(data)
-                    playerData = data
-                } else {
-                    session.playerReconnect(playerId)
-                    this.io.sockets.in(roomId).emit(SocketEvents.PLAYER_DATA, playerData?.toJson())
-                }
-                this._socket.join(roomId)
-                const playerList = session.playerList.map((p) => ({
-                    id: p.id,
-                    username: p.username,
-                    playername: p.playername
-                }))
-                this.io.sockets
-                    .in(roomId)
-                    .emit(SocketEvents.ROOM_JOINED, playerData!.username, playerData!.type, playerList)
-                this.io.sockets.in(roomId).emit(SocketEvents.PLAYER_JOINED, playerData?.toJson())
-            } else {
-                this._sendError(
-                    'joinRoom',
-                    'There was an issue, please try again',
-                    `This room ${roomId} does not exist.`
-                )
-            }
-        } catch (err) {
-            console.log(err.message)
-            this._sendError('joinRoom', 'There was an issue, please try again', err)
+        const playerList = session.playerList.map((p) => ({
+            id: p.id,
+            username: p.username,
+            playername: p.playername
+        }))
+        this.io.sockets.in(roomId).emit(SocketEvents.ROOM_JOINED, player.username, player.type, playerList)
+        this.io.sockets.in(roomId).emit(SocketEvents.PLAYER_JOINED, player.toJson())
+    }
+
+    private _joinRoom(roomId: string, playerId: string) {
+        const room = this.rooms.get(roomId)
+        if (!room) {
+            this._sendError('joinRoom', 'There was an issue, please try again', `This room ${roomId} does not exist.`)
+            return
         }
+        const session = this.getGame(roomId)
+        if (!session || session.playerCount <= 0) {
+            this._sendError('joinRoom', 'There was an issue, please try again', 'Room is Closed')
+            return
+        }
+
+        const player = session.getPlayer(playerId)
+        if (!player) {
+            this._socket.emit(SocketEvents.NEW_PLAYER, playerId)
+            return
+        }
+
+        if (session.originalDm.id === playerId) {
+            session.activeDm = playerId
+            this._socket.emit(SocketEvents.DM_CHANGED, roomId, playerId)
+        }
+
+        this._socketJoin(roomId, session, player)
+    }
+
+    private _newPlayerRegister(roomId: string, data: PlayerDump) {
+        const room = this.rooms.get(roomId)
+        if (!room) {
+            this._sendError('joinRoom', 'There was an issue, please try again', `This room ${roomId} does not exist.`)
+            return
+        }
+        const session = this.getGame(roomId)
+        if (!session || session.playerCount <= 0) {
+            this._sendError('joinRoom', 'There was an issue, please try again', 'Room is Closed')
+            return
+        }
+
+        const player = Player.fromDump(data)
+        session.addPlayer(player)
+        this._socketJoin(roomId, session, player)
     }
 
     private _sendMessage(roomId: string, username: string, playername: string, message: string, target?: string) {
