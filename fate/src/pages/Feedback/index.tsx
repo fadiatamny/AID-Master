@@ -17,13 +17,9 @@ interface FeedbackProps {
 
 const Feedback = ({ history }: FeedbackProps) => {
     const eventsManager = EventsManager.instance
-    const uid = localStorage.getItem('userId')
-    const username = sessionStorage.getItem('username')
-    const playertype = sessionStorage.getItem('type')
-    const playername = sessionStorage.getItem('playername')
-    const roomid = sessionStorage.getItem('rid')
+    const roomId = sessionStorage.getItem('rid')
 
-    const scenarios: Scenario[] = []
+    const [scenarios, setScenarios] = useState<Scenario[]>([])
     const [score, setScore] = useState(5)
     const [selectedScenarios, setSelectedScenarios] = useState<Scenario[]>([])
     const selectedScenariosRef = useRef<Scenario[]>(selectedScenarios)
@@ -71,6 +67,22 @@ const Feedback = ({ history }: FeedbackProps) => {
     const skipFeedback = () => {
         history.push(`/`)
     }
+
+    const handleScenarios = ({ scenarios }: { scenarios: Scenario[] }) => {
+        setScenarios(scenarios)
+    }
+
+    useEffect(() => {
+        eventsManager.on(SocketEvents.SCENARIO_LIST, 'feedback-component', (obj: any) => handleScenarios(obj))
+        eventsManager.trigger(SocketEvents.REQUEST_SCENARIOS, { roomId })
+    }, [])
+
+    useEffect(
+        () => () => {
+            eventsManager.off(SocketEvents.SCENARIO_LIST, 'feedback-componment')
+        },
+        []
+    )
 
     return (
         <div>

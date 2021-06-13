@@ -29,7 +29,8 @@ export default class SocketManager {
             [SocketEvents.LEAVE_ROOM]: this._leaveRoom.bind(this),
             [SocketEvents.NEW_PLAYER_REGISTER]: this._newPlayerRegister.bind(this),
             [SocketEvents.END_GAME]: this._endGame.bind(this),
-            [SocketEvents.FEEDBACK]: this._feedback.bind(this)
+            [SocketEvents.FEEDBACK]: this._feedback.bind(this),
+            [SocketEvents.REQUEST_SCENARIOS]: this._requestScenarios.bind(this)
         }
 
         const onsHandler = {
@@ -45,7 +46,8 @@ export default class SocketManager {
             [SocketEvents.PLAYER_LEFT]: this._playerLeft.bind(this),
             [SocketEvents.PLAYER_JOINED]: this._playerJoined.bind(this),
             [SocketEvents.NEW_PLAYER]: this._newPlayer.bind(this),
-            [SocketEvents.GAME_ENDED]: this._gameEnded.bind(this)
+            [SocketEvents.GAME_ENDED]: this._gameEnded.bind(this),
+            [SocketEvents.SCENARIO_LIST]: this._scenarioList.bind(this)
         }
 
         Object.entries(emitsHandler).forEach(([key, value]) =>
@@ -118,6 +120,10 @@ export default class SocketManager {
         this._socket.emit(SocketEvents.FEEDBACK, roomId, score, scenarios)
     }
 
+    private _requestScenarios({ roomId }: { roomId: string }) {
+        this._socket.emit(SocketEvents.REQUEST_SCENARIOS, roomId)
+    }
+
     //#endregion
 
     //#region ons
@@ -171,6 +177,10 @@ export default class SocketManager {
 
     private _gameEnded() {
         this._eventsManager.trigger(SocketEvents.GAME_ENDED, {})
+    }
+
+    private _scenarioList(scenarios: Scenario[]) {
+        this._eventsManager.trigger(SocketEvents.SCENARIO_LIST, { scenarios })
     }
 
     //#endregion
