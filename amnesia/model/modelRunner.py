@@ -46,7 +46,7 @@ class ModelRunner():
         self.fastTextModels = None
         self._loadModels()
 
-    def processJson(self,newData:json) -> None:
+    def feedback(self,newData:json) -> None:
         data = pd.read_json(newData)
         data = pd.DataFrame(data)
         allData = pd.DataFrame()
