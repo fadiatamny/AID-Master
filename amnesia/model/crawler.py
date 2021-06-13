@@ -19,7 +19,7 @@ class Crawler:
             return 1
         if p.find('a') or p.find('input'):
             return 2
-        
+
         return 0
 
     def fetchScenario(self, html):
@@ -30,7 +30,7 @@ class Crawler:
         processed = []
         for p in paragraphs:
             value = self.badLine(p)
-            if value == 0 :
+            if value == 0:
                 processed.append(p.get_text())
             elif value == 2:
                 break
