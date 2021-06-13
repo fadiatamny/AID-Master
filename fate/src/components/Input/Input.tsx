@@ -4,7 +4,7 @@ import styles from './Input.module.css'
 export interface InputProps {
     label?: string
     placeholder: string
-    id: string
+    id?: string
     className?: string
     value?: string
     autocomplete?: string
@@ -12,6 +12,8 @@ export interface InputProps {
     onSubmit?: () => void
     submitLabel?: string
     submitOnEnter?: boolean
+    disabled?: boolean,
+    key?: number
 }
 
 const defaultProps: InputProps = {
@@ -19,6 +21,7 @@ const defaultProps: InputProps = {
     placeholder: 'placeholder',
     className: '',
     autocomplete: 'on',
+    disabled: false,
     onChange: (event: React.ChangeEvent<HTMLInputElement>) => {
         return event.target.value
     }
@@ -34,7 +37,9 @@ const Input = ({
     onSubmit,
     submitLabel,
     autocomplete,
-    submitOnEnter
+    submitOnEnter,
+    disabled,
+    key
 }: InputProps = defaultProps) => {
     const onKeyUpHandler = (e: React.KeyboardEvent<HTMLInputElement>) => {
         if (e.key === 'Enter') {
@@ -52,7 +57,7 @@ const Input = ({
             <div className={`input-group mb-3 ml-5 mr-5 ${styles.container}`}>
                 <input
                     type="text"
-                    className={`form-control ${styles.input}`}
+                    className={`form-control ${disabled ? styles.disabled : ''}`}
                     placeholder={placeholder}
                     aria-label="Username"
                     aria-describedby="basic-addon1"
@@ -61,10 +66,11 @@ const Input = ({
                     value={value}
                     onKeyUp={submitOnEnter ? onKeyUpHandler : undefined}
                     autoComplete={autocomplete}
+                    disabled={disabled}
                 />
                 {label ? (
                     <div className="input-group-prepend">
-                        <span className={`input-group-text ${styles.input}`} id="basic-addon1">
+                        <span className={`input-group-text`} id="basic-addon1">
                             {label}
                         </span>
                     </div>

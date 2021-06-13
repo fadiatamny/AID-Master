@@ -11,4 +11,5 @@ export interface CharacterSheet {
     life: Attribute
     mana: Attribute
     shield: Attribute
+    imageurl: string
 }

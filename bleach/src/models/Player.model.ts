@@ -58,6 +58,7 @@ export class Player implements IPlayer {
         return {
             id: this.id,
             username: this.username,
+            playername: this.playername,
             type: this.type,
             characterSheet: this.characterSheet
         }

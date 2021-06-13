@@ -1,16 +1,22 @@
-from model.modelException import ModelException
 from flask import Blueprint, request, abort
-from .apiException import ApiException
+from apiException import ApiException
 from model.modelRunner import ModelRunner
+from model.modelException import ModelException
 from flask_cors import cross_origin
 import json
+import os
+from pathlib import Path
 
-modelPath = './model'
+prefix = os.path.dirname(os.path.realpath(__file__))
+config = None
+with open(f'{prefix}/.config.json') as f:
+    config = json.load(f)
 
-# os.chdir('./model')
-model = ModelRunner(f'{modelPath}/bin/currentModels',
-                    f'{modelPath}/bin/currentModels/knn')
-# os.chdir('../')
+model = ModelRunner( fastText=os.path.join(prefix, Path(config['FASTTEXT_MODEL_PATH'])), 
+                     knn=os.path.join(prefix, Path(config['KNN_MODEL_PATH'])),
+                     fastTextCount=config['FASTTEXT_MODEL_COUNT'],
+                     dataPath=os.path.join(prefix, Path(config['DATASET_PATH']))
+)
 
 router = Blueprint('api', __name__, url_prefix='/api')
 
@@ -19,13 +25,8 @@ router = Blueprint('api', __name__, url_prefix='/api')
 @router.route('/predict', methods=['POST'])
 def predict():
     try:
-        print('1')
         text = request.json['text']
-        
-        print('2')
         res = model.predict(text)
-        
-        print('3')
         return json.dumps(res)
     except ModelException as e:
         print(str(e))
@@ -49,4 +50,19 @@ def switchModels():
     except ApiException as e:
         abort(e.errorCode, {'message': str(e.message)})
     except Exception as e:
+        abort(500, {'message': str(e)})
+
+@cross_origin()
+@router.route('/feedback', methods=['POST'])
+def feedback():
+    try:
+        scenarios = request.json
+        # needs to be implemented.
+        #model.feedback(scenarios)
+        return 'Successfully Inserted Feedback'      
+    except ModelException as e:
+        print(str(e))
+        abort(500, {'message': str(e.message)})
+    except Exception as e:
+        print(str(e))
         abort(500, {'message': str(e)})

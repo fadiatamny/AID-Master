@@ -3,9 +3,8 @@
     height: 40px;
     border-radius: 20%;
     padding: 0;
-    margin: 0 auto;
-    text-align: center;
-    float: left;
+    margin: 0;
+    width: inherit;
 }
 
 .buttonStyling {
@@ -19,7 +18,16 @@
 .buttonStyling:hover {
     background-color: #191b25;
     color: #ffa3a4;
-    border-color: transparent;
+    border-color: #ff6768;
+}
+
+.buttonStyling:focus,
+.buttonStyling:active {
+    box-shadow: none !important;
+    outline: none !important;
+    border-color: #ff6768;
+    background-color: #191b25;
+    color: #ffa3a4;
 }
 
 .noRound{
