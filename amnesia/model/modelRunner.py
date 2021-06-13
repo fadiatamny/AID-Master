@@ -43,28 +43,30 @@ class ModelRunner():
         self.dataPath = dataPath
         self.categories = ModelUtils.fetchDatasetHeaders()
         datasetConfig = ModelUtils.fetchDatasetConfig()
-        self.forDf = pd.read_csv(os.path.join(dataPath, Path(f'./data.{datasetConfig["type"]}')))
+        self.forDf = pd.read_csv(os.path.join(
+            dataPath, Path(f'./data.{datasetConfig["type"]}')))
         self.fastTextModels = None
         self._loadModels()
 
-    def feedback(self,newData:json) -> None:
+    def feedback(self, newData) -> None:
         data = pd.read_json(newData)
         data = pd.DataFrame(data)
         allData = pd.DataFrame()
         for index in data.index:
             dataFrame = self.categories.copy()
             for category in data['prediction'][index]:
-                dataFrame[category]=[1]
+                dataFrame[category] = [1]
             dataFrame['TEXT'] = data['text'][index]
-            allData = pd.concat([allData,dataFrame],ignore_index=True)
+            allData = pd.concat([allData, dataFrame], ignore_index=True)
         oldData = pd.read_csv(self.dataPath)
-        oldData = pd.concat([oldData,allData],ignore_index=True)
+        oldData = pd.concat([oldData, allData], ignore_index=True)
         oldData.to_csv(self.dataPath)
 
     def _loadModels(self) -> None:
         self.fastTextModels = ModelUtils.loadFasttextModels(self.fastTextPath)
         hash = ModelUtils.fetchCurrentHash(self.knnPath)
-        self.knnModel = joblib.load(os.path.join(self.knnPath, Path(f'./knnmodel_{hash}.pkl')))
+        self.knnModel = joblib.load(os.path.join(
+            self.knnPath, Path(f'./knnmodel_{hash}.pkl')))
 
     def _verifyFastText(self, path: str):
         fCount: int = 0
@@ -151,14 +153,14 @@ class ModelRunner():
 
         tempDataframe = ModelUtils.fetchDatasetHeaders()
         cleanText = self._cleanText(text)
-        
+
         try:
             fastTextRes = ModelUtils.fastPredict(
                 cleanText, self.fastTextModels)
 
         except:
             raise ModelException('runner:predict', "unable to predict")
-        
+
         for i in range(len(fastTextRes)):
             new = fastTextRes[i].replace('__label__', '')
             tempDataframe[new] = ['1']
