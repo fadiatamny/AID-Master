@@ -1,2 +1,2 @@
-from .model import *
-from .apiException import ApiException
+from model import *
+from apiException import ApiException

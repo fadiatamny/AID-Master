@@ -1,4 +1,4 @@
-from api import router
+from .api import router
 from flask import Flask
 from flask_cors import CORS, cross_origin
 import os
