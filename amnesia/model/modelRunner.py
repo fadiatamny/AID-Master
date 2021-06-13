@@ -40,9 +40,25 @@ class ModelRunner():
         self.fastTextPath = fastText
         self.knnPath = knn
         self.categories = ModelUtils.fetchDatasetHeaders()
-        self.forDf =pd.read_csv('./model/data/data.csv')
+        self.forDf =pd.read_csv('./model/dataset/data.csv')
         self.fastTextModels = None
         self._loadModels()
+
+    def processJson(self,newData:json) -> None:
+        data = pd.read_json(newData)
+        data = pd.DataFrame(data)
+        allData = pd.DataFrame()
+        for index in data.index:
+            dataFrame = self.categories.copy()
+            for category in data['prediction'][index]:
+                dataFrame[category]=[1]
+            dataFrame['TEXT'] = data['text'][index]
+            allData = pd.concat([allData,dataFrame],ignore_index=True)
+            
+
+        #preprocess new data to dataframe
+        #add to old data
+        pass
 
     def _loadModels(self) -> None:
         self.fastTextModels = ModelUtils.loadFasttextModels(self.fastTextPath)
@@ -68,7 +84,6 @@ class ModelRunner():
 
  # convert the data frame to text
     def _dfToText(self, df: DataFrame) -> Series:
-        print('hiiiiiiiiiii')
         raw_frame = df.replace(0, np.nan)
         raw_frame = raw_frame.dropna(axis='columns', how='all')
         del raw_frame['TEXT']
@@ -95,26 +110,22 @@ class ModelRunner():
         if self.fastTextModels is None or self.knnModel is None:
             self._loadModels()
 
-        print('2.1')
+        
         tempDataframe = ModelUtils.fetchDatasetHeaders()
         cleanText = self._cleanText(text)
         
-        print('2.1')
         try:
             fastTextRes = ModelUtils.fastPredict(cleanText, self.fastTextModels)
             
         except:
             raise ModelException('runner:predict', "unable to predict")
         
-        
-        print('2.1')
-
         for i in range(len(fastTextRes)):
             new = fastTextRes[i].replace('__label__', '')
             tempDataframe[new] = ['1']
         del tempDataframe['TEXT']
         
-        print('2.1')
+        
 
         knnRes = self.knnModel.kneighbors(tempDataframe, return_distance=False)
         textObj = self._dfToText(self.forDf.loc[knnRes[0], :])
