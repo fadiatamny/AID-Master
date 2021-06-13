@@ -22,13 +22,8 @@ router = Blueprint('api', __name__, url_prefix='/api')
 @router.route('/predict', methods=['POST'])
 def predict():
     try:
-        print('1')
         text = request.json['text']
-        
-        print('2')
         res = model.predict(text)
-        
-        print('3')
         return json.dumps(res)
     except ModelException as e:
         print(str(e))
@@ -49,4 +44,19 @@ def switchModels():
     except ApiException as e:
         abort(e.errorCode, {'message': str(e.message)})
     except Exception as e:
+        abort(500, {'message': str(e)})
+
+@cross_origin()
+@router.route('/feedback', methods=['POST'])
+def predict():
+    try:
+        scenarios = request.json
+        # needs to be implemented.
+        model.feedback(scenarios)
+        return 'Successfully Inserted Feedback'      
+    except ModelException as e:
+        print(str(e))
+        abort(500, {'message': str(e.message)})
+    except Exception as e:
+        print(str(e))
         abort(500, {'message': str(e)})
