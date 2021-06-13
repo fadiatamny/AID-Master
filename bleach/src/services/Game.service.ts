@@ -244,5 +244,12 @@ export default class GameService {
         }
 
         //axios post messaage to amnesia
+        axios.post(`${process.env.AMNESIA_ENDPOINT}/api/feedback`, toSend).catch((e: AxiosError) => {
+            console.error(e.message)
+            console.log(e.stack)
+            this._sendError('feedback', 'There was an issue', e.message)
+        })
+
+        //have to end game here
     }
 }
