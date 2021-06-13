@@ -4,8 +4,8 @@ import os
 import sys
 import texthero as hero
 import logging
-from modelException import ModelException
-from modelUtils import ModelUtils
+from .modelException import ModelException
+from .modelUtils import ModelUtils
 
 logger = logging.getLogger(__name__)
 logger.setLevel("DEBUG")

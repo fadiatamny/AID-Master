@@ -1,23 +1,23 @@
-import { Link } from 'react-router-dom'
 import styles from '../StartingPages.module.css'
 import logo from '../../../assets/images/Logo.png'
 import AdvCircle from '../../../assets/images/CircleAdventurer.png'
 import DMCircle from '../../../assets/images/CircleDM.png'
 import Header from '../../../components/Header/Header'
-import EventsManager from '../../../services/EventsManager'
 import Clickable from '../../../components/Clickable/Clickable'
 import { useEffect } from 'react'
+import { History } from 'history'
 
-//@ts-ignore
-const HomaPage = (props: any) => {
-    const eventsManager = EventsManager.instance
+interface HomePageProps {
+    history: History
+}
 
+const HomaPage = ({ history }: HomePageProps) => {
     const clickAdv = () => {
-        props.history.push(`/AdventurerLogin`)
+        history.push(`/AdventurerLogin`)
     }
 
     const clickDM = () => {
-        props.history.push(`/DMLogin`)
+        history.push(`/DMLogin`)
     }
 
     useEffect(() => {

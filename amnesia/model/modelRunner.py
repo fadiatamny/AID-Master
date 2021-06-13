@@ -1,5 +1,6 @@
 
-from modelUtils import ModelUtils
+from .modelUtils import ModelUtils
+from .modelException import ModelException
 import pandas as pd
 from pandas.core.frame import DataFrame
 import joblib
@@ -9,9 +10,9 @@ import logging
 import time
 from functools import wraps
 from pandas.core.series import Series
-from modelException import ModelException
 import os
 import sys
+from pathlib import Path
 
 logger = logging.getLogger(__name__)
 logger.setLevel("DEBUG")
@@ -40,13 +41,16 @@ class ModelRunner():
         self.fastTextCount = fastTextCount
         self.knnPath = knn
         self.categories = ModelUtils.fetchDatasetHeaders()
-        self.forDf = pd.read_csv(dataPath)
+        print(dataPath)
+        datasetConfig = ModelUtils.fetchDatasetConfig()
+        self.forDf = pd.read_csv(os.path.join(dataPath, Path(f'./data.{datasetConfig["type"]}')))
         self.fastTextModels = None
         self._loadModels()
 
     def _loadModels(self) -> None:
         self.fastTextModels = ModelUtils.loadFasttextModels(self.fastTextPath)
-        self.knnModel = joblib.load(self.knnPath)
+        hash = ModelUtils.fetchCurrentHash(self.knnPath)
+        self.knnModel = joblib.load(os.path.join(self.knnPath, Path(f'./knnmodel_{hash}.pkl')))
 
     def _verifyFastText(self, path: str):
         fCount: int = 0

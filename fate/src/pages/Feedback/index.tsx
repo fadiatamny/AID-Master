@@ -66,7 +66,6 @@ const Feedback = ({ history }: FeedbackProps) => {
     }
 
     const sendFeedback = () => {
-        // do the socket magic here
         eventsManager.trigger(SocketEvents.FEEDBACK, { roomId, score: scoreRef.current, scenarios: selectedScenarios })
         history.push(`/`)
     }
@@ -96,34 +95,35 @@ const Feedback = ({ history }: FeedbackProps) => {
         []
     )
 
+    // return scenarios.length === 0 ? <Loading /> : (
     return (
-        <div>
+        <>
             <Header />
             <Container fluid className={`justify-content-center ${styles.container}`}>
                 <Row className="justify-content-center">
                     <h2 className={styles.h2}>We Value Your Feedback!</h2>
                     <p>Please fill out the following form and help us improve our service</p>
                 </Row>
-                <Container className={`justify-content-center ${styles.content}`}>
-                    <Container className={styles.score}>
+                <Row className={`justify-content-center ${styles.content}`}>
+                    <Row className={styles.score}>
                         <Row className="justify-content-center">
                             <h3 className={styles.h3}> How satisfied are you with the our predictions?</h3>
                         </Row>
                         <Row className="justify-content-center">{generateValues()}</Row>
-                    </Container>
+                    </Row>
                     {scenarios.length ? (
                         <>
                             <Divider />
-                            <Container className={styles.scenarios}>
+                            <Row className={styles.scenarios}>
                                 <Row className="justify-content-center">
                                     <h3 className={styles.h3}> How satisfied are you with the our predictions?</h3>
                                     <p>Please select the scenarios and predictions you thought were good</p>
                                 </Row>
                                 <Row className="justify-content-center">{generateScenarioList()}</Row>
-                            </Container>
+                            </Row>
                         </>
                     ) : null}
-                </Container>
+                </Row>
                 <Row className="justify-content-center">
                     <Col xs={{ order: 'first' }}>
                         <Button onClick={sendFeedback}>
@@ -139,7 +139,7 @@ const Feedback = ({ history }: FeedbackProps) => {
                     </Col>
                 </Row>
             </Container>
-        </div>
+        </>
     )
 }
 
