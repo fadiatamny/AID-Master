@@ -3,27 +3,29 @@ import json
 import pandas as pd
 import fasttext
 from collections import Counter
-from modelException import ModelException
+from .modelException import ModelException
 
 
 class ModelUtils():
     @staticmethod
     def fetchDatasetConfig() -> dict:
-        if not os.path.isfile('./dataset.config.json'):
+        prefix = os.path.dirname(os.path.realpath(__file__))
+        if not os.path.isfile(f'{prefix}/dataset.config.json'):
             raise ModelException(
-                'builder:building', 'ERROR: your data location config does not exist')
+                'Utils:load_dataset_config', 'ERROR: your data location config does not exist')
 
-        with open('./dataset.config.json') as f:
+        with open(f'{prefix}/dataset.config.json') as f:
             text = f.read()
             return json.loads(text)
 
     @staticmethod
     def fetchDatasetHeaders():
-        if not os.path.isfile('dataset.headers.json'):
+        prefix = os.path.dirname(os.path.realpath(__file__))
+        if not os.path.isfile(f'{prefix}/dataset.headers.json'):
             raise ModelException(
-                'runner:load_categories', 'Please make sure that the dataset.headers.json file exist.')
+                'Utils:load_categories', 'Please make sure that the dataset.headers.json file exist.')
 
-        with open('dataset.headers.json') as f:
+        with open(f'{prefix}/dataset.headers.json') as f:
             categoriesDict = json.loads((f.read()))
             return pd.DataFrame(categoriesDict)
 
@@ -53,3 +55,9 @@ class ModelUtils():
             resF.append(models[i].predict(text, k=10))
         res = (tuple(list(resF[0][0])+list(resF[1][0])+list(resF[2][0])))
         return [key for key in Counter(res).keys() if Counter(res)[key] > 1]
+
+    @staticmethod
+    def fetchCurrentHash(filePath: str) -> str:
+        files = os.listdir(f'{filePath}')
+        return files[0].split('_')[1].split('.')[0]
+

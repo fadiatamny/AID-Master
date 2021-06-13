@@ -1,16 +1,22 @@
-from model.modelException import ModelException
 from flask import Blueprint, request, abort
-from .apiException import ApiException
+from apiException import ApiException
 from model.modelRunner import ModelRunner
+from model.modelException import ModelException
 from flask_cors import cross_origin
 import json
+import os
+from pathlib import Path
 
-modelPath = './model'
+prefix = os.path.dirname(os.path.realpath(__file__))
+config = None
+with open(f'{prefix}/.config.json') as f:
+    config = json.load(f)
 
-# os.chdir('./model')
-model = ModelRunner(f'{modelPath}/bin/currentModels',
-                    f'{modelPath}/bin/currentModels/knn')
-# os.chdir('../')
+model = ModelRunner( fastText=os.path.join(prefix, Path(config['FASTTEXT_MODEL_PATH'])), 
+                     knn=os.path.join(prefix, Path(config['KNN_MODEL_PATH'])),
+                     fastTextCount=config['FASTTEXT_MODEL_COUNT'],
+                     dataPath=os.path.join(prefix, Path(config['DATASET_PATH']))
+)
 
 router = Blueprint('api', __name__, url_prefix='/api')
 
@@ -48,11 +54,11 @@ def switchModels():
 
 @cross_origin()
 @router.route('/feedback', methods=['POST'])
-def predict():
+def feedback():
     try:
         scenarios = request.json
         # needs to be implemented.
-        model.feedback(scenarios)
+        #model.feedback(scenarios)
         return 'Successfully Inserted Feedback'      
     except ModelException as e:
         print(str(e))

@@ -1,8 +1,12 @@
 import styles from './styles.module.css'
 
-const Divider = () => {
+interface DividerProps {
+    style?: React.CSSProperties
+}
+
+const Divider = ({ style }: DividerProps) => {
     return (
-        <div className={`row justify-content-center ${styles.container}`}>
+        <div className={`row justify-content-center ${styles.container} `} style={style}>
             <div className={`${styles.divider}`} />
         </div>
     )
