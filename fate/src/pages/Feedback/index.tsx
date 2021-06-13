@@ -9,6 +9,7 @@ import Divider from '../../components/Divider'
 import Clickable from '../../components/Clickable/Clickable'
 import { Scenario } from '../../models/Scenario.model'
 import { History } from 'history'
+import { isEqual } from 'lodash'
 
 interface FeedbackProps {
     history: History
@@ -41,8 +42,12 @@ const Feedback = ({ history }: FeedbackProps) => {
     }
 
     const handleScenarioSelection = (scenario: Scenario) => {
-        const curr = [...selectedScenariosRef.current]
-        curr.push(scenario)
+        let curr = [...selectedScenariosRef.current]
+        if (curr.includes(scenario)) {
+            curr = curr.filter((s) => !isEqual(s, scenario))
+        } else {
+            curr.push(scenario)
+        }
         setSelectedScenarios(curr)
     }
 
@@ -75,9 +80,9 @@ const Feedback = ({ history }: FeedbackProps) => {
     }
 
     useEffect(() => {
-        if (!roomId) {
-            history.push(`/`)
-        }
+        // if (!roomId) {
+        //     history.push(`/`)
+        // }
         eventsManager.on(SocketEvents.SCENARIO_LIST, 'feedback-component', (obj: { scenarios: Scenario[] }) =>
             handleScenarios(obj)
         )
