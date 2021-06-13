@@ -36,11 +36,13 @@ def timed(func):
     return wrapper
 
 class ModelRunner():
-    def __init__(self, fastText: str, knn: str) -> None:
+    def __init__(self, fastText: str, knn: str, fastTextCount: int, dataPath: str) -> None:
         self.fastTextPath = fastText
+        self.fastTextCount = fastTextCount
         self.knnPath = knn
         self.categories = ModelUtils.fetchDatasetHeaders()
-        self.forDf =pd.read_csv('./model/dataset/data.csv')
+        self.forDf = pd.read_csv(dataPath)
+        self.dataPath = dataPath
         self.fastTextModels = None
         self._loadModels()
 
@@ -54,11 +56,9 @@ class ModelRunner():
                 dataFrame[category]=[1]
             dataFrame['TEXT'] = data['text'][index]
             allData = pd.concat([allData,dataFrame],ignore_index=True)
-            
-
-        #preprocess new data to dataframe
-        #add to old data
-        pass
+        oldData = pd.read_csv(self.dataPath)
+        oldData = pd.concat([oldData,allData],ignore_index=True)
+        oldData.to_csv(self.dataPath)
 
     def _loadModels(self) -> None:
         self.fastTextModels = ModelUtils.loadFasttextModels(self.fastTextPath)
