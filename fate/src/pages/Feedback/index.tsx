@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-empty-function */
 import styles from './styles.module.css'
 import Header from '../../components/Header/Header'
 import { useEffect, useState, useRef, ReactElement } from 'react'
