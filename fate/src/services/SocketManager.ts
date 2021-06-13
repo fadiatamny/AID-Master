@@ -67,8 +67,8 @@ export default class SocketManager {
         this._socket.emit(SocketEvents.HI, {})
     }
 
-    private _createRoom({ playerId, username }: any) {
-        this._socket.emit(SocketEvents.CREATE_ROOM, playerId, username)
+    private _createRoom(player: Partial<PlayerDump>) {
+        this._socket.emit(SocketEvents.CREATE_ROOM, player)
     }
 
     private _joinRoom({ id, userId, data }: any) {
