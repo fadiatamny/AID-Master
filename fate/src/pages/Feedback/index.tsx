@@ -4,22 +4,18 @@ import Header from '../../components/Header/Header'
 import { useEffect, useState, useRef, ReactElement } from 'react'
 import { SocketEvents } from '../../models/SocketEvents.model'
 import EventsManager from '../../services/EventsManager'
-import { generate } from '../../services/ScenarioGuide'
-import { Col, Row, Container, InputGroup } from 'react-bootstrap'
-import Input from '../../components/Input/Input'
+import { Col, Row, Container } from 'react-bootstrap'
 import Button from '../../components/Button/Button'
 import Divider from '../../components/Divider'
 import Clickable from '../../components/Clickable/Clickable'
 import { Scenario } from '../../models/Scenario.model'
+import { History } from 'history'
 
-type MessageType = {
-    username: string
-    playername: string
-    messageText: string | string[]
-    myMessage: boolean
+interface FeedbackProps {
+    history: History
 }
 
-const Feedback = () => {
+const Feedback = ({ history }: FeedbackProps) => {
     const eventsManager = EventsManager.instance
     const uid = localStorage.getItem('userId')
     const username = sessionStorage.getItem('username')
@@ -67,6 +63,15 @@ const Feedback = () => {
         ))
     }
 
+    const sendFeedback = () => {
+        // do the socket magic here
+        history.push(`/`)
+    }
+
+    const skipFeedback = () => {
+        history.push(`/`)
+    }
+
     return (
         <div>
             <Header />
@@ -97,13 +102,13 @@ const Feedback = () => {
                 </Container>
                 <Row className="justify-content-center">
                     <Col xs={{ order: 'first' }}>
-                        <Button onClick={() => {}}>
+                        <Button onClick={sendFeedback}>
                             <p>Send Feedback</p>
                         </Button>
                     </Col>
                     <Col xs={{ order: 'last' }}>
                         <Row className="justify-content-end">
-                            <Button onClick={() => {}}>
+                            <Button onClick={skipFeedback}>
                                 <p>Skip Feedback</p>
                             </Button>
                         </Row>
