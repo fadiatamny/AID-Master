@@ -6,6 +6,7 @@ import StartingScreen from './pages/StartingPages/HomePage'
 import EventsManager from './services/EventsManager'
 import SocketManager from './services/SocketManager'
 import AdvLoginScreen from './pages/StartingPages/AdvLogin'
+import Feedback from './pages/Feedback'
 import { SocketEvents } from './models/SocketEvents.model'
 import { v4 as uuid } from 'uuid'
 import DMLoginScreen from './pages/StartingPages/DMLogin'
@@ -28,10 +29,12 @@ export default function App() {
 
     return (
         <Router>
-            <Route path="/" exact component={StartingScreen} />
+            {/* <Route path="/" exact component={StartingScreen} /> */}
+            <Route path="/" exact component={Feedback} />
             <Route path="/game" component={GameScreen} />
             <Route path="/AdventurerLogin" component={AdvLoginScreen} />
             <Route path="/DMLogin" component={DMLoginScreen} />
+            <Route path="/feedback" component={Feedback} />
         </Router>
     )
 }

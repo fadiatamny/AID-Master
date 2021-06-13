@@ -1,0 +1,47 @@
+.container {
+    width: 80vw;
+    background-color: #2f313a;
+    color: #ffffff;
+    padding: 5vw;
+    border-radius: 15px;
+}
+
+.h2 {    
+    align-self: center;
+    font-size: 30px;
+    color: #ff6768;
+}
+
+.h3 {    
+    align-self: center;
+    font-size: 18px;
+    color: #FF8586;
+}
+
+.content {
+    margin-top: 2vh;
+    margin-bottom: 2vh;
+}
+
+.selectedValue {
+    background-color: #191b25;
+    color: #ffa3a4;
+}
+
+.score {
+    margin-bottom: 2vh;
+}
+
+.scenarios {
+    margin-bottom: 2vh;
+}
+
+.scenarioItem {
+    background-color: #CFA2A2;
+    border-radius: 5px;
+    padding: 1vw 1vh;
+}
+
+.scenarioItem:hover {
+    background-color: #CE6B6C;
+}

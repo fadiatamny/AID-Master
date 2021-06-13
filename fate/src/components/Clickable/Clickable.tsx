@@ -5,11 +5,12 @@ export interface ClickableProps {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     onClick: (e?: any) => void
     style?: React.CSSProperties
+    className?: string
 }
 
-const Clickable = ({ children, onClick, style }: ClickableProps) => {
+const Clickable = ({ children, onClick, style, className }: ClickableProps) => {
     return (
-        <div onClick={onClick} className={`${style}`}>
+        <div onClick={onClick} className={`${className}`} style={style}>
             {children}
         </div>
     )
