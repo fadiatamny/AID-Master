@@ -17,14 +17,13 @@ handler.setFormatter(logging.Formatter(formatter))
 logger.addHandler(handler)
 
 def builderHelp():
-    print(
-        'Please follow format of modelBuilder.py [datasheet] [save_path] [k-neighbors? = 10] [hash? = ""]')
+    print('Please follow format of [datasheet] -s [save_path] -k [k-neighbors] -t [Time] -h [hash] -d [DEBUGGING]')
     print('[datasheet] = the data sheet to build models based on')
+    print('[save-path] = the path to save the data to')
     print('[k-neighbors] = k neighbors. default = 3')
     print('[Time] = build time default 5400 seconds')
     print('[hash] = hash to attach to model names. default = ""')
     print('[DEBUGGING] = prints test results after generation')
-
 def builder():
     if sys.argv[2] == '-h' or sys.argv[2] == '-help' or sys.argv[2] == '--help':
         builderHelp()
@@ -36,7 +35,7 @@ def builder():
 
     if len(sys.argv) < 3:
         logger.error(
-            'Please follow format of modelBuilder.py [datasheet] -s [save_path] -t [Time] -k [k-neighbors? = 3] -h [hash? = ""] -d')
+            'Please follow format of modelBuilder.py [datasheet] -s [save_path] -k [k-neighbors] -t [Time] -h [hash] -d')
         sys.exit()
 
     if not os.path.isdir('dataset'):
@@ -132,6 +131,37 @@ def builder():
         ModelBuilder.cleanFiles(h)
         os.chdir(cwd)
 
+def changeHelp():
+    print('Please follow format of -n [new_models_path] -c [current_models_path] -o [old_models_path]')
+    print('[new_models_path] = new models folder path')
+    print('[current_models_path] = new models folder path')
+    print('[old_models_path] = old models folder path')
+def change():
+    if sys.argv[2] == '-h' or sys.argv[2] == '-help':
+        changeHelp()
+        return
+
+    oldPath: str = None
+    currentPath: str = None
+    newPath: str = None
+
+    for index, item in enumerate(sys.argv, 0):
+        if item == '-n' and index + 1 < len(sys.argv):
+            newPath = f'{sys.argv[index + 1]}'
+        if item == '-c' and index + 1 < len(sys.argv):
+            currentPath = f'{sys.argv[index + 1]}'
+        if item == '-o' and index + 1 < len(sys.argv):
+            oldPath = f'{sys.argv[index+1]}'
+    try:
+        switch = ModelChanger(newPath, currentPath, oldPath)
+        switch.modelsMoving()
+    except ModelException as e:
+        logger.critical(str(e))
+        print('Please check -h for help.')
+    except Exception as e:
+        logger.critical('Stack:', str(e))
+        print('Please check -h for help.')
+
 def help():    
     print('Modes that are supported:')
     print('[build] = The model builder module')
@@ -163,3 +193,4 @@ if __name__ == '__main__':
     main()
 
 # build - python main.py build dataset/data.csv -s bin/newModels -k 10 -h 1234 -t 10
+# change - python change -n bin/newModels -c bin/currentModels -o bin/oldModels
