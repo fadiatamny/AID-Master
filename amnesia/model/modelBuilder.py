@@ -14,7 +14,7 @@ import shutil
 
 logger = logging.getLogger(__name__)
 logger.setLevel("DEBUG")
-handler = logging.FileHandler("Runner_Model.log")
+handler = logging.FileHandler("Builder_Model.log")
 formatter = "%(asctime)s %(levelname)s -- %(message)s"
 handler.setFormatter(logging.Formatter(formatter))
 logger.addHandler(handler)
@@ -63,12 +63,11 @@ class ModelBuilder():
     # read the data file and creat the fasttext
     def createFastText(filePath: str, savePath: str = 'bin/newModels/fasttext', hashbase: str = '', time: int = 5400, debug: bool = False) -> None:
         try:
+
             raw_data = ModelBuilder._readRawData(filePath)
         except Exception as e:
             raise ModelException('builder', str(e))
-
         cleandata = ModelBuilder._formatText(raw_data)
-
         # removing validate for now until we have more data. split is 80 - 20
         train, test = np.split(cleandata.sample(
             frac=1), [int(.8*len(cleandata))])
@@ -103,7 +102,6 @@ class ModelBuilder():
 
         # save the bast 3 fasttext models
         indexlist = resDataFrame.nlargest(3, 'Percision').index
-        print(indexlist)
         for i in indexlist:
             logger.debug(
                 f'Moving to {savePath}/fasttextmodel_{hashbase}_{i}.bin')
