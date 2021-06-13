@@ -13,13 +13,19 @@ from pandas.core.series import Series
 import os
 import sys
 from pathlib import Path
+from datetime import datetime
 
+prefix = os.path.dirname(os.path.realpath(__file__))
+
+if not os.path.isdir('logs'):
+    os.mkdir('logs')
 logger = logging.getLogger(__name__)
-logger.setLevel("DEBUG")
-handler = logging.FileHandler("Runner_Model.log")
-formatter = "%(asctime)s %(levelname)s -- %(message)s"
+logger.setLevel('DEBUG')
+handler = logging.FileHandler(f'{prefix}/logs/logs_runner_{datetime.now().date()}.log')
+formatter = '%(asctime)s %(levelname)s -- %(message)s'
 handler.setFormatter(logging.Formatter(formatter))
 logger.addHandler(handler)
+
 
 
 def timed(func):

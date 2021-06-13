@@ -6,13 +6,19 @@ import texthero as hero
 import logging
 from .modelException import ModelException
 from .modelUtils import ModelUtils
+from datetime import datetime
 
+prefix = os.path.dirname(os.path.realpath(__file__))
+
+if not os.path.isdir('logs'):
+    os.mkdir('logs')
 logger = logging.getLogger(__name__)
-logger.setLevel("DEBUG")
-handler = logging.FileHandler("Tester_Model.log")
-formatter = "%(asctime)s %(levelname)s -- %(message)s"
+logger.setLevel('DEBUG')
+handler = logging.FileHandler(f'{prefix}/logs/logs_tester_{datetime.now().date()}.log')
+formatter = '%(asctime)s %(levelname)s -- %(message)s'
 handler.setFormatter(logging.Formatter(formatter))
 logger.addHandler(handler)
+
 
 
 class ModelTester:

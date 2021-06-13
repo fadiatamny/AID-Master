@@ -1,9 +1,9 @@
-from model import *
+from model import ModelBuilder, DataInjector, ModelChanger, ModelRunner, ModelTester, ModelUtils, ModelException
 import os
 import sys
 import logging
-from datetime import datetime
 import requests
+from datetime import datetime
 
 prefix = os.path.dirname(os.path.realpath(__file__))
 
@@ -11,7 +11,7 @@ if not os.path.isdir('logs'):
     os.mkdir('logs')
 logger = logging.getLogger(__name__)
 logger.setLevel('DEBUG')
-handler = logging.FileHandler(f'{prefix}/logs/logs_{datetime.now()}.log')
+handler = logging.FileHandler(f'{prefix}/logs/logs_{datetime.now().date()}.log')
 formatter = '%(asctime)s %(levelname)s -- %(message)s'
 handler.setFormatter(logging.Formatter(formatter))
 logger.addHandler(handler)
@@ -28,6 +28,7 @@ def builderHelp():
 def builder():
     if sys.argv[2] == '-h' or sys.argv[2] == '-help' or sys.argv[2] == '--help':
         builderHelp()
+        return
 
     cwd = os.getcwd()
     cwdcat = cwd.partition('amnesia')
@@ -41,9 +42,9 @@ def builder():
     if not os.path.isdir('dataset'):
         os.mkdir('dataset')
 
-    if not os.path.isfile(sys.argv[1]):
+    if not os.path.isfile(sys.argv[2]):
         # fetch n download it
-        path = sys.argv[1].split('/')
+        path = sys.argv[2].split('/')
         filename = path[len(path) - 1].split('.')[0]
         datasetConfig = ModelUtils.fetchDatasetConfig()
         r = requests.get(datasetConfig['url'], allow_redirects=True)
@@ -114,7 +115,7 @@ def builder():
     try:
         ModelBuilder.cleanFiles(h)
         ModelBuilder.createModels(
-            filePath=sys.argv[1],
+            filePath=sys.argv[2],
             savePath=s,
             k=k,
             hash=h,
@@ -160,3 +161,5 @@ def main():
 
 if __name__ == '__main__':
     main()
+
+# build - python main.py build dataset/data.csv -s bin/newModels -k 10 -h 1234 -t 10
