@@ -137,7 +137,7 @@ def changeHelp():
     print('[current_models_path] = new models folder path')
     print('[old_models_path] = old models folder path')
 def change():
-    if sys.argv[2] == '-h' or sys.argv[2] == '-help':
+    if sys.argv[2] == '-h' or sys.argv[2] == '-help' or sys.argv[2] == '--help':
         changeHelp()
         return
 
@@ -161,6 +161,64 @@ def change():
     except Exception as e:
         logger.critical('Stack:', str(e))
         print('Please check -h for help.')
+
+def injectHelp():
+    print('Please follow format of -d [data_path] -sm [save_models_path] -h [hash] -nm [number_of_models] -on [original_models_path] -o [old_Models_Path] -n [number of crawler rounds] -l [LOOP]')
+    print('[data_Path] = new models folder path')
+    print('[save_Models_Path] = new models folder path')
+    print('[hash] = hash for new models = 10')
+    print('[number_of_models] =number of new to creat and existing models')
+    print('[original_models_path] = current models path')
+    print('[old_Models_Path] = old models folder path')
+    print('[number_Crawler] = the number of crawler rounds, diffult = 10')
+    print('[loop] = number of loops')
+def inject():
+    if sys.argv[2] == '-h' or sys.argv[2] == '-help' or sys.argv[2] == '--help':
+        injectHelp()
+        return
+
+    data: str = None
+    save: str = None
+    hash: str = None
+    crawlerRounds: int = None
+    originalmodels: str = None
+    loop: int = 1
+    oldModels: str = None
+
+    for index, item in enumerate(sys.argv, 0):
+        if item == '-d' and index + 1 < len(sys.argv):
+            data = f'{sys.argv[index + 1]}'
+        if item == '-sm' and index + 1 < len(sys.argv):
+            save = f'{sys.argv[index + 1]}'
+        if item == '-h' and index + 1 < len(sys.argv):
+            hash = f'{sys.argv[index+1]}'
+        if item == '-on' and index + 1 < len(sys.argv):
+            originalmodels = f'{sys.argv[index+1]}'
+        if item == '-n' and index + 1 < len(sys.argv):
+            crawlerRounds = int(sys.argv[index+1])
+        if item == '-l' and index + 1 < len(sys.argv):
+            loop = int(sys.argv[index+1])
+        if item == '-o' and index + 1 < len(sys.argv):
+            oldModels = f'{sys.argv[index+1]}'
+
+    cwd = os.getcwd()
+    cwdcut = cwd.partition('amnesia')
+    os.chdir(f'{cwdcut[0]}/amnesia/model/')
+    datadir = os.path.dirname(f'{data}')
+    if not os.path.isdir(f'{datadir}/injectedData'):
+        os.mkdir(f'{datadir}/injectedData')
+
+    try:
+        DataInjector.injectionLoop(dataPath=data, saveModelsPath=save, hash=hash,
+                                   modelsPath=originalmodels, numberCrawler=crawlerRounds, oldPath=oldModels, loopCount=loop)
+    except ModelException as e:
+        print('Please check -h for help.')
+        logger.critical(str(e))
+    except Exception as e:
+        print('Please check -h for help.')
+        logger.critical('Stack:', str(e))
+    finally:
+        os.chdir(cwd)
 
 def help():    
     print('Modes that are supported:')
@@ -188,9 +246,9 @@ def main():
     elif mode == 'test':
         pass
 
-
 if __name__ == '__main__':
     main()
 
 # build - python main.py build dataset/data.csv -s bin/newModels -k 10 -h 1234 -t 10
-# change - python change -n bin/newModels -c bin/currentModels -o bin/oldModels
+# inject - python main.py inject -d dataset/data.csv -sm bin/newModels/injectModels -h 9876 -nm 3 -on bin/currentModels/ -o bin/oldModels -n 4 -l 1
+# change - python main.py change -n bin/newModels -c bin/currentModels -o bin/oldModels
