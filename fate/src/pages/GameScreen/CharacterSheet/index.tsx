@@ -130,10 +130,10 @@ const CharacterSheet = () => {
         <div className={`container-fluid justify-content-center ${styles.container}`}>
             <div className="row justify-content-center">
                 <div className="col-9">
-                <Input label="Name" placeholder="mr. Man" onChange={changeName} value={name} />
+                    <Input label="Name" placeholder="mr. Man" onChange={changeName} value={name} />
                 </div>
                 <div className="col-3">
-                <Input label="Level" placeholder="1" onChange={changeLevel} value={level.toString()} />
+                    <Input label="Level" placeholder="1" onChange={changeLevel} value={level.toString()} />
                 </div>
                 <div className="col-12 justify-content-center">
                     <div className={`row justify-content-center `}>
@@ -174,7 +174,6 @@ const CharacterSheet = () => {
                                                 className={styles.text}
                                                 value={ability}
                                                 submitLabel="X"
-                                                //@ts-ignore
                                                 onSubmit={() => abilityRemove(ability)}
                                                 placeholder={ability}
                                                 disabled
@@ -204,7 +203,6 @@ const CharacterSheet = () => {
                                                 className={styles.text}
                                                 value={eq}
                                                 submitLabel="X"
-                                                //@ts-ignore
                                                 onSubmit={() => equipRemove(eq)}
                                                 placeholder={eq}
                                                 disabled
@@ -228,7 +226,7 @@ const CharacterSheet = () => {
                     </div>
                 </div>
             </div>
-            
+
             {/* <>
                 <Button onClick={handleShow}>
                     <p>Edit Info</p>

@@ -1,5 +1,6 @@
 
-from modelUtils import ModelUtils
+from .modelUtils import ModelUtils
+from .modelException import ModelException
 import pandas as pd
 from pandas.core.frame import DataFrame
 import joblib
@@ -9,9 +10,9 @@ import logging
 import time
 from functools import wraps
 from pandas.core.series import Series
-from modelException import ModelException
 import os
 import sys
+from pathlib import Path
 
 logger = logging.getLogger(__name__)
 logger.setLevel("DEBUG")
@@ -39,14 +40,31 @@ class ModelRunner():
         self.fastTextPath = fastText
         self.fastTextCount = fastTextCount
         self.knnPath = knn
+        self.dataPath = dataPath
         self.categories = ModelUtils.fetchDatasetHeaders()
-        self.forDf = pd.read_csv(dataPath)
+        datasetConfig = ModelUtils.fetchDatasetConfig()
+        self.forDf = pd.read_csv(os.path.join(dataPath, Path(f'./data.{datasetConfig["type"]}')))
         self.fastTextModels = None
         self._loadModels()
 
+    def feedback(self,newData:json) -> None:
+        data = pd.read_json(newData)
+        data = pd.DataFrame(data)
+        allData = pd.DataFrame()
+        for index in data.index:
+            dataFrame = self.categories.copy()
+            for category in data['prediction'][index]:
+                dataFrame[category]=[1]
+            dataFrame['TEXT'] = data['text'][index]
+            allData = pd.concat([allData,dataFrame],ignore_index=True)
+        oldData = pd.read_csv(self.dataPath)
+        oldData = pd.concat([oldData,allData],ignore_index=True)
+        oldData.to_csv(self.dataPath)
+
     def _loadModels(self) -> None:
         self.fastTextModels = ModelUtils.loadFasttextModels(self.fastTextPath)
-        self.knnModel = joblib.load(self.knnPath)
+        hash = ModelUtils.fetchCurrentHash(self.knnPath)
+        self.knnModel = joblib.load(os.path.join(self.knnPath, Path(f'./knnmodel_{hash}.pkl')))
 
     def _verifyFastText(self, path: str):
         fCount: int = 0
@@ -133,14 +151,14 @@ class ModelRunner():
 
         tempDataframe = ModelUtils.fetchDatasetHeaders()
         cleanText = self._cleanText(text)
-
+        
         try:
             fastTextRes = ModelUtils.fastPredict(
                 cleanText, self.fastTextModels)
 
         except:
             raise ModelException('runner:predict', "unable to predict")
-
+        
         for i in range(len(fastTextRes)):
             new = fastTextRes[i].replace('__label__', '')
             tempDataframe[new] = ['1']

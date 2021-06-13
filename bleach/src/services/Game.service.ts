@@ -5,6 +5,9 @@ import { GameDump, GameSession } from '../models/GameSession.model'
 import ScenarioUtils from '../utils/Scenario.utils'
 import { Player, PlayerDump, PlayerType } from '../models/Player.model'
 import { SocketEvents } from '../models/SocketEvents.model'
+import { Scenario } from '../models/Scenario.model'
+
+const AVERAGE_SCORE = process.env.AVERAGE_SCORE || 5
 
 export default class GameService {
     private static _activeGames: Record<string, GameSession> = {}
@@ -28,7 +31,10 @@ export default class GameService {
             [SocketEvents.SEND_MESSAGE]: this._sendMessage.bind(this),
             [SocketEvents.SEND_SCENARIO]: this._sendScenario.bind(this),
             [SocketEvents.LEAVE_ROOM]: this._leaveRoom.bind(this),
-            [SocketEvents.NEW_PLAYER_REGISTER]: this._newPlayerRegister.bind(this)
+            [SocketEvents.NEW_PLAYER_REGISTER]: this._newPlayerRegister.bind(this),
+            [SocketEvents.END_GAME]: this._endGame.bind(this),
+            [SocketEvents.FEEDBACK]: this._feedback.bind(this),
+            [SocketEvents.REQUEST_SCENARIOS]: this._requestScenarios.bind(this)
         }
 
         Object.entries(onsHandler).forEach(([key, value]) => this._socket.on(key, value))
@@ -55,9 +61,14 @@ export default class GameService {
         delete GameService._activeGames[roomId]
     }
 
-    private _createRoom(pId: string, username: string, playername: string, data?: GameDump) {
+    private _createRoom(p: Partial<Player>, data?: GameDump) {
+        if (!p.id || !p.username || !p.playername) {
+            this._sendError('createRoom', 'There was an issue, please try again', 'Missing Variables')
+            return
+        }
+
         const id = uniqid()
-        const dm = new Player(PlayerType.DM, pId, username, playername)
+        const dm = new Player(PlayerType.DM, p.id, p.username, p.playername)
 
         if (data) {
             try {
@@ -92,8 +103,11 @@ export default class GameService {
     }
 
     private _joinRoom(roomId: string, playerId: string) {
-        const room = this.rooms.get(roomId)
-        if (!room) {
+        if (!roomId || !playerId) {
+            this._sendError('joinRoom', 'There was an issue, please try again', 'Missing Variables')
+            return
+        }
+        if (!this._roomExists(roomId)) {
             this._sendError('joinRoom', 'There was an issue, please try again', `This room ${roomId} does not exist.`)
             return
         }
@@ -118,8 +132,7 @@ export default class GameService {
     }
 
     private _newPlayerRegister(roomId: string, data: PlayerDump) {
-        const room = this.rooms.get(roomId)
-        if (!room) {
+        if (!this._roomExists(roomId)) {
             this._sendError('joinRoom', 'There was an issue, please try again', `This room ${roomId} does not exist.`)
             return
         }
@@ -139,10 +152,18 @@ export default class GameService {
             this._sendError('sendMessage', 'There was an issue, please try again', 'Missing Variables')
             return
         }
+        if (!this._roomExists(roomId)) {
+            this._sendError('sendMessage', 'There was an issue, please try again', 'Room doesnt exist')
+            return
+        }
         this.io.sockets.in(roomId).emit(SocketEvents.MESSAGE, username, message, playername, target)
     }
 
     private _sendScenario(roomId: string, username: string, scenario: string) {
+        if (!roomId || !username || !scenario) {
+            this._sendError('sendScenario', 'There was an issue, please try again', 'Missing Variables')
+            return
+        }
         if (!this._roomExists(roomId)) {
             this._sendError('sendScenario', 'There was an issue, please try again', 'Room doesnt exist')
             return
@@ -170,6 +191,10 @@ export default class GameService {
     }
 
     private _leaveRoom(roomId: string, playerId: string, username: string) {
+        if (!roomId || !playerId || !username) {
+            this._sendError('leaveRoom', 'There was an issue, please try again', 'Missing Variables')
+            return
+        }
         if (!this._roomExists(roomId)) {
             this._sendError('leaveRoom', 'There was an issue, please try again', 'Room doesnt exist')
             return
@@ -183,5 +208,63 @@ export default class GameService {
 
     private _sendError(where?: string, message?: string, error?: unknown) {
         this._socket.emit(SocketEvents.ERROR, where, message ?? `There was an issue`, error)
+    }
+
+    private _endGame(roomId: string) {
+        if (!roomId) {
+            this._sendError('endGame', 'There was an issue, please try again', 'Missing Variables')
+            return
+        }
+        if (!this._roomExists(roomId)) {
+            this._sendError('endGame', 'There was an issue, please try again', 'Room doesnt exist')
+            return
+        }
+
+        this.io.sockets.in(roomId).emit(SocketEvents.GAME_ENDED)
+    }
+
+    private _feedback(roomId: string, score: number, scenarios: Scenario[]) {
+        if (!roomId || !score) {
+            this._sendError('feedback', 'There was an issue, please try again', 'Missing Variables')
+            return
+        }
+        if (!this._roomExists(roomId)) {
+            this._sendError('feedback', 'There was an issue, please try again', 'Room doesnt exist')
+            return
+        }
+
+        const toSend: Scenario[] = []
+        const session = this.getGame(roomId)
+
+        if (score <= AVERAGE_SCORE) {
+            toSend.push(...session.scenarios)
+        }
+
+        if (scenarios) {
+            toSend.push(...scenarios)
+        }
+
+        //axios post messaage to amnesia
+        axios.post(`${process.env.AMNESIA_ENDPOINT}/api/feedback`, toSend).catch((e: AxiosError) => {
+            console.error(e.message)
+            console.log(e.stack)
+            this._sendError('feedback', 'There was an issue', e.message)
+        })
+
+        //have to end game here
+    }
+
+    private _requestScenarios(roomId: string) {
+        if (!roomId) {
+            this._sendError('feedback', 'There was an issue, please try again', 'Missing Variables')
+            return
+        }
+        if (!this._roomExists(roomId)) {
+            this._sendError('feedback', 'There was an issue, please try again', 'Room doesnt exist')
+            return
+        }
+
+        const session = this.getGame(roomId)
+        this.io.sockets.in(roomId).emit(SocketEvents.SCENARIO_LIST, session.scenarios)
     }
 }

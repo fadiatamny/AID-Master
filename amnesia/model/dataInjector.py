@@ -1,15 +1,15 @@
-from modelUtils import ModelUtils
-from crawler import Crawler
+from .modelUtils import ModelUtils
+from .modelBuilder import ModelBuilder
+from .modelTester import ModelTester
+from .modelException import ModelException
+from .modelChanger import ModelChanger
+from .crawler import Crawler
 import pandas as pd
 import texthero as hero
-from modelBuilder import ModelBuilder
-from modelTester import ModelTester
 import os
 import sys
 import logging
-from modelException import ModelException
 import shutil
-from modelChanger import ModelChanger
 
 logger = logging.getLogger(__name__)
 logger.setLevel("DEBUG")

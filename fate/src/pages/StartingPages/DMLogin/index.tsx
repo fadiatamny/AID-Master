@@ -23,8 +23,9 @@ const DMLoginScreen = (props: any) => {
             props.history.push(`/game`)
         })
         eventsManager.trigger(SocketEvents.CREATE_ROOM, {
-            playerId: uid,
-            username: username
+            id: uid,
+            username,
+            playername
         })
     }
 

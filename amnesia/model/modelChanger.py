@@ -1,11 +1,10 @@
 import os
-from posix import listdir
 import shutil
 import glob
 import sys
 import logging
 from typing import Any
-from modelException import ModelException
+from .modelException import ModelException
 
 logger = logging.getLogger(__name__)
 logger.setLevel("DEBUG")

@@ -20,7 +20,7 @@ const ChatTabs = ({ users, general, switchActive }: ChatTabsProps) => {
                         <Tab username={user.username} charactername={user.playername} isActive={user.isActive} />
                     </Clickable>
                 ))}
-                <Divider />
+                <Divider style={{ width: '80%' }} />
                 {users?.map((user, i) => (
                     <Clickable key={i} onClick={() => switchActive(user.username)}>
                         <Tab username={user.username} charactername={user.playername} isActive={user.isActive} />

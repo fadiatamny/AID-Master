@@ -1,6 +1,7 @@
 import io, { Socket } from 'socket.io-client'
 import { GameDump } from '../models/GameSession.model'
 import { PlayerType, IPlayer, PlayerDump } from '../models/Player.model'
+import { Scenario } from '../models/Scenario.model'
 import { SocketEvents } from '../models/SocketEvents.model'
 import EventsManager from './EventsManager'
 const endpoint = 'http://localhost:5069'
@@ -25,7 +26,11 @@ export default class SocketManager {
             [SocketEvents.JOIN_ROOM]: this._joinRoom.bind(this),
             [SocketEvents.SEND_MESSAGE]: this._sendMessage.bind(this),
             [SocketEvents.SEND_SCENARIO]: this._sendScenario.bind(this),
-            [SocketEvents.LEAVE_ROOM]: this._leaveRoom.bind(this)
+            [SocketEvents.LEAVE_ROOM]: this._leaveRoom.bind(this),
+            [SocketEvents.NEW_PLAYER_REGISTER]: this._newPlayerRegister.bind(this),
+            [SocketEvents.END_GAME]: this._endGame.bind(this),
+            [SocketEvents.FEEDBACK]: this._feedback.bind(this),
+            [SocketEvents.REQUEST_SCENARIOS]: this._requestScenarios.bind(this)
         }
 
         const onsHandler = {
@@ -39,7 +44,10 @@ export default class SocketManager {
             [SocketEvents.SCENARIO_GUIDE]: this._scenarioGuide.bind(this),
             [SocketEvents.ERROR]: this._error.bind(this),
             [SocketEvents.PLAYER_LEFT]: this._playerLeft.bind(this),
-            [SocketEvents.PLAYER_JOINED]: this._playerJoined.bind(this)
+            [SocketEvents.PLAYER_JOINED]: this._playerJoined.bind(this),
+            [SocketEvents.NEW_PLAYER]: this._newPlayer.bind(this),
+            [SocketEvents.GAME_ENDED]: this._gameEnded.bind(this),
+            [SocketEvents.SCENARIO_LIST]: this._scenarioList.bind(this)
         }
 
         Object.entries(emitsHandler).forEach(([key, value]) =>
@@ -67,8 +75,8 @@ export default class SocketManager {
         this._socket.emit(SocketEvents.HI, {})
     }
 
-    private _createRoom({ playerId, username }: any) {
-        this._socket.emit(SocketEvents.CREATE_ROOM, playerId, username)
+    private _createRoom(player: Partial<PlayerDump>) {
+        this._socket.emit(SocketEvents.CREATE_ROOM, player)
     }
 
     private _joinRoom({ id, userId, data }: any) {
@@ -99,6 +107,23 @@ export default class SocketManager {
     private _leaveRoom({ id, userId, username }: any) {
         this._socket.emit(SocketEvents.LEAVE_ROOM, id, userId, username)
     }
+
+    private _newPlayerRegister({ roomId, data }: { roomId: string; data: PlayerDump }) {
+        this._socket.emit(SocketEvents.NEW_PLAYER_REGISTER, roomId, data)
+    }
+
+    private _endGame({ roomId }: { roomId: string }) {
+        this._socket.emit(SocketEvents.END_GAME, roomId)
+    }
+
+    private _feedback({ roomId, score, scenarios }: { roomId: string; score: number; scenarios: Scenario[] }) {
+        this._socket.emit(SocketEvents.FEEDBACK, roomId, score, scenarios)
+    }
+
+    private _requestScenarios({ roomId }: { roomId: string }) {
+        this._socket.emit(SocketEvents.REQUEST_SCENARIOS, roomId)
+    }
+
     //#endregion
 
     //#region ons
@@ -144,6 +169,18 @@ export default class SocketManager {
 
     private _playerJoined(player: PlayerDump) {
         this._eventsManager.trigger(SocketEvents.PLAYER_JOINED, player)
+    }
+
+    private _newPlayer(playerId: PlayerDump) {
+        this._eventsManager.trigger(SocketEvents.NEW_PLAYER, { id: playerId })
+    }
+
+    private _gameEnded() {
+        this._eventsManager.trigger(SocketEvents.GAME_ENDED, {})
+    }
+
+    private _scenarioList(scenarios: Scenario[]) {
+        this._eventsManager.trigger(SocketEvents.SCENARIO_LIST, { scenarios })
     }
 
     //#endregion
