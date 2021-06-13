@@ -76,9 +76,9 @@ class ModelBuilder():
             # np.savetxt(f'./validate_data{hash}.txt', validate.values, fmt='%s')
             np.savetxt(f'testing_data{hashbase}.txt', test.values, fmt='%s')
             np.savetxt(f'training_data{hashbase}.txt', train.values, fmt='%s')
-        except:
+        except Exception as e:
             raise ModelException(
-                'builder', 'unable to save the testing and training data files')
+                'builder', f'unable to save the testing and training data files. {str(e)}')
 
         # creating the 5 base models and performing auto tune for 10 labels and 1.5h (5400s) and limiting the file size to 1G
         resDataFrame = pd.DataFrame(columns=['exmp', 'Percision', 'Recall'])
@@ -95,10 +95,10 @@ class ModelBuilder():
                     {'exmp': restest[0], 'Percision': restest[1], 'Recall': restest[2]}, ignore_index=True)
                 fastmodule.save_model(
                     f'build/fasttextmodel_{hashbase}_{i}.bin')
-        except:
+        except Exception as e:
             for i in os.scandir('build'):
                 os.remove(i.path)
-            raise ModelException('builder', 'unable to create models')
+            raise ModelException('builder', f'unable to create models. {str(e)}')
 
         # save the bast 3 fasttext models
         indexlist = resDataFrame.nlargest(3, 'Percision').index
