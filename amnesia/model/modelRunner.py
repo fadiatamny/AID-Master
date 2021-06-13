@@ -41,8 +41,23 @@ class ModelRunner():
         self.knnPath = knn
         self.categories = ModelUtils.fetchDatasetHeaders()
         self.forDf = pd.read_csv(dataPath)
+        self.dataPath = dataPath
         self.fastTextModels = None
         self._loadModels()
+
+    def feedback(self,newData:json) -> None:
+        data = pd.read_json(newData)
+        data = pd.DataFrame(data)
+        allData = pd.DataFrame()
+        for index in data.index:
+            dataFrame = self.categories.copy()
+            for category in data['prediction'][index]:
+                dataFrame[category]=[1]
+            dataFrame['TEXT'] = data['text'][index]
+            allData = pd.concat([allData,dataFrame],ignore_index=True)
+        oldData = pd.read_csv(self.dataPath)
+        oldData = pd.concat([oldData,allData],ignore_index=True)
+        oldData.to_csv(self.dataPath)
 
     def _loadModels(self) -> None:
         self.fastTextModels = ModelUtils.loadFasttextModels(self.fastTextPath)
@@ -133,14 +148,14 @@ class ModelRunner():
 
         tempDataframe = ModelUtils.fetchDatasetHeaders()
         cleanText = self._cleanText(text)
-
+        
         try:
             fastTextRes = ModelUtils.fastPredict(
                 cleanText, self.fastTextModels)
 
         except:
             raise ModelException('runner:predict', "unable to predict")
-
+        
         for i in range(len(fastTextRes)):
             new = fastTextRes[i].replace('__label__', '')
             tempDataframe[new] = ['1']
