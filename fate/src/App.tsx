@@ -29,8 +29,7 @@ export default function App() {
 
     return (
         <Router>
-            {/* <Route path="/" exact component={StartingScreen} /> */}
-            <Route path="/" exact component={Feedback} />
+            <Route path="/" exact component={StartingScreen} />
             <Route path="/game" component={GameScreen} />
             <Route path="/AdventurerLogin" component={AdvLoginScreen} />
             <Route path="/DMLogin" component={DMLoginScreen} />

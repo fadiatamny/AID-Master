@@ -21,6 +21,8 @@ const Feedback = ({ history }: FeedbackProps) => {
     const [scenarios, setScenarios] = useState<Scenario[]>([])
     const [score, setScore] = useState(5)
     const [selectedScenarios, setSelectedScenarios] = useState<Scenario[]>([])
+
+    const scoreRef = useRef<number>(score)
     const selectedScenariosRef = useRef<Scenario[]>(selectedScenarios)
 
     const generateValues = () => {
@@ -60,6 +62,7 @@ const Feedback = ({ history }: FeedbackProps) => {
 
     const sendFeedback = () => {
         // do the socket magic here
+        eventsManager.trigger(SocketEvents.FEEDBACK, { roomId, score: scoreRef.current, scenarios: selectedScenarios })
         history.push(`/`)
     }
 
@@ -72,7 +75,12 @@ const Feedback = ({ history }: FeedbackProps) => {
     }
 
     useEffect(() => {
-        eventsManager.on(SocketEvents.SCENARIO_LIST, 'feedback-component', (obj: any) => handleScenarios(obj))
+        if (!roomId) {
+            history.push(`/`)
+        }
+        eventsManager.on(SocketEvents.SCENARIO_LIST, 'feedback-component', (obj: { scenarios: Scenario[] }) =>
+            handleScenarios(obj)
+        )
         eventsManager.trigger(SocketEvents.REQUEST_SCENARIOS, { roomId })
     }, [])
 

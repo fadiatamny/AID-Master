@@ -6,7 +6,7 @@ import DMCircle from '../../../assets/images/CircleDM.png'
 import Header from '../../../components/Header/Header'
 import EventsManager from '../../../services/EventsManager'
 import Clickable from '../../../components/Clickable/Clickable'
-import { SocketEvents } from '../../../models/SocketEvents.model'
+import { useEffect } from 'react'
 
 //@ts-ignore
 const HomaPage = (props: any) => {
@@ -19,6 +19,14 @@ const HomaPage = (props: any) => {
     const clickDM = () => {
         props.history.push(`/DMLogin`)
     }
+
+    useEffect(() => {
+        sessionStorage.removeItem('rid')
+        sessionStorage.removeItem('playername')
+        sessionStorage.removeItem('username')
+        sessionStorage.removeItem('type')
+        sessionStorage.removeItem('playerlist')
+    }, [])
 
     return (
         <div>
