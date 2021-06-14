@@ -1,10 +1,11 @@
 import styles from '../StartingPages.module.css'
-import AdvCircle from '../../../assets/images/CircleAdventurer.png'
+import AdvCircle from '../../assets/images/CircleAdventurer.png'
 import { useState } from 'react'
-import Header from '../../../components/Header/Header'
-import Input from '../../../components/Input/Input'
-import EventsManager from '../../../services/EventsManager'
-import { SocketEvents } from '../../../models/SocketEvents.model'
+import Header from '../../components/Header/Header'
+import Input from '../../components/Input/Input'
+import EventsManager from '../../services/EventsManager'
+import { SocketEvents } from '../../models/SocketEvents.model'
+import { Col, Row } from 'react-bootstrap'
 
 const AdvLoginScreen = (props: any) => {
     const [roomNumber, setRoomNumber] = useState('')
@@ -42,13 +43,13 @@ const AdvLoginScreen = (props: any) => {
     }
 
     return (
-        <div>
+        <>
             <Header />
-            <div className={`row ${styles.container}`}>
-                <div className="col">
+            <Row className={`${styles.container}`}>
+                <Col>
                     <img src={AdvCircle} className={styles.roundImage} />
-                </div>
-                <div className="col">
+                </Col>
+                <Col>
                     <Input
                         id="AdvUsername"
                         className={styles.RoomCode}
@@ -71,9 +72,9 @@ const AdvLoginScreen = (props: any) => {
                         onChange={handleRoomChange}
                         onSubmit={handleSubmit}
                     />
-                </div>
-            </div>
-        </div>
+                </Col>
+            </Row>
+        </>
     )
 }
 

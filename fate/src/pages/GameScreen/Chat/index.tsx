@@ -2,6 +2,7 @@ import styles from './styles.module.css'
 import React from 'react'
 import ChatTabs from './ChatTabs'
 import ChatWindow from './ChatWindow'
+import { Col, Row } from 'react-bootstrap'
 
 type MessageType = {
     username: string
@@ -58,11 +59,11 @@ const Chat = ({ messages, username, playername, type, rid }: ChatProps) => {
     const switchActive = (name: string) => setActiveChat(name)
 
     return (
-        <div className={`row justify-content-center ${styles.container}`}>
-            <div className={`col-md-3 col-xl-2`}>
+        <Row className={`justify-content-center ${styles.container}`}>
+            <Col sm={3}>
                 <ChatTabs users={generateUserTabs()} general={generateGeneralTabs()} switchActive={switchActive} />
-            </div>
-            <div className={`col`}>
+            </Col>
+            <Col>
                 <ChatWindow
                     messages={messages[activeChat].messages}
                     username={username}
@@ -70,8 +71,8 @@ const Chat = ({ messages, username, playername, type, rid }: ChatProps) => {
                     activeChat={activeChat}
                     rid={rid}
                 />
-            </div>
-        </div>
+            </Col>
+        </Row>
     )
 }
 

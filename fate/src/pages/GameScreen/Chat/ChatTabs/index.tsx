@@ -1,3 +1,4 @@
+import { Col } from 'react-bootstrap'
 import Clickable from '../../../../components/Clickable/Clickable'
 import Divider from '../../../../components/Divider'
 import styles from './styles.module.css'
@@ -13,7 +14,7 @@ export interface ChatTabsProps {
 
 const ChatTabs = ({ users, general, switchActive }: ChatTabsProps) => {
     return (
-        <div className="col">
+        <Col>
             <div className={`${styles.container}`}>
                 {general.map((user, i) => (
                     <Clickable key={i} onClick={() => switchActive(user.username)}>
@@ -27,8 +28,7 @@ const ChatTabs = ({ users, general, switchActive }: ChatTabsProps) => {
                     </Clickable>
                 ))}
             </div>
-        </div>
-        // <div>hi</div>
+        </Col>
     )
 }
 

@@ -193,7 +193,7 @@ const GameScreen = () => {
     )
 
     return (
-        <div>
+        <>
             <Header />
             <Row className="justify-content-center">
                 {showsheet ? (
@@ -239,7 +239,7 @@ const GameScreen = () => {
                     />
                 </Col>
             </Row>
-        </div>
+        </>
     )
 }
 

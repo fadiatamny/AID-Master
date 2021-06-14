@@ -2,14 +2,14 @@ import { BrowserRouter as Router, Route } from 'react-router-dom'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import './App.css'
 import GameScreen from './pages/GameScreen'
-import StartingScreen from './pages/StartingPages/HomePage'
+import StartingScreen from './pages/HomePage'
 import EventsManager from './services/EventsManager'
 import SocketManager from './services/SocketManager'
-import AdvLoginScreen from './pages/StartingPages/AdvLogin'
+import AdvLoginScreen from './pages/AdvLogin'
 import Feedback from './pages/Feedback'
 import { SocketEvents } from './models/SocketEvents.model'
 import { v4 as uuid } from 'uuid'
-import DMLoginScreen from './pages/StartingPages/DMLogin'
+import DMLoginScreen from './pages/DMLogin'
 
 export default function App() {
     const eventsManager = EventsManager.instance

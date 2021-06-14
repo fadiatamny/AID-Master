@@ -1,8 +1,7 @@
 import React, { useState, useRef } from 'react'
 import styles from './styles.module.css'
-import { Row } from 'react-bootstrap'
+import { Col, Row, Container } from 'react-bootstrap'
 import Button from '../../../components/Button/Button'
-import CharacterForm from './CharacterForm'
 import { CharacterSheet as CH } from '../../../models/CharacterSheet.model'
 import Input from '../../../components/Input/Input'
 import CHPplaceholder from '../../../assets/images/characterPicPlaceholder.png'
@@ -15,9 +14,6 @@ export interface CharaSheetProps {
 }
 
 const CharacterSheet = ({ sheets, setSheets, showsheet, toggleSheets }: CharaSheetProps) => {
-    // const [show, setShow] = useState(false)
-    // const handleClose = () => setShow(false)
-    // const handleShow = () => setShow(true)
     const [sheet, setSheet] = useState<CH>()
     const sheetRef = useRef<CH>()
 
@@ -112,25 +108,25 @@ const CharacterSheet = ({ sheets, setSheets, showsheet, toggleSheets }: CharaShe
     }
 
     return (
-        <div className={`container-fluid justify-content-center ${styles.container}`}>
-            <div className="row justify-content-center">
-                <div className="col-9">
+        <Container className={`justify-content-center ${styles.container}`}>
+            <Row className="justify-content-center">
+                <Col sm={9}>
                     <Input label="Name" placeholder="mr. Man" onChange={changeName} value={name} />
-                </div>
-                <div className="col-3">
+                </Col>
+                <Col sm={3}>
                     <Input label="Level" placeholder="1" onChange={changeLevel} value={level.toString()} />
-                </div>
-                <div className="col-12 justify-content-center">
-                    <div className={`row justify-content-center `}>
-                        <div className="col">
+                </Col>
+                <Col sm={12} className="justify-content-center">
+                    <Row className={`justify-content-center `}>
+                        <Col>
                             <Input label="HP" placeholder="0" value={life.current.toString()} onChange={changeLife} />
                             <Input label="HP" placeholder="100" value={life.max.toString()} disabled />
-                        </div>
-                        <div className="col">
+                        </Col>
+                        <Col>
                             <Input label="Mana" value={mana.current.toString()} placeholder="0" onChange={changeMana} />
                             <Input label="Mana" value={mana.max.toString()} placeholder="100" disabled />
-                        </div>
-                        <div className="col">
+                        </Col>
+                        <Col>
                             <Input
                                 label="Shield"
                                 value={shield.current.toString()}
@@ -138,10 +134,10 @@ const CharacterSheet = ({ sheets, setSheets, showsheet, toggleSheets }: CharaShe
                                 onChange={changeShield}
                             />
                             <Input label="Shield" value={shield.max.toString()} placeholder="100" disabled />
-                        </div>
-                    </div>
-                    <div className="row justify-content-center">
-                        <div className="col">
+                        </Col>
+                    </Row>
+                    <Row className="justify-content-center">
+                        <Col>
                             <h3 className={`${styles.text}`}>Abilities</h3>
                             <Input
                                 submitLabel="Add"
@@ -169,8 +165,8 @@ const CharacterSheet = ({ sheets, setSheets, showsheet, toggleSheets }: CharaShe
                                     <p className={styles.text}>no abilities</p>
                                 )}
                             </div>
-                        </div>
-                        <div className="col">
+                        </Col>
+                        <Col>
                             <h3 className={`${styles.text}`}>Equipment</h3>
                             <Input
                                 submitLabel="Add"
@@ -198,12 +194,12 @@ const CharacterSheet = ({ sheets, setSheets, showsheet, toggleSheets }: CharaShe
                                     <p className={styles.text}>no equipment</p>
                                 )}
                             </div>
-                        </div>
-                    </div>
-                    <div className="row justify-content-center">
+                        </Col>
+                    </Row>
+                    <Row className="justify-content-center">
                         <img className={styles.imageurl} src={imgurl ? imgurl : CHPplaceholder} />
                         <Input label="Image URL" placeholder={imgURLPlaceholder} value={imgurl} onChange={changeImg} />
-                    </div>
+                    </Row>
                     <Row className="justify-content-center">
                         <Button onClick={handleSubmit}>
                             <p>Save Edits</p>
@@ -213,29 +209,9 @@ const CharacterSheet = ({ sheets, setSheets, showsheet, toggleSheets }: CharaShe
                             <p>Hide Sheet</p>
                         </Button>
                     </Row>
-                </div>
-            </div>
-
-            {/* <>
-                <Button onClick={handleShow}>
-                    <p>Edit Info</p>
-                </Button>
-
-                <Modal show={show} onHide={handleClose} backdrop="static" keyboard={false} size="xl">
-                    <Modal.Header>
-                        <Modal.Title>Character Sheet Update</Modal.Title>
-                    </Modal.Header>
-                    <Modal.Body>
-                        <CharacterForm sheet={sheet} setSheet={setSheet} />
-                    </Modal.Body>
-                    <Modal.Footer>
-                        <Button onClick={handleClose}>
-                            <p>Close</p>
-                        </Button>
-                    </Modal.Footer>
-                </Modal>
-            </> */}
-        </div>
+                </Col>
+            </Row>
+        </Container>
     )
 }
 

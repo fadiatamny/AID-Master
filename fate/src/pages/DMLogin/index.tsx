@@ -1,11 +1,12 @@
 import styles from '../StartingPages.module.css'
-import DMCircle from '../../../assets/images/CircleDM.png'
+import DMCircle from '../../assets/images/CircleDM.png'
 import { useState } from 'react'
-import Header from '../../../components/Header/Header'
-import Input from '../../../components/Input/Input'
-import EventsManager from '../../../services/EventsManager'
-import { SocketEvents } from '../../../models/SocketEvents.model'
-import Clickable from '../../../components/Clickable/Clickable'
+import Header from '../../components/Header/Header'
+import Input from '../../components/Input/Input'
+import EventsManager from '../../services/EventsManager'
+import { SocketEvents } from '../../models/SocketEvents.model'
+import Clickable from '../../components/Clickable/Clickable'
+import { Row, Col } from 'react-bootstrap'
 
 const DMLoginScreen = (props: any) => {
     const [username, setUsername] = useState('Game Master')
@@ -38,13 +39,13 @@ const DMLoginScreen = (props: any) => {
     }
 
     return (
-        <div>
+        <>
             <Header />
-            <div className={`row ${styles.container}`}>
-                <div className="col">
+            <Row className={` ${styles.container}`}>
+                <Col>
                     <img src={DMCircle} className={styles.roundImage} />
-                </div>
-                <div className="col">
+                </Col>
+                <Col>
                     <Input
                         id="DMUsername"
                         className={styles.RoomCode}
@@ -63,9 +64,9 @@ const DMLoginScreen = (props: any) => {
                     <Clickable onClick={handleSubmit}>
                         <p className={styles.submit}>Create Game</p>
                     </Clickable>
-                </div>
-            </div>
-        </div>
+                </Col>
+            </Row>
+        </>
     )
 }
 
