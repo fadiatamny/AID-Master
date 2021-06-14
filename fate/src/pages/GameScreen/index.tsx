@@ -7,6 +7,8 @@ import EventsManager from '../../services/EventsManager'
 import { generate } from '../../services/ScenarioGuide'
 import CharacterSheet from './CharacterSheet'
 import { Col, Row } from 'react-bootstrap'
+import { CharacterSheet as CH } from '../../models/CharacterSheet.model'
+import Button from '../../components/Button/Button'
 
 type MessageType = {
     username: string
@@ -22,6 +24,8 @@ const GameScreen = () => {
     const playertype = sessionStorage.getItem('type')
     const playername = sessionStorage.getItem('playername')
     const roomid = sessionStorage.getItem('rid')
+    const [sheets, setSheets] = useState<CH[]>([])
+    const [showsheet, setShowsheet] = useState(false)
 
     const generateMessages = () => {
         const messagesObj: { [key: string]: { playername: string; messages: MessageType[] } } = {
@@ -159,6 +163,10 @@ const GameScreen = () => {
         setMessages(messagesCopy)
     }
 
+    const toggleSheets = () => {
+        setShowsheet(!showsheet)
+    }
+
     useEffect(() => {
         //check state
         eventsManager.on(SocketEvents.MESSAGE, 'game-component', (obj: any) => handleMessages(obj))
@@ -188,9 +196,39 @@ const GameScreen = () => {
         <div>
             <Header />
             <Row className="justify-content-center">
-                <Col sm={{ order: 1, span: 12 }} md={5}>
-                    <CharacterSheet />
-                </Col>
+                {showsheet ? (
+                    sheets.length === 0 && playertype === 'dm' ? (
+                        <Col
+                            sm={{ order: 1, span: 12 }}
+                            md={5}
+                            className={`${styles.textcontainer} justify-content-center`}
+                        >
+                            <Row className="justify-content-center align-items-center">
+                                <p className={`${styles.text}`}>No character sheets :(</p>
+                                <Button onClick={toggleSheets}>
+                                    <p>Hide Sheet</p>
+                                </Button>
+                            </Row>
+                        </Col>
+                    ) : (
+                        <Col sm={{ order: 1, span: 12 }} md={5}>
+                            <CharacterSheet
+                                sheets={sheets}
+                                setSheets={setSheets}
+                                showsheet={showsheet}
+                                toggleSheets={toggleSheets}
+                            />
+                        </Col>
+                    )
+                ) : (
+                    <Col sm={{ order: 1, span: 2 }} md={2} className="justify-content-center">
+                        <Row sm={1}>
+                            <Button onClick={toggleSheets}>
+                                <p>Show Sheets</p>
+                            </Button>
+                        </Row>
+                    </Col>
+                )}
                 <Col sm={{ order: 2, span: 12 }} md={7}>
                     <Chat
                         messages={messages}

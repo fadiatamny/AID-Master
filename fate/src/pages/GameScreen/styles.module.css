@@ -1,3 +1,18 @@
 .container {
     display: flex;
 }
+
+.textcontainer {
+    height: 80vh;
+    padding-top: 1vh;
+    margin-top: 2vh;
+    margin-bottom: 2vh;
+    border-radius: 15px;
+    background-color: #2f313a;
+}
+
+.text{
+    color: white;
+    text-align: center;
+    margin: 0;
+}

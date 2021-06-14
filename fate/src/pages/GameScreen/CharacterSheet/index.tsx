@@ -1,42 +1,27 @@
 import React, { useState, useRef } from 'react'
 import styles from './styles.module.css'
-import { Modal } from 'react-bootstrap'
+import { Row } from 'react-bootstrap'
 import Button from '../../../components/Button/Button'
 import CharacterForm from './CharacterForm'
 import { CharacterSheet as CH } from '../../../models/CharacterSheet.model'
 import Input from '../../../components/Input/Input'
+import CHPplaceholder from '../../../assets/images/characterPicPlaceholder.png'
 
-// type SheetType = {
-//     class: string
-//     alignment: string
-//     armorClass: number
-//     hitPoint: number
-//     level: number
-//     imageurl?: string
-//     strenght: number
-//     intelligence: number
-//     wisdom: number
-//     dexterity: number
-//     constitution: number
-//     charisma: number
-//     poison?: number
-//     magic?: number
-//     paralysis?: number
-//     dragon?: number
-//     spells: number
-//     abilities: string
-//     skills: string
-// }
+export interface CharaSheetProps {
+    sheets: CH[]
+    setSheets: any
+    showsheet: boolean
+    toggleSheets: any
+}
 
-const CharacterSheet = () => {
+const CharacterSheet = ({ sheets, setSheets, showsheet, toggleSheets }: CharaSheetProps) => {
     // const [show, setShow] = useState(false)
     // const handleClose = () => setShow(false)
     // const handleShow = () => setShow(true)
     const [sheet, setSheet] = useState<CH>()
     const sheetRef = useRef<CH>()
 
-    const imgURLPlaceholder =
-        'https://lh3.googleusercontent.com/proxy/-2InXxLiN8Pq3d60P7LxuhhTwyl1ljt5kSaieGtzwVxH8U-JZADocOfOQS5iElndk3D2-S9JXvVxt9L2wRzPtgEJ3FM9LZv8EDC8dZg'
+    const imgURLPlaceholder = 'http://www.imagesharing.com/imageid/yourimage.png'
     const [name, setName] = useState(sheet?.name ?? 'Character Name')
     const [abilities, setAbilities] = useState<string[]>(sheet?.abilities ?? [])
     const [newability, setNewability] = useState('')
@@ -46,7 +31,7 @@ const CharacterSheet = () => {
     const [life, setLife] = useState(sheet?.life ?? { current: 100, max: 100 })
     const [mana, setMana] = useState(sheet?.mana ?? { current: 100, max: 100 })
     const [shield, setShield] = useState(sheet?.shield ?? { current: 100, max: 100 })
-    const [imgurl, setImgurl] = useState(sheet?.imageurl ?? imgURLPlaceholder)
+    const [imgurl, setImgurl] = useState(sheet?.imageurl ?? '')
 
     const handleSubmit = () => {
         const tmp = {
@@ -216,14 +201,18 @@ const CharacterSheet = () => {
                         </div>
                     </div>
                     <div className="row justify-content-center">
-                        <img className={styles.imageurl} src={imgurl} />
+                        <img className={styles.imageurl} src={imgurl ? imgurl : CHPplaceholder} />
                         <Input label="Image URL" placeholder={imgURLPlaceholder} value={imgurl} onChange={changeImg} />
                     </div>
-                    <div className="row justify-content-center">
+                    <Row className="justify-content-center">
                         <Button onClick={handleSubmit}>
                             <p>Save Edits</p>
                         </Button>
-                    </div>
+
+                        <Button onClick={toggleSheets}>
+                            <p>Hide Sheet</p>
+                        </Button>
+                    </Row>
                 </div>
             </div>
 
