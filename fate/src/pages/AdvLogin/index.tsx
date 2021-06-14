@@ -21,7 +21,11 @@ const AdvLoginScreen = (props: any) => {
             sessionStorage.setItem('username', `${username}`)
             sessionStorage.setItem('type', obj.type)
             sessionStorage.setItem('playerlist', JSON.stringify(obj.playerlist))
+            sessionStorage.setItem('sheet', JSON.stringify(obj.CharacterSheet))
             props.history.push(`/game`)
+        })
+        eventsManager.on(SocketEvents.NEW_PLAYER, 'home-screen', (obj: any) => {
+            alert(JSON.stringify(obj))
         })
         eventsManager.trigger(SocketEvents.JOIN_ROOM, {
             id: roomNumber,
