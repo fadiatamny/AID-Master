@@ -67,6 +67,10 @@ class ModelChanger():
         return True
 
     def modelsMoving(self):
+        cwd = os.getcwd()
+        cwdcat = cwd.partition('amnesia')
+        os.chdir(f'{cwdcat[0]}/amnesia/model/')
+
         self._cleanfolder(folderPath=self.oldPath)
         currentHash, currentNumListOfModels = self._gettingHashAndNumbers(
             filePath=self.currentPath, fileEnd='bin')
@@ -77,7 +81,7 @@ class ModelChanger():
         if not self._isEmptyDirectory(self.currentPath, newModelCount=len(newNumListOfModels)):
             self._moveingFiles(originPath=self.currentPath, destPath=self.oldPath,
                                hash=currentHash, numofmodels=currentNumListOfModels)
-
+        os.chdir(cwd)
 
 if __name__ == '__main__':
     if sys.argv[1] == '-h' or sys.argv[1] == '-help':
