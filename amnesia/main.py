@@ -11,19 +11,24 @@ if not os.path.isdir('logs'):
     os.mkdir('logs')
 logger = logging.getLogger(__name__)
 logger.setLevel('DEBUG')
-handler = logging.FileHandler(f'{prefix}/logs/logs_{datetime.now().date()}.log')
+handler = logging.FileHandler(
+    f'{prefix}/logs/logs_{datetime.now().date()}.log')
 formatter = '%(asctime)s %(levelname)s -- %(message)s'
 handler.setFormatter(logging.Formatter(formatter))
 logger.addHandler(handler)
 
+
 def builderHelp():
-    print('Please follow format of [datasheet] -s [save_path] -k [k-neighbors] -t [Time] -h [hash] -d [DEBUGGING]')
+    print(
+        'Please follow format of [datasheet] -s [save_path] -k [k-neighbors] -t [Time] -h [hash] -d [DEBUGGING]')
     print('[datasheet] = the data sheet to build models based on')
     print('[save-path] = the path to save the data to')
     print('[k-neighbors] = k neighbors. default = 3')
     print('[Time] = build time default 5400 seconds')
     print('[hash] = hash to attach to model names. default = ""')
     print('[DEBUGGING] = prints test results after generation')
+
+
 def builder():
     if sys.argv[2] == '-h' or sys.argv[2] == '-help' or sys.argv[2] == '--help':
         builderHelp()
@@ -131,11 +136,15 @@ def builder():
         ModelBuilder.cleanFiles(h)
         os.chdir(cwd)
 
+
 def changeHelp():
-    print('Please follow format of -n [new_models_path] -c [current_models_path] -o [old_models_path]')
+    print(
+        'Please follow format of -n [new_models_path] -c [current_models_path] -o [old_models_path]')
     print('[new_models_path] = new models folder path')
     print('[current_models_path] = new models folder path')
     print('[old_models_path] = old models folder path')
+
+
 def change():
     if sys.argv[2] == '-h' or sys.argv[2] == '-help' or sys.argv[2] == '--help':
         changeHelp()
@@ -162,6 +171,7 @@ def change():
         logger.critical('Stack:', str(e))
         print('Please check -h for help.')
 
+
 def injectHelp():
     print('Please follow format of -d [data_path] -sm [save_models_path] -h [hash] -nm [number_of_models] -on [original_models_path] -o [old_Models_Path] -n [number of crawler rounds] -l [LOOP]')
     print('[data_Path] = new models folder path')
@@ -172,6 +182,8 @@ def injectHelp():
     print('[old_Models_Path] = old models folder path')
     print('[number_Crawler] = the number of crawler rounds, diffult = 10')
     print('[loop] = number of loops')
+
+
 def inject():
     if sys.argv[2] == '-h' or sys.argv[2] == '-help' or sys.argv[2] == '--help':
         injectHelp()
@@ -220,13 +232,15 @@ def inject():
     finally:
         os.chdir(cwd)
 
-def help():    
+
+def help():
     print('Modes that are supported:')
     print('[build] = The model builder module')
     print('[inject] = The model injection module')
     print('[change] = The model structure replacer module')
     print('[run] = The main model runner module')
     print('[test] = The model tester module')
+
 
 def main():
     if len(sys.argv) < 2:
@@ -245,6 +259,7 @@ def main():
         pass
     elif mode == 'test':
         pass
+
 
 if __name__ == '__main__':
     main()
