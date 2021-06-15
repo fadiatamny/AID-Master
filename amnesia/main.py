@@ -203,7 +203,7 @@ def builder():
             time = int(sys.argv[index + 1])
 
     try:
-        ModelBuilder.cleanFiles(h)
+        ModelBuilder.cleanFiles(hash)
         ModelBuilder.createModels(
             filePath=sys.argv[2],
             savePath=savePath,
