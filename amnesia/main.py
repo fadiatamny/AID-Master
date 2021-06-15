@@ -7,8 +7,8 @@ from datetime import datetime
 
 prefix = os.path.dirname(os.path.realpath(__file__))
 
-if not os.path.isdir('logs'):
-    os.mkdir('logs')
+if not os.path.isdir(f'{prefix}/logs'):
+    os.mkdir(f'{prefix}/logs')
 logger = logging.getLogger(__name__)
 logger.setLevel('DEBUG')
 handler = logging.FileHandler(
