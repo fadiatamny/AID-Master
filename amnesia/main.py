@@ -126,7 +126,7 @@ def builder():
 
     if len(sys.argv) < 5:
         logger.error(
-            'Please follow format of modelBuilder.py [datasheet] -s [save_path] -k [k-neighbors] -t [Time] -h [hash] -d')
+            'Please follow format of modelBuilder.py [datasheet] -s [save_path] -k [k-neighbors] -t [Time] -h [hash] -d [DEBUGGING]')
         sys.exit()
 
     if not os.path.isdir('dataset'):
@@ -185,32 +185,32 @@ def builder():
         os.mkdir('bin/newModels/injectModels/knn')
     
     k: int = 10
-    s: str = ''
-    h: str = ''
+    savePath: str = ''
+    hash: str = ''
     d: bool = False
-    t: int = 5400
+    time: int = 5400
 
     for index, item in enumerate(sys.argv, 0):
         if item == '-s' and index + 1 < len(sys.argv):
-            s = f'{sys.argv[index + 1]}'
+            savePath = f'{sys.argv[index + 1]}'
         if item == '-h' and index + 1 < len(sys.argv):
-            h = f'{sys.argv[index + 1]}'
+            hash = f'{sys.argv[index + 1]}'
         if item == '-k' and index + 1 < len(sys.argv):
             k = int(sys.argv[index + 1])
         if item == '-d':
             d = True
         if item == '-t' and index + 1 < len(sys.argv):
-            t = int(sys.argv[index + 1])
+            time = int(sys.argv[index + 1])
 
     try:
         ModelBuilder.cleanFiles(h)
         ModelBuilder.createModels(
             filePath=sys.argv[2],
-            savePath=s,
+            savePath=savePath,
             k=k,
-            hash=h,
+            hash=hash,
             debug=d,
-            time=t
+            time=time
         )
     except ModelException as e:
         logger.critical(str(e))
@@ -219,7 +219,7 @@ def builder():
         logger.critical('Stack:', str(e))
         print('Please check -h for help.')
     finally:
-        ModelBuilder.cleanFiles(h)
+        ModelBuilder.cleanFiles(hash)
         os.chdir(cwd)
 
 
