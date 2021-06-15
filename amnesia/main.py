@@ -31,8 +31,8 @@ def runner():
         runnerHelp()
         return
 
-    if len(sys.argv) < 3:
-        logger.error('Please follow format of modelBuilder.py -f [FastText] -k [KNN]')
+    if len(sys.argv) < 4:
+        logger.error('Please follow format of modelRunner.py -f [FastText] -fn [FastText Number] -k [KNN] -d [Data]')
         sys.exit()
     
     fastText: str = ''
@@ -78,7 +78,7 @@ def tester():
         return
 
     if len(sys.argv) < 3:
-        logger.error('Please follow format of modelBuilder.py [datasheet]')
+        logger.error('Please follow format of modelBuilder.py -d [dataSet] -m [modelsPath] -n [numbersModels]')
         sys.exit()
 
     dataSet: str = ''
@@ -124,7 +124,7 @@ def builder():
     cwdcat = cwd.partition('amnesia')
     os.chdir(f'{cwdcat[0]}/amnesia/model/')
 
-    if len(sys.argv) < 3:
+    if len(sys.argv) < 5:
         logger.error(
             'Please follow format of modelBuilder.py [datasheet] -s [save_path] -k [k-neighbors] -t [Time] -h [hash] -d')
         sys.exit()
@@ -235,6 +235,11 @@ def change():
     if sys.argv[2] == '-h' or sys.argv[2] == '-help' or sys.argv[2] == '--help':
         changeHelp()
         return
+    
+    if len(sys.argv) < 3:
+        logger.error(
+            'Please follow format of -n [new_models_path] -c [current_models_path] -o [old_models_path]')
+        sys.exit()
 
     oldPath: str = None
     currentPath: str = None
@@ -274,6 +279,11 @@ def inject():
     if sys.argv[2] == '-h' or sys.argv[2] == '-help' or sys.argv[2] == '--help':
         injectHelp()
         return
+
+    if len(sys.argv) < 8:
+        logger.error(
+            'Please follow format of -d [data_path] -sm [save_models_path] -h [hash] -nm [number_of_models] -on [original_models_path] -o [old_Models_Path] -n [number of crawler rounds] -l [LOOP]')
+        sys.exit()
 
     data: str = None
     save: str = None
