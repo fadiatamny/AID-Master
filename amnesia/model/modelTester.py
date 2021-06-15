@@ -70,7 +70,7 @@ if __name__ == '__main__':
         sys.exit()
 
     if len(sys.argv) < 2:
-        logger.error('Please follow format of modelBuilder.py [datasheet]')
+        logger.error('Please follow format of modelBuilder.py -d [dataSet] -m [modelsPath] -n [numbersModels]')
         sys.exit()
 
     dataSet: str = ''

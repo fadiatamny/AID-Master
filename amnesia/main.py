@@ -141,7 +141,7 @@ def builder():
         with open(f'./dataset/{filename}.{datasetConfig["type"]}', 'wb') as f:
             f.write(r.content)
         logger.debug('Successfully downloaded data')
-
+    
     if not os.path.isdir('build'):
         os.mkdir('build')
 
@@ -183,7 +183,7 @@ def builder():
 
     if not os.path.isdir('bin/newModels/injectModels/knn'):
         os.mkdir('bin/newModels/injectModels/knn')
-
+    
     k: int = 10
     s: str = ''
     h: str = ''
@@ -363,3 +363,5 @@ if __name__ == '__main__':
 # build - python main.py build dataset/data.csv -s bin/newModels -k 10 -h 1234 -t 10
 # inject - python main.py inject -d dataset/data.csv -sm bin/newModels/injectModels -h 9876 -nm 3 -on bin/currentModels/ -o bin/oldModels -n 4 -l 1
 # change - python main.py change -n bin/newModels -c bin/currentModels -o bin/oldModels
+# tester - python main.py test -d dataset/data.csv -m bin/currentModels -n 3
+# runner - python main.py run -f bin/currentModels/fasttext -fn 3 -k bin/currentModels/knn -d dataset/data.csv
