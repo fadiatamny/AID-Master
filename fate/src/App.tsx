@@ -3,13 +3,13 @@ import 'bootstrap/dist/css/bootstrap.min.css'
 import './App.css'
 import GameScreen from './pages/GameScreen'
 import StartingScreen from './pages/HomePage'
-import EventsManager from './services/EventsManager'
-import SocketManager from './services/SocketManager'
 import AdvLoginScreen from './pages/AdvLogin'
 import Feedback from './pages/Feedback'
+import DMLoginScreen from './pages/DMLogin'
+import SocketManager from './services/SocketManager'
+import EventsManager from './services/EventsManager'
 import { SocketEvents } from './models/SocketEvents.model'
 import { v4 as uuid } from 'uuid'
-import DMLoginScreen from './pages/DMLogin'
 
 export default function App() {
     const eventsManager = EventsManager.instance

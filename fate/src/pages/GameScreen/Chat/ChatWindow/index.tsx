@@ -5,7 +5,7 @@ import MessagesList from './MessageList'
 import React from 'react'
 import EventsManager from '../../../../services/EventsManager'
 import { SocketEvents } from '../../../../models/SocketEvents.model'
-import { Col, Row } from 'react-bootstrap'
+import { Col, Row, Container } from 'react-bootstrap'
 
 type MessageType = {
     username: string
@@ -42,7 +42,7 @@ const ChatWindow = ({ activeChat, username, playername, rid, messages }: ChatWin
     }
     return (
         <Col className="justify-content-center">
-            <div className={`${styles.container}`}>
+            <Container className={`${styles.container}`}>
                 <Row className={`justify-content-center ${styles.inputHolder}`}>
                     <ChatTitle />
                 </Row>
@@ -61,7 +61,7 @@ const ChatWindow = ({ activeChat, username, playername, rid, messages }: ChatWin
                         submitLabel=">"
                     />
                 </Row>
-            </div>
+            </Container>
         </Col>
     )
 }

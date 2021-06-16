@@ -6,7 +6,7 @@ import { SocketEvents } from '../../models/SocketEvents.model'
 import EventsManager from '../../services/EventsManager'
 import { generate } from '../../services/ScenarioGuide'
 import CharacterSheet from './CharacterSheet'
-import { Col, Row } from 'react-bootstrap'
+import { Col, Container, Row } from 'react-bootstrap'
 import { CharacterSheet as CH } from '../../models/CharacterSheet.model'
 import Button from '../../components/Button/Button'
 
@@ -195,50 +195,36 @@ const GameScreen = () => {
     return (
         <>
             <Header />
-            <Row className="justify-content-center">
-                {showsheet ? (
-                    sheets.length === 0 && playertype === 'dm' ? (
-                        <Col
-                            sm={{ order: 1, span: 12 }}
-                            md={5}
-                            className={`${styles.textcontainer} justify-content-center`}
-                        >
-                            <Row className="justify-content-center align-items-center">
-                                <p className={`${styles.text}`}>No character sheets :(</p>
-                                <Button onClick={toggleSheets}>
-                                    <p>Hide Sheet</p>
-                                </Button>
-                            </Row>
+            <Container fluid>
+                {playertype === 'dm' ? (
+                    <Row>
+                        <Col sm={{ span: 4, order: 1 }}>
+                            <Button onClick={toggleSheets}>{showsheet ? <p>Hide Sheet</p> : <p>Show Sheets</p>}</Button>
                         </Col>
-                    ) : (
-                        <Col sm={{ order: 1, span: 12 }} md={5}>
+                    </Row>
+                ) : null}
+                <Row>
+                    <Col sm={4}>
+                        {showsheet && sheets.length === 0 ? null : (
                             <CharacterSheet
                                 sheets={sheets}
                                 setSheets={setSheets}
                                 showsheet={showsheet}
                                 toggleSheets={toggleSheets}
                             />
-                        </Col>
-                    )
-                ) : (
-                    <Col sm={{ order: 1, span: 2 }} md={2} className="justify-content-center">
-                        <Row sm={1}>
-                            <Button onClick={toggleSheets}>
-                                <p>Show Sheets</p>
-                            </Button>
-                        </Row>
+                        )}
                     </Col>
-                )}
-                <Col sm={{ order: 2, span: 12 }} md={7}>
-                    <Chat
-                        messages={messages}
-                        rid={roomid!}
-                        username={username!}
-                        playername={playername!}
-                        type={playertype!}
-                    />
-                </Col>
-            </Row>
+                    <Col>
+                        <Chat
+                            messages={messages}
+                            rid={roomid!}
+                            username={username!}
+                            playername={playername!}
+                            type={playertype!}
+                        />
+                    </Col>
+                </Row>
+            </Container>
         </>
     )
 }
