@@ -5,7 +5,6 @@ import fasttext
 from collections import Counter
 from .modelException import ModelException
 
-
 class ModelUtils():
     @staticmethod
     def fetchDatasetConfig() -> dict:

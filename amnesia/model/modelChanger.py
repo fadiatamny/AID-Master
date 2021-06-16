@@ -5,11 +5,16 @@ import sys
 import logging
 from typing import Any
 from .modelException import ModelException
+from datetime import datetime
 
+prefix = os.path.dirname(os.path.realpath(__file__))
+
+if not os.path.isdir(f'{prefix}/logs'):
+    os.mkdir(f'{prefix}/logs')
 logger = logging.getLogger(__name__)
-logger.setLevel("DEBUG")
-handler = logging.FileHandler("Changer_Model.log")
-formatter = "%(asctime)s %(levelname)s -- %(message)s"
+logger.setLevel('DEBUG')
+handler = logging.FileHandler(f'{prefix}/logs/logs_changer_{datetime.now().date()}.log')
+formatter = '%(asctime)s %(levelname)s -- %(message)s'
 handler.setFormatter(logging.Formatter(formatter))
 logger.addHandler(handler)
 
@@ -62,6 +67,10 @@ class ModelChanger():
         return True
 
     def modelsMoving(self):
+        cwd = os.getcwd()
+        cwdcat = cwd.partition('amnesia')
+        os.chdir(f'{cwdcat[0]}/amnesia/model/')
+
         self._cleanfolder(folderPath=self.oldPath)
         currentHash, currentNumListOfModels = self._gettingHashAndNumbers(
             filePath=self.currentPath, fileEnd='bin')
@@ -72,7 +81,7 @@ class ModelChanger():
         if not self._isEmptyDirectory(self.currentPath, newModelCount=len(newNumListOfModels)):
             self._moveingFiles(originPath=self.currentPath, destPath=self.oldPath,
                                hash=currentHash, numofmodels=currentNumListOfModels)
-
+        os.chdir(cwd)
 
 if __name__ == '__main__':
     if sys.argv[1] == '-h' or sys.argv[1] == '-help':

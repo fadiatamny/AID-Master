@@ -5,3 +5,4 @@ from .modelTester import ModelTester
 from .modelUtils import ModelUtils
 from .modelRunner import ModelRunner
 from .crawler import Crawler
+from .modelChanger import ModelChanger
