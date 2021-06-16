@@ -18,92 +18,6 @@ handler.setFormatter(logging.Formatter(formatter))
 logger.addHandler(handler)
 
 
-def runnerHelp():
-    print(
-        'Please follow format of modelRunner.py -f [FastText] -fn [FastText Number] -k [KNN] -d [Data]')
-    print('[FastText] = the FastText models bin path')
-    print('[FastText Number] = Number of FastText models')
-    print('[KNN] = the KNN model bin path')
-    print('[Data] = the location where your data is')
-
-def runner():
-    if sys.argv[2] == '-h' or sys.argv[2] == '-help' or sys.argv[2] == '--help':
-        runnerHelp()
-        return
-
-    if len(sys.argv) < 4:
-        logger.error('Please follow format of modelRunner.py -f [FastText] -fn [FastText Number] -k [KNN] -d [Data]')
-        sys.exit()
-    
-    fastText: str = ''
-    knn: str = ''
-    dataPath: str = ''
-    fastTextCount: int = 3
-
-    for index, item in enumerate(sys.argv, 0):
-        if item == '-k' and index + 1 < len(sys.argv):
-            knn = str(sys.argv[index + 1])
-        if item == '-f' and index + 1 < len(sys.argv):
-            fastText = str(sys.argv[index + 1])
-        if item == '-fn' and index + 1 < len(sys.argv):
-            fastTextCount = int(sys.argv[index + 1])
-        if item == '-d' and index + 1 < len(sys.argv):
-            dataPath = str(sys.argv[index + 1])
-
-    try:
-        runner = ModelRunner(fastText, knn, fastTextCount, dataPath)
-
-        text = input('Please insert text to be predicted')
-        prediction = runner.predict(text)
-
-        logger.debug(f'Prediction is:\n{prediction}')
-    except ModelException as e:
-        logger.critical(str(e))
-        print('Please check -h for help.')
-    except Exception as e:
-        logger.critical('Stack:', str(e))
-        print('Please check -h for help.')
-
-def testerHelp():
-    print(
-        'Please follow format of modelBuilder.py -d [dataSet] -m [modelsPath] -n [numbersModels]')
-    print('[dataSet] = the data sheet to build models based on')
-    print('[modelsPath] = the path for the fastText models you want to test')
-    print('[numbersModels] = the number of models you want to test')
-
-
-def tester():
-    if sys.argv[2] == '-h' or sys.argv[2] == '-help' or sys.argv[2] == '--help':
-        testerHelp()
-        return
-
-    if len(sys.argv) < 3:
-        logger.error('Please follow format of modelBuilder.py -d [dataSet] -m [modelsPath] -n [numbersModels]')
-        sys.exit()
-
-    dataSet: str = ''
-    modelsPath: str = ''
-    numbersModels: int = 3
-
-    for index, item in enumerate(sys.argv, 0):
-        if item == '-d' and index + 1 < len(sys.argv):
-            dataSet = f'{sys.argv[index + 1]}'
-        if item == '-m' and index + 1 < len(sys.argv):
-            modelsPath = f'{sys.argv[index + 1]}'
-        if item == '-n' and index + 1 < len(sys.argv):
-            numbersModels = int(sys.argv[index + 1])
-
-    try:
-        ModelTester.fastTextTest(
-            dataPath=dataSet, fastTextPath=modelsPath, numberModels=numbersModels)
-    except ModelException as e:
-        print('Please check -h for help.')
-        logger.critical(str(e))
-    except Exception as e:
-        print('Please check -h for help.')
-        logger.critical('Stack:', str(e))
-
-
 def builderHelp():
     print(
         'Please follow format of [datasheet] -s [save_path] -k [k-neighbors] -t [Time] -h [hash] -d [DEBUGGING]')
@@ -141,7 +55,7 @@ def builder():
         with open(f'./dataset/{filename}.{datasetConfig["type"]}', 'wb') as f:
             f.write(r.content)
         logger.debug('Successfully downloaded data')
-    
+
     if not os.path.isdir('build'):
         os.mkdir('build')
 
@@ -183,7 +97,7 @@ def builder():
 
     if not os.path.isdir('bin/newModels/injectModels/knn'):
         os.mkdir('bin/newModels/injectModels/knn')
-    
+
     k: int = 10
     savePath: str = ''
     hash: str = ''
@@ -235,7 +149,7 @@ def change():
     if sys.argv[2] == '-h' or sys.argv[2] == '-help' or sys.argv[2] == '--help':
         changeHelp()
         return
-    
+
     if len(sys.argv) < 3:
         logger.error(
             'Please follow format of -n [new_models_path] -c [current_models_path] -o [old_models_path]')
@@ -329,6 +243,96 @@ def inject():
         os.chdir(cwd)
 
 
+def runHelp():
+    print(
+        'Please follow format of modelRunner.py -f [FastText] -fn [FastText Number] -k [KNN] -d [Data]')
+    print('[FastText] = the FastText models bin path')
+    print('[FastText Number] = Number of FastText models')
+    print('[KNN] = the KNN model bin path')
+    print('[Data] = the location where your data is')
+
+
+def run():
+    if sys.argv[2] == '-h' or sys.argv[2] == '-help' or sys.argv[2] == '--help':
+        runHelp()
+        return
+
+    if len(sys.argv) < 4:
+        logger.error(
+            'Please follow format of modelRunner.py -f [FastText] -fn [FastText Number] -k [KNN] -d [Data]')
+        sys.exit()
+
+    fastText: str = ''
+    knn: str = ''
+    dataPath: str = ''
+    fastTextCount: int = 3
+
+    for index, item in enumerate(sys.argv, 0):
+        if item == '-k' and index + 1 < len(sys.argv):
+            knn = str(sys.argv[index + 1])
+        if item == '-f' and index + 1 < len(sys.argv):
+            fastText = str(sys.argv[index + 1])
+        if item == '-fn' and index + 1 < len(sys.argv):
+            fastTextCount = int(sys.argv[index + 1])
+        if item == '-d' and index + 1 < len(sys.argv):
+            dataPath = str(sys.argv[index + 1])
+
+    try:
+        runner = ModelRunner(fastText, knn, fastTextCount, dataPath)
+
+        text = input('Please insert text to be predicted')
+        prediction = runner.predict(text)
+
+        logger.debug(f'Prediction is:\n{prediction}')
+    except ModelException as e:
+        logger.critical(str(e))
+        print('Please check -h for help.')
+    except Exception as e:
+        logger.critical('Stack:', str(e))
+        print('Please check -h for help.')
+
+
+def testHelp():
+    print(
+        'Please follow format of modelBuilder.py -d [dataSet] -m [modelsPath] -n [numbersModels]')
+    print('[dataSet] = the data sheet to build models based on')
+    print('[modelsPath] = the path for the fastText models you want to test')
+    print('[numbersModels] = the number of models you want to test')
+
+
+def test():
+    if sys.argv[2] == '-h' or sys.argv[2] == '-help' or sys.argv[2] == '--help':
+        testHelp()
+        return
+
+    if len(sys.argv) < 3:
+        logger.error(
+            'Please follow format of modelBuilder.py -d [dataSet] -m [modelsPath] -n [numbersModels]')
+        sys.exit()
+
+    dataSet: str = ''
+    modelsPath: str = ''
+    numbersModels: int = 3
+
+    for index, item in enumerate(sys.argv, 0):
+        if item == '-d' and index + 1 < len(sys.argv):
+            dataSet = f'{sys.argv[index + 1]}'
+        if item == '-m' and index + 1 < len(sys.argv):
+            modelsPath = f'{sys.argv[index + 1]}'
+        if item == '-n' and index + 1 < len(sys.argv):
+            numbersModels = int(sys.argv[index + 1])
+
+    try:
+        ModelTester.fastTextTest(
+            dataPath=dataSet, fastTextPath=modelsPath, numberModels=numbersModels)
+    except ModelException as e:
+        print('Please check -h for help.')
+        logger.critical(str(e))
+    except Exception as e:
+        print('Please check -h for help.')
+        logger.critical('Stack:', str(e))
+
+
 def help():
     print('Modes that are supported:')
     print('[build] = The model builder module')
@@ -340,6 +344,7 @@ def help():
 
 def main():
     if len(sys.argv) < 2:
+        print('Please follow format of [Mode] or ask for help with -h')
         logger.error('Please follow format of [Mode] or ask for help with -h')
         return
     mode = sys.argv[1]
@@ -352,16 +357,18 @@ def main():
     elif mode == 'change':
         change()
     elif mode == 'run':
-        runner()
+        run()
     elif mode == 'test':
-        tester()
-
+        test()
+    else:
+        print('Incorrect command. Please check -h for help')
+        logger.error('Incorrect command. Please check -h for help')
 
 if __name__ == '__main__':
     main()
 
-# build - python main.py build dataset/data.csv -s bin/newModels -k 10 -h 1234 -t 10
-# inject - python main.py inject -d dataset/data.csv -sm bin/newModels/injectModels -h 9876 -nm 3 -on bin/currentModels/ -o bin/oldModels -n 4 -l 1
-# change - python main.py change -n bin/newModels -c bin/currentModels -o bin/oldModels
-# tester - python main.py test -d dataset/data.csv -m bin/currentModels -n 3
-# runner - python main.py run -f bin/currentModels/fasttext -fn 3 -k bin/currentModels/knn -d dataset/data.csv
+# build     -   python main.py build dataset/data.csv -s bin/newModels -k 10 -h 1234 -t 10
+# inject    -   python main.py inject -d dataset/data.csv -sm bin/newModels/injectModels -h 9876 -nm 3 -on bin/currentModels/ -o bin/oldModels -n 4 -l 1
+# change    -   python main.py change -n bin/newModels -c bin/currentModels -o bin/oldModels
+# run       -   python main.py run -f bin/currentModels/fasttext -fn 3 -k bin/currentModels/knn -d dataset/data.csv
+# test      -   python main.py test -d dataset/data.csv -m bin/currentModels -n 3
