@@ -11,14 +11,18 @@ import logging
 from .modelException import ModelException
 from .modelUtils import ModelUtils
 import shutil
+from datetime import datetime
 
+prefix = os.path.dirname(os.path.realpath(__file__))
+
+if not os.path.isdir(f'{prefix}/logs'):
+    os.mkdir(f'{prefix}/logs')
 logger = logging.getLogger(__name__)
-logger.setLevel("DEBUG")
-handler = logging.FileHandler("Builder_Model.log")
-formatter = "%(asctime)s %(levelname)s -- %(message)s"
+logger.setLevel('DEBUG')
+handler = logging.FileHandler(f'{prefix}/logs/logs_builder_{datetime.now().date()}.log')
+formatter = '%(asctime)s %(levelname)s -- %(message)s'
 handler.setFormatter(logging.Formatter(formatter))
 logger.addHandler(handler)
-
 
 class ModelBuilder():
     @staticmethod

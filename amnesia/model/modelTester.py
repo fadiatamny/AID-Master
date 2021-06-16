@@ -6,13 +6,19 @@ import texthero as hero
 import logging
 from .modelException import ModelException
 from .modelUtils import ModelUtils
+from datetime import datetime
 
+prefix = os.path.dirname(os.path.realpath(__file__))
+
+if not os.path.isdir(f'{prefix}/logs'):
+    os.mkdir(f'{prefix}/logs')
 logger = logging.getLogger(__name__)
-logger.setLevel("DEBUG")
-handler = logging.FileHandler("Tester_Model.log")
-formatter = "%(asctime)s %(levelname)s -- %(message)s"
+logger.setLevel('DEBUG')
+handler = logging.FileHandler(f'{prefix}/logs/logs_tester_{datetime.now().date()}.log')
+formatter = '%(asctime)s %(levelname)s -- %(message)s'
 handler.setFormatter(logging.Formatter(formatter))
 logger.addHandler(handler)
+
 
 
 class ModelTester:
@@ -64,7 +70,7 @@ if __name__ == '__main__':
         sys.exit()
 
     if len(sys.argv) < 2:
-        logger.error('Please follow format of modelBuilder.py [datasheet]')
+        logger.error('Please follow format of modelBuilder.py -d [dataSet] -m [modelsPath] -n [numbersModels]')
         sys.exit()
 
     dataSet: str = ''
