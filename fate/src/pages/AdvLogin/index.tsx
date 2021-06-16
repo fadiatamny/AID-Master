@@ -25,7 +25,16 @@ const AdvLoginScreen = (props: any) => {
             props.history.push(`/game`)
         })
         eventsManager.on(SocketEvents.NEW_PLAYER, 'home-screen', (obj: any) => {
+            // means you are a new player and have to create stuff 
             alert(JSON.stringify(obj))
+
+            // after we handle the form of creating his character sheet and all we send the following 
+            eventsManager.trigger(SocketEvents.NEW_PLAYER_REGISTER, {
+                roomId: roomNumber,
+                data: { type: 'player', id: uid, username: username, playername: playername }
+            })
+
+            //after you trigger that yo uwait for the join room event
         })
         eventsManager.trigger(SocketEvents.JOIN_ROOM, {
             id: roomNumber,

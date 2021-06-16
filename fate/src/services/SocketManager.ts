@@ -171,7 +171,7 @@ export default class SocketManager {
         this._eventsManager.trigger(SocketEvents.PLAYER_JOINED, player)
     }
 
-    private _newPlayer(playerId: PlayerDump) {
+    private _newPlayer(playerId: string) {
         this._eventsManager.trigger(SocketEvents.NEW_PLAYER, { id: playerId })
     }
 
