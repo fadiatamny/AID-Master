@@ -25,8 +25,8 @@ class ModelTester:
     @staticmethod
     def fastTextTest(dataPath: str, fastTextPath: str, numberModels: int):
         cwd = os.getcwd()
-        cwdcat = cwd.partition('amnesia')
-        os.chdir(f'{cwdcat[0]}/amnesia/model/')
+        cwdcat = cwd.partition('model')
+        os.chdir(f'{cwdcat[0]}/model/')
         fleg = 0
         tempDataframe = pd.DataFrame()
         data = pd.read_csv(dataPath)
