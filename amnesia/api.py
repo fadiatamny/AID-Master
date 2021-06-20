@@ -57,8 +57,7 @@ def switchModels():
 def feedback():
     try:
         scenarios = request.json
-        # needs to be implemented.
-        #model.feedback(scenarios)
+        model.feedback(scenarios)
         return 'Successfully Inserted Feedback'      
     except ModelException as e:
         print(str(e))
