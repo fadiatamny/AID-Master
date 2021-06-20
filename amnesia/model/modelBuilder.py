@@ -138,8 +138,8 @@ class ModelBuilder():
     @staticmethod
     def createModels(filePath: str, savePath: str = 'bin/newModels', time: int = 5400, k: int = 3, hash: str = '', debug: bool = False) -> None:
         cwd = os.getcwd()
-        cwdcat = cwd.partition('amnesia')
-        os.chdir(f'{cwdcat[0]}/amnesia/model/')
+        cwdcat = cwd.partition('model')
+        os.chdir(f'{cwdcat[0]}/model/')
         try:
             ModelBuilder.createFastText(
                 filePath=filePath, hashbase=hash, debug=debug, savePath=f'{savePath}/fasttext', time=time)
@@ -163,8 +163,8 @@ class ModelBuilder():
 
 if __name__ == '__main__':
     cwd = os.getcwd()
-    cwdcat = cwd.partition('amnesia')
-    os.chdir(f'{cwdcat[0]}/amnesia/model/')
+    cwdcat = cwd.partition('model')
+    os.chdir(f'{cwdcat[0]}/model/')
     if sys.argv[1] == '-h' or sys.argv[1] == '-help':
         print(
             'Please follow format of modelBuilder.py [datasheet] [save_path] [k-neighbors? = 10] [hash? = ""]')

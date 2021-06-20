@@ -164,8 +164,8 @@ if __name__ == '__main__':
             oldModels = f'{sys.argv[index+1]}'
 
     cwd = os.getcwd()
-    cwdcut = cwd.partition('amnesia')
-    os.chdir(f'{cwdcut[0]}/amnesia/model/')
+    cwdcut = cwd.partition('model')
+    os.chdir(f'{cwdcut[0]}/model/')
     datadir = os.path.dirname(f'{data}')
     if not os.path.isdir(f'{datadir}/injectedData'):
         os.mkdir(f'{datadir}/injectedData')

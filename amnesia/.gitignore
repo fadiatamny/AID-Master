@@ -12,4 +12,5 @@ model/testRes.txt
 model/modelTestercopy.py
 model/*.log
 model/bin
+model/dataset.headers.json
 logs

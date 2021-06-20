@@ -68,8 +68,8 @@ class ModelChanger():
 
     def modelsMoving(self):
         cwd = os.getcwd()
-        cwdcat = cwd.partition('amnesia')
-        os.chdir(f'{cwdcat[0]}/amnesia/model/')
+        cwdcat = cwd.partition('model')
+        os.chdir(f'{cwdcat[0]}/model/')
 
         self._cleanfolder(folderPath=self.oldPath)
         currentHash, currentNumListOfModels = self._gettingHashAndNumbers(

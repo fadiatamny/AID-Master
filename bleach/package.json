@@ -4,6 +4,7 @@
   "description": "Backend repo for AID Master project",
   "main": "./src/index.ts",
   "scripts": {
+    "start": "node ./build/index.js",
     "serve:dev": "nodemon ./src/index.ts",
     "serve:prod": "node ./build/index.js",
     "build": "tsc",
