@@ -250,8 +250,6 @@ export default class GameService {
             console.log(e.stack)
             this._sendError('feedback', 'There was an issue', e.message)
         })
-
-        //have to end game here
     }
 
     private _requestScenarios(roomId: string) {
