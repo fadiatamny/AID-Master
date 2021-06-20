@@ -25,7 +25,7 @@ const GameScreen = () => {
     const playername = sessionStorage.getItem('playername')
     const roomid = sessionStorage.getItem('rid')
     const [sheets, setSheets] = useState<CH[]>([])
-    const [showsheet, setShowsheet] = useState(false)
+    const [showsheet, setShowsheet] = useState(true)
 
     const generateMessages = () => {
         const messagesObj: { [key: string]: { playername: string; messages: MessageType[] } } = {
@@ -196,22 +196,33 @@ const GameScreen = () => {
         <>
             <Header />
             <Container fluid>
-                {playertype === 'dm' ? (
-                    <Row>
-                        <Col sm={{ span: 4, order: 1 }}>
-                            <Button onClick={toggleSheets}>{showsheet ? <p>Hide Sheet</p> : <p>Show Sheets</p>}</Button>
-                        </Col>
-                    </Row>
-                ) : null}
                 <Row>
                     <Col sm={4}>
-                        {showsheet && sheets.length === 0 ? null : (
-                            <CharacterSheet
-                                sheets={sheets}
-                                setSheets={setSheets}
-                                showsheet={showsheet}
-                                toggleSheets={toggleSheets}
-                            />
+                        {showsheet ? (
+                            sheets.length === 0 ? (
+                                <Row>
+                                    <Col>
+                                        <Button onClick={toggleSheets}>
+                                            <p>No Sheets</p>
+                                        </Button>
+                                    </Col>
+                                </Row>
+                            ) : (
+                                <CharacterSheet
+                                    sheets={sheets}
+                                    setSheets={setSheets}
+                                    showsheet={showsheet}
+                                    toggleSheets={toggleSheets}
+                                />
+                            )
+                        ) : (
+                            <Row>
+                                <Col>
+                                    <Button onClick={toggleSheets}>
+                                        <p>Show Sheets</p>
+                                    </Button>
+                                </Col>
+                            </Row>
                         )}
                     </Col>
                     <Col>
