@@ -72,4 +72,8 @@ app.use((err: ResponseError, req: Request, res: Response, next: NextFunction) =>
 
 app.use('/api', api)
 
+app.get('/', (req: Request, res: Response) => {
+    res.status(200).send('Welcome To AID Master Game Handler Service')
+})
+
 export default app
