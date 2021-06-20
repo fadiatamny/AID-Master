@@ -5,16 +5,38 @@ import { useEffect, useState, useRef } from 'react'
 import { SocketEvents } from '../../models/SocketEvents.model'
 import EventsManager from '../../services/EventsManager'
 import { generate } from '../../services/ScenarioGuide'
-import CharacterSheet from './CharacterSheet'
+// import CharacterSheet from './CharacterSheets/CharacterSheet'
 import { Col, Container, Row } from 'react-bootstrap'
 import { CharacterSheet as CH } from '../../models/CharacterSheet.model'
 import Button from '../../components/Button/Button'
+import CharacterSheets from './CharacterSheets'
 
 type MessageType = {
     username: string
     playername: string
     messageText: string | string[]
     myMessage: boolean
+}
+const mocksheet = {
+    name: 'Kyrren',
+    abilities: ['born alive'],
+    equipment: ['sword'],
+    level: 2,
+    life: { current: 54, max: 100 },
+    mana: { current: 70, max: 70 },
+    shield: { current: 24, max: 30 },
+    imageurl: 'https://images.theconversation.com/files/366179/original/file-20201028-15-1g9o7at.jpg'
+}
+
+const mocksheet2 = {
+    name: 'Smittens',
+    abilities: ['born alive'],
+    equipment: ['sword'],
+    level: 2,
+    life: { current: 54, max: 100 },
+    mana: { current: 70, max: 70 },
+    shield: { current: 24, max: 30 },
+    imageurl: 'https://static3.bigstockphoto.com/4/4/2/large1500/244707958.jpg'
 }
 
 const GameScreen = () => {
@@ -24,7 +46,7 @@ const GameScreen = () => {
     const playertype = sessionStorage.getItem('type')
     const playername = sessionStorage.getItem('playername')
     const roomid = sessionStorage.getItem('rid')
-    const [sheets, setSheets] = useState<CH[]>([])
+    const [sheets, setSheets] = useState<CH[]>([mocksheet, mocksheet2])
     const [showsheet, setShowsheet] = useState(true)
 
     const generateMessages = () => {
@@ -197,7 +219,7 @@ const GameScreen = () => {
             <Header />
             <Container fluid>
                 <Row>
-                    <Col sm={4}>
+                    <Col sm={showsheet ? { span: 4 } : { span: 1 }}>
                         {showsheet ? (
                             sheets.length === 0 ? (
                                 <Row>
@@ -208,12 +230,7 @@ const GameScreen = () => {
                                     </Col>
                                 </Row>
                             ) : (
-                                <CharacterSheet
-                                    sheets={sheets}
-                                    setSheets={setSheets}
-                                    showsheet={showsheet}
-                                    toggleSheets={toggleSheets}
-                                />
+                                <CharacterSheets sheets={sheets} toggleSheets={toggleSheets} type={playertype} />
                             )
                         ) : (
                             <Row>

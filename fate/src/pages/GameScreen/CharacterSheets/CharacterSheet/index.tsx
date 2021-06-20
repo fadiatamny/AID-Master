@@ -1,20 +1,19 @@
 import React, { useState, useRef } from 'react'
 import styles from './styles.module.css'
 import { Col, Row, Container } from 'react-bootstrap'
-import Button from '../../../components/Button/Button'
-import { CharacterSheet as CH } from '../../../models/CharacterSheet.model'
-import Input from '../../../components/Input/Input'
-import CHPplaceholder from '../../../assets/images/characterPicPlaceholder.png'
+import Button from '../../../../components/Button/Button'
+import { CharacterSheet as CH } from '../../../../models/CharacterSheet.model'
+import Input from '../../../../components/Input/Input'
+import CHPplaceholder from '../../../../assets/images/characterPicPlaceholder.png'
 
 export interface CharaSheetProps {
-    sheets: CH[]
-    setSheets: any
-    showsheet: boolean
     toggleSheets: any
+    currsheet: CH
+    dm: boolean
 }
 
-const CharacterSheet = ({ sheets, setSheets, showsheet, toggleSheets }: CharaSheetProps) => {
-    const [sheet, setSheet] = useState<CH>()
+const CharacterSheet = ({ toggleSheets, currsheet, dm }: CharaSheetProps) => {
+    const [sheet, setSheet] = useState<CH>(currsheet)
     const sheetRef = useRef<CH>()
 
     const imgURLPlaceholder = 'http://www.imagesharing.com/imageid/yourimage.png'
@@ -111,19 +110,37 @@ const CharacterSheet = ({ sheets, setSheets, showsheet, toggleSheets }: CharaShe
         <Container className={`justify-content-center ${styles.container}`}>
             <Row className="justify-content-center">
                 <Col sm={9}>
-                    <Input label="Name" placeholder="mr. Man" onChange={changeName} value={name} />
+                    <Input label="Name" placeholder="mr. Man" onChange={changeName} value={name} disabled={dm} />
                 </Col>
                 <Col sm={3}>
-                    <Input label="Level" placeholder="1" onChange={changeLevel} value={level.toString()} />
+                    <Input
+                        label="Level"
+                        placeholder="1"
+                        onChange={changeLevel}
+                        value={level.toString()}
+                        disabled={dm}
+                    />
                 </Col>
                 <Col sm={12} className="justify-content-center">
                     <Row className={`justify-content-center `}>
                         <Col>
-                            <Input label="HP" placeholder="0" value={life.current.toString()} onChange={changeLife} />
+                            <Input
+                                label="HP"
+                                placeholder="0"
+                                value={life.current.toString()}
+                                onChange={changeLife}
+                                disabled={dm}
+                            />
                             <Input label="HP" placeholder="100" value={life.max.toString()} disabled />
                         </Col>
                         <Col>
-                            <Input label="Mana" value={mana.current.toString()} placeholder="0" onChange={changeMana} />
+                            <Input
+                                label="Mana"
+                                value={mana.current.toString()}
+                                placeholder="0"
+                                onChange={changeMana}
+                                disabled={dm}
+                            />
                             <Input label="Mana" value={mana.max.toString()} placeholder="100" disabled />
                         </Col>
                         <Col>
@@ -132,6 +149,7 @@ const CharacterSheet = ({ sheets, setSheets, showsheet, toggleSheets }: CharaShe
                                 value={shield.current.toString()}
                                 placeholder="0"
                                 onChange={changeShield}
+                                disabled={dm}
                             />
                             <Input label="Shield" value={shield.max.toString()} placeholder="100" disabled />
                         </Col>
@@ -139,17 +157,28 @@ const CharacterSheet = ({ sheets, setSheets, showsheet, toggleSheets }: CharaShe
                     <Row className="justify-content-center">
                         <Col>
                             <h3 className={`${styles.text}`}>Abilities</h3>
-                            <Input
-                                submitLabel="Add"
-                                onSubmit={abilityAdd}
-                                value={newability}
-                                placeholder="new ability"
-                                onChange={abilityChange}
-                            />
+                            {dm ? null : (
+                                <Input
+                                    submitLabel="Add"
+                                    onSubmit={abilityAdd}
+                                    value={newability}
+                                    placeholder="new ability"
+                                    onChange={abilityChange}
+                                    disabled={dm}
+                                />
+                            )}
                             <div className={`${styles.arrayCols}`}>
                                 {abilities.length !== 0 ? (
                                     abilities.map((ability: string, key: number) => {
-                                        return (
+                                        return dm ? (
+                                            <Input
+                                                key={key}
+                                                className={styles.text}
+                                                value={ability}
+                                                placeholder={ability}
+                                                disabled
+                                            />
+                                        ) : (
                                             <Input
                                                 key={key}
                                                 className={styles.text}
@@ -168,17 +197,28 @@ const CharacterSheet = ({ sheets, setSheets, showsheet, toggleSheets }: CharaShe
                         </Col>
                         <Col>
                             <h3 className={`${styles.text}`}>Equipment</h3>
-                            <Input
-                                submitLabel="Add"
-                                onSubmit={equipAdd}
-                                value={newequip}
-                                placeholder="new equipment"
-                                onChange={equipChange}
-                            />
+                            {dm ? null : (
+                                <Input
+                                    submitLabel="Add"
+                                    onSubmit={equipAdd}
+                                    value={newequip}
+                                    placeholder="new equipment"
+                                    onChange={equipChange}
+                                    disabled={dm}
+                                />
+                            )}{' '}
                             <div className={`${styles.arrayCols}`}>
                                 {equip.length !== 0 ? (
                                     equip.map((eq: string, key: number) => {
-                                        return (
+                                        return dm ? (
+                                            <Input
+                                                key={key}
+                                                className={styles.text}
+                                                value={eq}
+                                                placeholder={eq}
+                                                disabled
+                                            />
+                                        ) : (
                                             <Input
                                                 key={key}
                                                 className={styles.text}
@@ -198,12 +238,20 @@ const CharacterSheet = ({ sheets, setSheets, showsheet, toggleSheets }: CharaShe
                     </Row>
                     <Row className="justify-content-center">
                         <img className={styles.imageurl} src={imgurl ? imgurl : CHPplaceholder} />
-                        <Input label="Image URL" placeholder={imgURLPlaceholder} value={imgurl} onChange={changeImg} />
+                        <Input
+                            label="Image URL"
+                            placeholder={imgURLPlaceholder}
+                            value={imgurl}
+                            onChange={changeImg}
+                            disabled={dm}
+                        />
                     </Row>
                     <Row className="justify-content-center">
-                        <Button onClick={handleSubmit}>
-                            <p>Save Edits</p>
-                        </Button>
+                        {dm ? null : (
+                            <Button onClick={handleSubmit}>
+                                <p>Save Edits</p>
+                            </Button>
+                        )}
 
                         <Button onClick={toggleSheets}>
                             <p>Hide Sheet</p>
