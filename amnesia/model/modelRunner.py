@@ -55,18 +55,18 @@ class ModelRunner():
         self._loadModels()
 
     def feedback(self, newData) -> None:
-        data = pd.read_json(newData)
+        data = pd.DataFrame.from_dict(newData)
         data = pd.DataFrame(data)
         allData = pd.DataFrame()
         for index in data.index:
             dataFrame = self.categories.copy()
-            for category in data['prediction'][index]:
+            for category in data['prediction'][index].keys():
                 dataFrame[category] = [1]
             dataFrame['TEXT'] = data['text'][index]
             allData = pd.concat([allData, dataFrame], ignore_index=True)
         oldData = pd.read_csv(self.dataPath)
-        oldData = pd.concat([oldData, allData], ignore_index=True)
-        oldData.to_csv(self.dataPath)
+        allData = pd.concat([oldData, allData], ignore_index=True)
+        allData.to_csv(self.dataPath)
 
     def _loadModels(self) -> None:
         self.fastTextModels = ModelUtils.loadFasttextModels(self.fastTextPath)
@@ -176,7 +176,6 @@ class ModelRunner():
         textObj = self._dfToText(self.forDf.loc[knnRes[0], :])
         jsonPayload = self._normalize(textObj).to_json()
         os.chdir(cwd)
-
         return jsonPayload
 
 
