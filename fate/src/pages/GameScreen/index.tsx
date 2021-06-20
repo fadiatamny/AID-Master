@@ -10,6 +10,7 @@ import { Col, Container, Row } from 'react-bootstrap'
 import { CharacterSheet as CH } from '../../models/CharacterSheet.model'
 import Button from '../../components/Button/Button'
 import CharacterSheets from './CharacterSheets'
+import { PlayerType } from '../../models/Player.model'
 
 type MessageType = {
     username: string
@@ -46,7 +47,8 @@ const GameScreen = () => {
     const playertype = sessionStorage.getItem('type')
     const playername = sessionStorage.getItem('playername')
     const roomid = sessionStorage.getItem('rid')
-    const [sheets, setSheets] = useState<CH[]>([mocksheet, mocksheet2])
+    const [sheets, setSheets] = useState<CH[]>([])
+    const sheetRef = useRef<CH[]>(sheets) 
     const [showsheet, setShowsheet] = useState(true)
 
     const generateMessages = () => {
@@ -174,7 +176,16 @@ const GameScreen = () => {
                     messages: []
                 }
             }
+            if (playertype === PlayerType.DM) {
+                const sheetsCopy = [...sheetRef.current]
+                sheetsCopy.push(obj.characterSheet)
+                setSheets(sheetsCopy)
+            }
+        } else {
+            setSheets([obj.characterSheet])
         }
+
+        
         messagesCopy['All'].messages.push({
             username: 'AID Master',
             playername: 'System',
@@ -183,6 +194,7 @@ const GameScreen = () => {
         })
 
         setMessages(messagesCopy)
+        
     }
 
     const toggleSheets = () => {

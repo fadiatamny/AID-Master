@@ -5,7 +5,11 @@ import Header from '../../components/Header/Header'
 import Input from '../../components/Input/Input'
 import EventsManager from '../../services/EventsManager'
 import { SocketEvents } from '../../models/SocketEvents.model'
-import { Col, Row } from 'react-bootstrap'
+import { Col, Row, Modal } from 'react-bootstrap'
+import Button from '../../components/Button/Button'
+import { PlayerType } from '../../models/Player.model'
+import CharacterSheet from './tmp'
+import { CharacterSheet as CH } from '../../models/CharacterSheet.model'
 
 const AdvLoginScreen = (props: any) => {
     const [roomNumber, setRoomNumber] = useState('')
@@ -13,6 +17,10 @@ const AdvLoginScreen = (props: any) => {
     const [playername, setPlayername] = useState('')
     const eventsManager = EventsManager.instance
     const uid = localStorage.getItem('userId')
+    const [show, setShow] = useState(false)
+    const handleClose = () => setShow(false)
+    const handleShow = () => setShow(true)
+    const sheet = {}
 
     const handleSubmit = () => {
         eventsManager.on(SocketEvents.ROOM_JOINED, 'home-screen', (obj: any) => {
@@ -24,15 +32,17 @@ const AdvLoginScreen = (props: any) => {
             sessionStorage.setItem('sheet', JSON.stringify(obj.CharacterSheet))
             props.history.push(`/game`)
         })
-        eventsManager.on(SocketEvents.NEW_PLAYER, 'home-screen', (obj: any) => {
-            // means you are a new player and have to create stuff 
-            alert(JSON.stringify(obj))
 
-            // after we handle the form of creating his character sheet and all we send the following 
-            eventsManager.trigger(SocketEvents.NEW_PLAYER_REGISTER, {
-                roomId: roomNumber,
-                data: { type: 'player', id: uid, username: username, playername: playername }
-            })
+        eventsManager.on(SocketEvents.NEW_PLAYER, 'home-screen', (obj: any) => {
+            if (obj.id !== uid) return
+            // means you are a new player and have to create stuff
+            handleShow()
+
+            // after we handle the form of creating his character sheet and all we send the following
+            // eventsManager.trigger(SocketEvents.NEW_PLAYER_REGISTER, {
+            //     roomId: roomNumber,
+            //     data: { type: 'player', id: uid, username: username, playername: playername }
+            // })
 
             //after you trigger that yo uwait for the join room event
         })
@@ -40,6 +50,13 @@ const AdvLoginScreen = (props: any) => {
             id: roomNumber,
             userId: localStorage.getItem('userId'),
             data: { type: 'player', id: uid, username: username, playername: playername }
+        })
+    }
+
+    const newPlayerSubmit = (sheet: CH) => {
+        eventsManager.trigger(SocketEvents.NEW_PLAYER_REGISTER, {
+            roomId: roomNumber,
+            data: { type: PlayerType.PLAYER, id: uid, username: username, characterSheet: sheet }
         })
     }
 
@@ -87,6 +104,16 @@ const AdvLoginScreen = (props: any) => {
                     />
                 </Col>
             </Row>
+
+            <Modal show={show} onHide={handleClose}>
+                <Modal.Header closeButton>
+                    <Modal.Title>Character Info</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <CharacterSheet handleSubmitForm={newPlayerSubmit} />
+
+                </Modal.Body>
+            </Modal>
         </>
     )
 }
