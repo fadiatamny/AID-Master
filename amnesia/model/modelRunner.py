@@ -176,7 +176,6 @@ class ModelRunner():
         textObj = self._dfToText(self.forDf.loc[knnRes[0], :])
         jsonPayload = self._normalize(textObj).to_json()
         os.chdir(cwd)
-        print(jsonPayload)
         return jsonPayload
 
 
