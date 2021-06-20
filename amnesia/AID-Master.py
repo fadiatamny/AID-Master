@@ -35,8 +35,8 @@ def builder():
         return
 
     cwd = os.getcwd()
-    cwdcat = cwd.partition('amnesia')
-    os.chdir(f'{cwdcat[0]}/amnesia/model/')
+    cwdcat = cwd.partition('model')
+    os.chdir(f'{cwdcat[0]}/model/')
 
     if len(sys.argv) < 5:
         logger.error(
@@ -224,8 +224,8 @@ def inject():
             oldModels = f'{sys.argv[index+1]}'
 
     cwd = os.getcwd()
-    cwdcut = cwd.partition('amnesia')
-    os.chdir(f'{cwdcut[0]}/amnesia/model/')
+    cwdcut = cwd.partition('model')
+    os.chdir(f'{cwdcut[0]}/model/')
     datadir = os.path.dirname(f'{data}')
     if not os.path.isdir(f'{datadir}/injectedData'):
         os.mkdir(f'{datadir}/injectedData')

@@ -152,8 +152,8 @@ class ModelRunner():
     @timed
     def predict(self, text: str):
         cwd = os.getcwd()
-        cwdcat = cwd.partition('amnesia')
-        os.chdir(f'{cwdcat[0]}/amnesia/model/')
+        cwdcat = cwd.partition('model')
+        os.chdir(f'{cwdcat[0]}/model/')
         if self.fastTextModels is None or self.knnModel is None:
             self._loadModels()
 
