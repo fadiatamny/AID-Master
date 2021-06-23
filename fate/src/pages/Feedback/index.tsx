@@ -25,6 +25,7 @@ const Feedback = ({ history }: FeedbackProps) => {
 
     const scoreRef = useRef<number>(score)
     const selectedScenariosRef = useRef<Scenario[]>(selectedScenarios)
+    selectedScenariosRef.current = selectedScenarios
 
     const generateValues = () => {
         const values: Array<ReactElement> = []

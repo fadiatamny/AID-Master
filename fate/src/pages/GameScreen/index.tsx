@@ -10,6 +10,11 @@ import { CharacterSheet as ICharacterSheet } from '../../models/CharacterSheet.m
 import Button from '../../components/Button'
 import CharacterSheets from './CharacterSheets'
 import { PlayerType } from '../../models/Player.model'
+import { History } from 'history'
+
+interface GameScreenProps {
+    history: History
+}
 
 type MessageType = {
     username: string
@@ -18,7 +23,7 @@ type MessageType = {
     myMessage: boolean
 }
 
-const GameScreen = () => {
+const GameScreen = ({ history }: GameScreenProps) => {
     const eventsManager = EventsManager.instance
     const uid = localStorage.getItem('userId')
     const username = sessionStorage.getItem('username')
@@ -27,6 +32,7 @@ const GameScreen = () => {
     const roomid = sessionStorage.getItem('rid')
     const [sheets, setSheets] = useState<ICharacterSheet[]>([])
     const sheetRef = useRef<ICharacterSheet[]>(sheets)
+    sheetRef.current = sheets
     const [showsheet, setShowsheet] = useState(false)
 
     const generateMessages = () => {
@@ -74,7 +80,7 @@ const GameScreen = () => {
         generateMessages()
     )
 
-    const messagesRef = useRef<{ [key: string]: { playername: string; messages: MessageType[] } }>()
+    const messagesRef = useRef<{ [key: string]: { playername: string; messages: MessageType[] } }>(messages)
     messagesRef.current = messages
 
     const handleMessages = (obj: any) => {
@@ -177,8 +183,15 @@ const GameScreen = () => {
         setShowsheet(!showsheet)
     }
 
+    const navToHome = () => {
+        history.push(`/`)
+    }
+
     useEffect(() => {
-        //check state
+        if (!uid || !roomid || !username) {
+            navToHome()
+        }
+        eventsManager.on(SocketEvents.SESSION_ENDED, 'game-component', (obj: any) => navToHome())
         eventsManager.on(SocketEvents.MESSAGE, 'game-component', (obj: any) => handleMessages(obj))
         eventsManager.on(SocketEvents.PLAYER_JOINED, 'game-component', (obj: any) => handlePlayerJoined(obj))
         if (sessionStorage.getItem('type') === 'dm') {
@@ -198,6 +211,8 @@ const GameScreen = () => {
             eventsManager.off(SocketEvents.CONNECTED, 'game-screen')
             eventsManager.off(SocketEvents.SCENARIO, 'game-componment')
             eventsManager.off(SocketEvents.SCENARIO_GUIDE, 'game-componment')
+            eventsManager.off(SocketEvents.SESSION_ENDED, 'game-componment')
+            navToHome()
         },
         []
     )

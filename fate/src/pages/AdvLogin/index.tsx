@@ -1,6 +1,6 @@
 import styles from './styles.module.css'
 import AdvCircle from '../../assets/images/CircleAdventurer.png'
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import Header from '../../components/Header'
 import Input from '../../components/Input'
 import EventsManager from '../../services/EventsManager'
@@ -20,7 +20,10 @@ const AdvLoginScreen = (props: any) => {
     const [show, setShow] = useState(false)
     const handleClose = () => setShow(false)
     const handleModalShow = () => setShow(true)
-
+    const showRef = useRef(show)
+    showRef.current = show
+    const playernameRef = useRef(playername)
+    playernameRef.current = playername
     const handleSubmit = () => {
         eventsManager.on(SocketEvents.ROOM_JOINED, 'home-screen', (obj: any) => {
             sessionStorage.setItem('rid', `${roomNumber}`)
@@ -100,7 +103,7 @@ const AdvLoginScreen = (props: any) => {
                     <Modal.Title>Character Info</Modal.Title>
                 </Modal.Header>
                 <Modal.Body className={styles.modalBody}>
-                    <CharacterSheet dm={false} submitForm={newPlayerSubmit} playername={playername} />
+                    <CharacterSheet dm={false} submitForm={newPlayerSubmit} playername={playernameRef.current} />
                 </Modal.Body>
             </Modal>
         </>

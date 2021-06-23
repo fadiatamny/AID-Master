@@ -9,6 +9,7 @@ export interface IPlayer {
     type: PlayerType
     id: string
     username: string
+    playername: string
     characterSheet?: CharacterSheet
 }
 
@@ -16,5 +17,6 @@ export interface PlayerDump {
     type: PlayerType
     id: string
     username: string
+    playername: string
     characterSheet: CharacterSheet
 }
