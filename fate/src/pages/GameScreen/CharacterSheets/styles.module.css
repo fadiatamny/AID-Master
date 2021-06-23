@@ -37,7 +37,7 @@
 }
 
 .empty {
-    color: white;
+    color: #bbbbbb;
     display: grid;
     place-items: center;
     height: 100%

@@ -1,4 +1,4 @@
-import styles from '../StartingPages.module.css'
+import styles from './styles.module.css'
 import DMCircle from '../../assets/images/CircleDM.png'
 import { useState } from 'react'
 import Header from '../../components/Header/Header'

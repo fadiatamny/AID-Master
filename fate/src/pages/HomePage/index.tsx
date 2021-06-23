@@ -1,4 +1,4 @@
-import styles from '../StartingPages.module.css'
+import styles from './styles.module.css'
 import logo from '../../assets/images/Logo.png'
 import AdvCircle from '../../assets/images/CircleAdventurer.png'
 import DMCircle from '../../assets/images/CircleDM.png'

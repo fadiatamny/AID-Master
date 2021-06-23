@@ -2,7 +2,7 @@ import { useState } from 'react'
 import styles from './styles.module.css'
 import { Row, Container, Pagination } from 'react-bootstrap'
 import { CharacterSheet as CH } from '../../../models/CharacterSheet.model'
-import CharacterSheet from './CharacterSheet'
+import CharacterSheet from '../../../components/CharacterSheet'
 import Divider from '../../../components/Divider'
 
 export interface CharaSheetsProps {

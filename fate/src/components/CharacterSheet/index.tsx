@@ -1,29 +1,44 @@
 import { useState, useRef } from 'react'
 import styles from './styles.module.css'
 import { Col, Row, Container } from 'react-bootstrap'
-import Button from '../../../../components/Button/Button'
-import { CharacterSheet as ICharacterSheet } from '../../../../models/CharacterSheet.model'
-import Input from '../../../../components/Input/Input'
-import CharacterPicturePlaceholder from '../../../../assets/images/characterPicPlaceholder.png'
+import Button from '../Button/Button'
+import { CharacterSheet as ICharacterSheet } from '../../models/CharacterSheet.model'
+import Input from '../Input/Input'
+import CharacterPicturePlaceholder from '../../assets/images/characterPicPlaceholder.png'
 
 export interface CharaSheetProps {
-    currsheet: ICharacterSheet
+    currsheet?: ICharacterSheet
     dm: boolean
+    submitForm?: any
+    playername?: string
 }
 
-const CharacterSheet = ({ currsheet, dm }: CharaSheetProps) => {
-    const [sheet, setSheet] = useState<ICharacterSheet>(currsheet)
+const defaultCharacterSheet = (playername?: string): ICharacterSheet => {
+    return {
+        name: playername ?? 'Character name',
+        abilities: [],
+        equipment: [],
+        level: 1,
+        life: { current: 100, max: 100 },
+        mana: { current: 100, max: 100 },
+        shield: { current: 100, max: 100 },
+        imageurl: ''
+    }
+}
+
+const CharacterSheet = ({ currsheet, dm, submitForm, playername }: CharaSheetProps) => {
+    const [sheet, setSheet] = useState<ICharacterSheet>(currsheet ?? defaultCharacterSheet(playername))
     const imgURLPlaceholder = 'http://www.imagesharing.com/imageid/yourimage.png'
-    const [name, setName] = useState(sheet?.name ?? 'Character Name')
-    const [abilities, setAbilities] = useState<string[]>(sheet?.abilities ?? [])
+    const [name, setName] = useState(sheet.name)
+    const [abilities, setAbilities] = useState<string[]>(sheet.abilities)
     const [newability, setNewability] = useState('')
-    const [equip, setEquip] = useState<string[]>(sheet?.equipment ?? [])
+    const [equip, setEquip] = useState<string[]>(sheet.equipment)
     const [newequip, setNewequip] = useState('')
-    const [level, setLevel] = useState(sheet?.level ?? 1)
-    const [life, setLife] = useState(sheet?.life ?? { current: 100, max: 100 })
-    const [mana, setMana] = useState(sheet?.mana ?? { current: 100, max: 100 })
-    const [shield, setShield] = useState(sheet?.shield ?? { current: 100, max: 100 })
-    const [imgurl, setImgurl] = useState(sheet?.imageurl ?? '')
+    const [level, setLevel] = useState(sheet.level)
+    const [life, setLife] = useState(sheet.life)
+    const [mana, setMana] = useState(sheet.mana)
+    const [shield, setShield] = useState(sheet.shield)
+    const [imgurl, setImgurl] = useState(sheet.imageurl)
 
     const handleSubmit = () => {
         const tmp = {
@@ -36,12 +51,8 @@ const CharacterSheet = ({ currsheet, dm }: CharaSheetProps) => {
             life: life,
             imageurl: imgurl
         }
-        try {
-            setSheet(tmp)
-            alert('save successful' + sheet?.toString())
-        } catch {
-            alert('failed saving info')
-        }
+        setSheet(tmp)
+        //Have to notify server of this change. this isnt enough.
     }
 
     const abilityChange = (e: any) => {
@@ -93,6 +104,15 @@ const CharacterSheet = ({ currsheet, dm }: CharaSheetProps) => {
     const changeShield = (e: any) => {
         setShield({ current: e.target.value, max: shield.max })
     }
+    const changeMaxLife = (e: any) => {
+        setLife({ current: life.current, max: e.target.value })
+    }
+    const changeMaxMana = (e: any) => {
+        setMana({ current: mana.current, max: e.target.value })
+    }
+    const changeMaxShield = (e: any) => {
+        setShield({ current: shield.current, max: e.target.value })
+    }
 
     const equipRemove = (eq: string) => {
         const tmp = [...equip]
@@ -128,7 +148,13 @@ const CharacterSheet = ({ currsheet, dm }: CharaSheetProps) => {
                                 onChange={changeLife}
                                 disabled={dm}
                             />
-                            <Input label="HP" placeholder="100" value={life.max.toString()} disabled />
+                            <Input
+                                label="Max HP"
+                                placeholder="100"
+                                value={life.max.toString()}
+                                onChange={changeMaxLife}
+                                disabled={!submitForm}
+                            />
                         </Col>
                         <Col>
                             <Input
@@ -138,7 +164,13 @@ const CharacterSheet = ({ currsheet, dm }: CharaSheetProps) => {
                                 onChange={changeMana}
                                 disabled={dm}
                             />
-                            <Input label="Mana" value={mana.max.toString()} placeholder="100" disabled />
+                            <Input
+                                label="Max Mana"
+                                value={mana.max.toString()}
+                                placeholder="100"
+                                onChange={changeMaxMana}
+                                disabled={!submitForm}
+                            />
                         </Col>
                         <Col>
                             <Input
@@ -148,7 +180,13 @@ const CharacterSheet = ({ currsheet, dm }: CharaSheetProps) => {
                                 onChange={changeShield}
                                 disabled={dm}
                             />
-                            <Input label="Shield" value={shield.max.toString()} placeholder="100" disabled />
+                            <Input
+                                label="Max Shield"
+                                value={shield.max.toString()}
+                                placeholder="100"
+                                onChange={changeMaxShield}
+                                disabled={!submitForm}
+                            />
                         </Col>
                     </Row>
                     <Row className="justify-content-center">
@@ -244,11 +282,16 @@ const CharacterSheet = ({ currsheet, dm }: CharaSheetProps) => {
                         />
                     </Row>
                     <Row className="justify-content-center">
-                        {dm ? null : (
+                        {true || dm || submitForm ? null : (
                             <Button onClick={handleSubmit}>
                                 <p>Save Edits</p>
                             </Button>
                         )}
+                        {submitForm ? (
+                            <Button onClick={submitForm}>
+                                <p>Enter Room</p>
+                            </Button>
+                        ) : null}
                     </Row>
                 </Col>
             </Row>

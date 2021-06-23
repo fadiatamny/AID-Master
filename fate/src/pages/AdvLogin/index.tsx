@@ -1,4 +1,4 @@
-import styles from '../StartingPages.module.css'
+import styles from './styles.module.css'
 import AdvCircle from '../../assets/images/CircleAdventurer.png'
 import { useState } from 'react'
 import Header from '../../components/Header/Header'
@@ -6,10 +6,10 @@ import Input from '../../components/Input/Input'
 import EventsManager from '../../services/EventsManager'
 import { SocketEvents } from '../../models/SocketEvents.model'
 import { Col, Row, Modal } from 'react-bootstrap'
-import Button from '../../components/Button/Button'
 import { PlayerType } from '../../models/Player.model'
-import CharacterSheet from './tmp'
-import { CharacterSheet as CH } from '../../models/CharacterSheet.model'
+import CharacterSheet from '../../components/CharacterSheet'
+import { CharacterSheet as ICharacterSheet } from '../../models/CharacterSheet.model'
+import './styles.css'
 
 const AdvLoginScreen = (props: any) => {
     const [roomNumber, setRoomNumber] = useState('')
@@ -43,7 +43,7 @@ const AdvLoginScreen = (props: any) => {
         })
     }
 
-    const newPlayerSubmit = (sheet: CH) => {
+    const newPlayerSubmit = (sheet: ICharacterSheet) => {
         eventsManager.trigger(SocketEvents.NEW_PLAYER_REGISTER, {
             roomId: roomNumber,
             data: { type: PlayerType.PLAYER, id: uid, username: username, characterSheet: sheet }
@@ -95,12 +95,12 @@ const AdvLoginScreen = (props: any) => {
                 </Col>
             </Row>
 
-            <Modal show={show} onHide={handleClose}>
-                <Modal.Header closeButton>
+            <Modal show={show} onHide={handleClose} dialogClassName={styles.modalContainer}>
+                <Modal.Header closeButton closeLabel="" className={styles.modalHeader}>
                     <Modal.Title>Character Info</Modal.Title>
                 </Modal.Header>
-                <Modal.Body>
-                    <CharacterSheet handleSubmitForm={newPlayerSubmit} />
+                <Modal.Body className={styles.modalBody}>
+                    <CharacterSheet dm={false} submitForm={newPlayerSubmit} playername={playername} />
                 </Modal.Body>
             </Modal>
         </>
