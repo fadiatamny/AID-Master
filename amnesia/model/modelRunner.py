@@ -49,6 +49,12 @@ class ModelRunner():
         self.dataPath = dataPath
         self.categories = ModelUtils.fetchDatasetHeaders()
         datasetConfig = ModelUtils.fetchDatasetConfig()
+
+        if not os.path.isfolder(dataPath):
+            raise ModelException('runner:init', 'folder for data does not exist')
+        if not os.path.isfile(os.path.join(dataPath, Path(f'./data.{datasetConfig["type"]}'))):
+            raise ModelException('runner:init', 'the file data does not exist in the datapath')
+
         self.forDf = pd.read_csv(os.path.join(
             dataPath, Path(f'./data.{datasetConfig["type"]}')))
         self.fastTextModels = None
