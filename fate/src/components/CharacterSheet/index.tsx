@@ -1,9 +1,9 @@
 import { useState } from 'react'
 import styles from './styles.module.css'
 import { Col, Row, Container } from 'react-bootstrap'
-import Button from '../Button/Button'
+import Button from '../Button'
 import { CharacterSheet as ICharacterSheet } from '../../models/CharacterSheet.model'
-import Input from '../Input/Input'
+import Input from '../Input'
 import CharacterPicturePlaceholder from '../../assets/images/characterPicPlaceholder.png'
 
 export interface CharaSheetProps {

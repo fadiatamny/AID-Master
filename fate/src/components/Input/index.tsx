@@ -1,5 +1,5 @@
-import Button from '../Button/Button'
-import styles from './Input.module.css'
+import Button from '../Button'
+import styles from './styles.module.css'
 
 export interface InputProps {
     label?: string

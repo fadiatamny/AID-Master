@@ -1,5 +1,5 @@
 import styles from './styles.module.css'
-import Input from '../../../../components/Input/Input'
+import Input from '../../../../components/Input'
 import ChatTitle from './ChatTitle'
 import MessagesList from './MessageList'
 import React from 'react'

@@ -1,8 +1,8 @@
-import Clickable from '../../../../components/Clickable/Clickable'
+import Clickable from '../../../../components/Clickable'
 import Divider from '../../../../components/Divider'
 import styles from './styles.module.css'
 import Tab from './Tab'
-import { Container, Row, Col } from 'react-bootstrap'
+import { Container, Row } from 'react-bootstrap'
 
 export interface ChatTabsProps {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any

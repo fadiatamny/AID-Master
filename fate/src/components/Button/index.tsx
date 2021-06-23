@@ -1,4 +1,4 @@
-import styles from './Button.module.css'
+import styles from './styles.module.css'
 import BButton from 'react-bootstrap/Button'
 
 export interface ButtonProps {

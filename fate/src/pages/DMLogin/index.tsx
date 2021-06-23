@@ -1,11 +1,11 @@
 import styles from './styles.module.css'
 import DMCircle from '../../assets/images/CircleDM.png'
 import { useState } from 'react'
-import Header from '../../components/Header/Header'
-import Input from '../../components/Input/Input'
+import Header from '../../components/Header'
+import Input from '../../components/Input'
 import EventsManager from '../../services/EventsManager'
 import { SocketEvents } from '../../models/SocketEvents.model'
-import Clickable from '../../components/Clickable/Clickable'
+import Clickable from '../../components/Clickable'
 import { Row, Col } from 'react-bootstrap'
 
 const DMLoginScreen = (props: any) => {
