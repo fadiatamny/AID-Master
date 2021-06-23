@@ -9,7 +9,7 @@ import { Col, Container, Row } from 'react-bootstrap'
 import { CharacterSheet as ICharacterSheet } from '../../models/CharacterSheet.model'
 import Button from '../../components/Button'
 import CharacterSheets from './CharacterSheets'
-import { PlayerType } from '../../models/Player.model'
+import { PlayerDump, PlayerType } from '../../models/Player.model'
 import { History } from 'history'
 
 interface GameScreenProps {
@@ -31,8 +31,8 @@ const GameScreen = ({ history }: GameScreenProps) => {
     const playername = sessionStorage.getItem('playername')
     const roomid = sessionStorage.getItem('rid')
     const [sheets, setSheets] = useState<ICharacterSheet[]>([])
-    const sheetRef = useRef<ICharacterSheet[]>(sheets)
-    sheetRef.current = sheets
+    const sheetsRef = useRef<ICharacterSheet[]>(sheets)
+    sheetsRef.current = sheets
     const [showsheet, setShowsheet] = useState(false)
 
     const generateMessages = () => {
@@ -148,11 +148,12 @@ const GameScreen = ({ history }: GameScreenProps) => {
         setMessages(messagesCopy)
     }
 
-    const handlePlayerJoined = (obj: any) => {
+    const handlePlayerJoined = (obj: PlayerDump) => {
         const messagesCopy = Object.assign({}, messagesRef.current)
         if (obj.id !== uid) {
-            const playerlist = sessionStorage.getItem('playerlist') ?? '[]'
-            sessionStorage.setItem('playerlist', JSON.stringify([...JSON.parse(playerlist), obj]))
+            let playerlist: PlayerDump[] = JSON.parse(sessionStorage.getItem('playerlist') ?? '[]')
+            playerlist = playerlist.filter((p: PlayerDump) => p.id !== obj.id)
+            sessionStorage.setItem('playerlist', JSON.stringify([...playerlist, obj]))
 
             if (!messagesCopy[obj.username]) {
                 messagesCopy[obj.username] = {
@@ -161,7 +162,7 @@ const GameScreen = ({ history }: GameScreenProps) => {
                 }
             }
             if (playertype === PlayerType.DM) {
-                const sheetsCopy = [...sheetRef.current]
+                const sheetsCopy = [...sheetsRef.current]
                 sheetsCopy.push(obj.characterSheet)
                 setSheets(sheetsCopy)
             }
@@ -230,7 +231,7 @@ const GameScreen = ({ history }: GameScreenProps) => {
 
     return (
         <>
-            <Header />
+            <Header endGameButton={true} onEndSubmit={navToFeedback} />
             <Container fluid>
                 <Row className={styles.controls}>
                     <Col>
@@ -240,7 +241,7 @@ const GameScreen = ({ history }: GameScreenProps) => {
                 <Row>
                     {showsheet ? (
                         <Col sm={{ span: 4 }} className="animated fadeIn">
-                            <CharacterSheets sheets={sheets} type={playertype} />
+                            <CharacterSheets sheets={sheetsRef.current} type={playertype} />
                         </Col>
                     ) : null}
                     <Col>

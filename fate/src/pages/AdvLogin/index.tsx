@@ -25,6 +25,10 @@ const AdvLoginScreen = (props: any) => {
     const playernameRef = useRef(playername)
     playernameRef.current = playername
     const handleSubmit = () => {
+        if (roomNumber === '' || username === '' || playername === '') {
+            return
+        }
+
         eventsManager.on(SocketEvents.ROOM_JOINED, 'home-screen', (obj: any) => {
             sessionStorage.setItem('rid', `${roomNumber}`)
             sessionStorage.setItem('playername', `${playername}`)
@@ -39,6 +43,7 @@ const AdvLoginScreen = (props: any) => {
             if (obj.id !== uid) return
             handleModalShow()
         })
+
         eventsManager.trigger(SocketEvents.JOIN_ROOM, {
             id: roomNumber,
             userId: localStorage.getItem('userId'),
@@ -49,7 +54,7 @@ const AdvLoginScreen = (props: any) => {
     const newPlayerSubmit = (sheet: ICharacterSheet) => {
         eventsManager.trigger(SocketEvents.NEW_PLAYER_REGISTER, {
             roomId: roomNumber,
-            data: { type: PlayerType.PLAYER, id: uid, username: username, characterSheet: sheet }
+            data: { type: PlayerType.PLAYER, id: uid, username, playername, characterSheet: sheet }
         })
     }
 

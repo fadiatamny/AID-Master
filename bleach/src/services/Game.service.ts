@@ -118,6 +118,7 @@ export default class GameService {
         }
 
         const player = session.getPlayer(playerId)
+        console.log('checking', player)
         if (!player) {
             this._socket.emit(SocketEvents.NEW_PLAYER, playerId)
             return
@@ -143,8 +144,12 @@ export default class GameService {
         }
 
         const player = Player.fromDump(data)
-        session.addPlayer(player)
-        this._socketJoin(roomId, session, player)
+        try {
+            session.addPlayer(player)
+            this._socketJoin(roomId, session, player)
+        } catch (e) {
+            this._sendError('newPlayerJoin', 'There was an issue, please try again', 'player already exists')
+        }
     }
 
     private _sendMessage(roomId: string, username: string, playername: string, message: string, target?: string) {
@@ -191,7 +196,7 @@ export default class GameService {
     }
 
     private _leaveRoom(roomId: string, playerId: string, username: string) {
-        if (!roomId || !playerId || !username) {
+        if (!roomId || !playerId) {
             this._sendError('leaveRoom', 'There was an issue, please try again', 'Missing Variables')
             return
         }

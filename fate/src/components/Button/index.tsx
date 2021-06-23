@@ -3,7 +3,7 @@ import BButton from 'react-bootstrap/Button'
 
 export interface ButtonProps {
     onClick?: () => void
-    children: JSX.Element
+    children?: JSX.Element | string
     className?: string
     forLabel?: boolean
     disabled?: boolean
