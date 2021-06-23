@@ -34,8 +34,7 @@ export default class GameService {
             [SocketEvents.NEW_PLAYER_REGISTER]: this._newPlayerRegister.bind(this),
             [SocketEvents.END_GAME]: this._endGame.bind(this),
             [SocketEvents.FEEDBACK]: this._feedback.bind(this),
-            [SocketEvents.REQUEST_SCENARIOS]: this._requestScenarios.bind(this),
-            [SocketEvents.SESSION_END]: this._sessionEnd.bind(this)
+            [SocketEvents.REQUEST_SCENARIOS]: this._requestScenarios.bind(this)
         }
 
         Object.entries(onsHandler).forEach(([key, value]) => this._socket.on(key, value))
@@ -265,18 +264,5 @@ export default class GameService {
 
         const session = this.getGame(roomId)
         this.io.sockets.in(roomId).emit(SocketEvents.SCENARIO_LIST, session.scenarios)
-    }
-
-    private _sessionEnd(roomId: string) {
-        if (!roomId) {
-            this._sendError('sessionEnd', 'There was an issue, please try again', 'Missing Variables')
-            return
-        }
-        if (!this._roomExists(roomId)) {
-            this._sendError('sessionEnd', 'There was an issue, please try again', 'Room doesnt exist')
-            return
-        }
-
-        this.io.sockets.in(roomId).emit(SocketEvents.SESSION_ENDED)
     }
 }

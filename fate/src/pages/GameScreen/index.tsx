@@ -186,12 +186,21 @@ const GameScreen = ({ history }: GameScreenProps) => {
     const navToHome = () => {
         history.push(`/`)
     }
+    const navToFeedback = () => {
+        history.push(`/feedback`)
+    }
 
     useEffect(() => {
         if (!uid || !roomid || !username) {
             navToHome()
         }
-        eventsManager.on(SocketEvents.SESSION_ENDED, 'game-component', (obj: any) => navToHome())
+        eventsManager.on(SocketEvents.GAME_ENDED, 'game-component', () => {
+            if (playertype === PlayerType.DM) {
+                navToFeedback()
+            } else {
+                navToHome()
+            }
+        })
         eventsManager.on(SocketEvents.MESSAGE, 'game-component', (obj: any) => handleMessages(obj))
         eventsManager.on(SocketEvents.PLAYER_JOINED, 'game-component', (obj: any) => handlePlayerJoined(obj))
         if (sessionStorage.getItem('type') === 'dm') {
@@ -207,12 +216,14 @@ const GameScreen = ({ history }: GameScreenProps) => {
                 userId: localStorage.getItem('userId'),
                 username: sessionStorage.getItem('username')
             })
+            if (playertype === PlayerType.DM) {
+                eventsManager.trigger(SocketEvents.END_GAME, { roomId: sessionStorage.getItem('rid') })
+            }
             eventsManager.off(SocketEvents.MESSAGE, 'game-component')
             eventsManager.off(SocketEvents.CONNECTED, 'game-screen')
             eventsManager.off(SocketEvents.SCENARIO, 'game-componment')
             eventsManager.off(SocketEvents.SCENARIO_GUIDE, 'game-componment')
-            eventsManager.off(SocketEvents.SESSION_ENDED, 'game-componment')
-            navToHome()
+            eventsManager.off(SocketEvents.END_GAME, 'game-componment')
         },
         []
     )
