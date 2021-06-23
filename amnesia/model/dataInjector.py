@@ -94,7 +94,7 @@ class DataInjector():
         newdata.to_csv(
             f'{dirPath}/injectedData/injectedData_{hash}.csv', index=False)
         ModelBuilder.createFastText(
-            filePath=f'{dirPath}/injectedData/injectedData_{hash}.csv', savePath=f'{saveModelsPath}/fasttext', hashbase=f'{hash}', time=10)
+            filePath=f'{dirPath}/injectedData/injectedData_{hash}.csv', savePath=f'{saveModelsPath}/fasttext', hashbase=f'{hash}', time=7000)
         ModelBuilder.createKNN(
             f'{dirPath}/injectedData/injectedData_{hash}.csv', f'{saveModelsPath}/knn', 10, f'{hash}')
         accuracy = ModelTester.fastTextTest(
@@ -110,11 +110,10 @@ class DataInjector():
         os.chdir(cwd)
 
     @staticmethod
-    def injectionLoop(dataPath: str, saveModelsPath: str, hash: str, modelsPath: str, numberCrawler: int, oldPath: str, loopCount: int = 1):
+    def injectionLoop(dataPath: str, saveModelsPath: str, hash: str, modelsPath: str, numberCrawler: int, oldPath: str, loopCount: int = 1,numOfModels:int = 3):
         for i in range(loopCount):
-            input("0")
             DataInjector.inject(dataPath=dataPath, saveModelsPath=saveModelsPath, hash=hash,
-                                modelsPath=modelsPath, numberCrawler=numberCrawler, oldPath=oldPath)
+                                modelsPath=modelsPath, numberCrawler=numberCrawler, oldPath=oldPath,numOfModels=numOfModels)
 
 
 if __name__ == '__main__':
@@ -172,7 +171,7 @@ if __name__ == '__main__':
 
     try:
         DataInjector.injectionLoop(dataPath=data, saveModelsPath=save, hash=hash,
-                                   modelsPath=originalmodels, numberCrawler=crawlerRounds, oldPath=oldModels)
+                                   modelsPath=originalmodels, numberCrawler=crawlerRounds, oldPath=oldModels,numOfModels=numOfModels)
         # add http call to server to change model based on name and hash.
     except ModelException as e:
         print('Please check -h for help.')
