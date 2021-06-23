@@ -7,7 +7,7 @@ import StartingScreen from './pages/HomePage'
 import AdventureLoginScreen from './pages/AdvLogin'
 import Feedback from './pages/Feedback'
 import DMLoginScreen from './pages/DMLogin'
-import SocketManager from './services/SocketManager'
+import SocketManager, { SocketError } from './services/SocketManager'
 import EventsManager from './services/EventsManager'
 import { SocketEvents } from './models/SocketEvents.model'
 import { v4 as uuid } from 'uuid'
@@ -22,9 +22,9 @@ export default function App() {
     eventsManager.on(SocketEvents.CONNECTED, 'app', () => {
         console.log('App:Socket Connected')
     })
-    eventsManager.on(SocketEvents.ERROR, 'app', (e: unknown) => {
+    eventsManager.on(SocketEvents.ERROR, 'app', (e: SocketError) => {
         console.error('Error Occured: ', e)
-        NotificationManager.error('Error Occured', 2000)
+        NotificationManager.error('Error Occured', e.message)
     })
 
     if (!localStorage.getItem('userId')) {

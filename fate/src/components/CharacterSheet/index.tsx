@@ -1,5 +1,4 @@
-/* eslint-disable @typescript-eslint/no-empty-function */
-import { useState, useRef } from 'react'
+import { useState } from 'react'
 import styles from './styles.module.css'
 import { Col, Row, Container } from 'react-bootstrap'
 import Button from '../Button'
@@ -28,32 +27,44 @@ const defaultCharacterSheet = (playername?: string): ICharacterSheet => {
 }
 
 const CharacterSheet = ({ currsheet, dm, submitForm, playername }: CharaSheetProps) => {
-    const [sheet, setSheet] = useState<ICharacterSheet>(currsheet ?? defaultCharacterSheet(playername))
-    const sheetRef = useRef(sheet)
-    sheetRef.current = sheet
+    const sheet = currsheet ?? defaultCharacterSheet(playername)
     const [newability, setNewability] = useState('')
     const [newequip, setNewequip] = useState('')
-    const [name, setName] = useState(sheet.name)
     const [abilities, setAbilities] = useState<string[]>(sheet.abilities)
-    const [level, setLevel] = useState('')
-    const [life, setLife] = useState('')
-    const [mana, setMana] = useState('')
-    const [shield, setShield] = useState('')
-    const [imgurl, setImgurl] = useState('')
+    const [equipment, setEquipment] = useState<string[]>(sheet.equipment)
+    const [level, setLevel] = useState(sheet.level)
+    const [life, setLife] = useState(sheet.life)
+    const [mana, setMana] = useState(sheet.mana)
+    const [shield, setShield] = useState(sheet.shield)
+    const [imageurl, setImageurl] = useState(sheet.imageurl)
     const imgURLPlaceholder = 'http://www.imagesharing.com/imageid/yourimage.png'
+
+    const generateSheet = (): ICharacterSheet => {
+        return {
+            abilities: abilities,
+            equipment: equipment,
+            level: level,
+            mana: mana,
+            shield: shield,
+            name: sheet.name,
+            life: life,
+            imageurl: imageurl
+        }
+    }
 
     const handleSubmit = () => {
         //Have to notify server of this change. this isnt enough.
+        //maybe up component ? for now i disabled this function.
     }
 
     const abilityChange = (e: any) => {
         setNewability(e.target.value)
     }
-
     const abilityAdd = () => {
-        setSheet(Object.assign({}, sheetRef.current, { abilities: [...sheetRef.current.abilities, newability] }))
+        const tmp = [...abilities, newability]
+        setAbilities(tmp)
+        setNewability('')
     }
-
     const abilityRemove = (ability: string) => {
         const tmp = [...abilities]
         const index = tmp.indexOf(ability)
@@ -62,45 +73,53 @@ const CharacterSheet = ({ currsheet, dm, submitForm, playername }: CharaSheetPro
             setAbilities(tmp)
         }
     }
-
     const equipChange = (e: any) => {
         setNewequip(e.target.value)
     }
-
     const equipAdd = () => {
+        const tmp = [...equipment, newequip]
+        setEquipment(tmp)
         setNewequip('')
     }
-
-    const changeName = (e: any) => {
-        setName(e.target.value)
-    }
-
     const changeImg = (e: any) => {
-        setImgurl(e.target.value)
+        setImageurl(e.target.value)
     }
-
     const changeLevel = (e: any) => {
         setLevel(e.target.value)
     }
-    const changeLife = (e: any) => {}
-    const changeMana = (e: any) => {}
-    const changeShield = (e: any) => {}
-    const changeMaxLife = (e: any) => {}
-    const changeMaxMana = (e: any) => {}
-    const changeMaxShield = (e: any) => {}
+    const changeLife = (e: any) => {
+        setLife({ current: e.target.value, max: life.max })
+    }
+    const changeMana = (e: any) => {
+        setMana({ current: e.target.value, max: mana.max })
+    }
+    const changeShield = (e: any) => {
+        setShield({ current: e.target.value, max: shield.max })
+    }
+    const changeMaxLife = (e: any) => {
+        setLife({ current: life.current, max: e.target.value })
+    }
+    const changeMaxMana = (e: any) => {
+        setMana({ current: mana.current, max: e.target.value })
+    }
+    const changeMaxShield = (e: any) => {
+        setShield({ current: shield.current, max: e.target.value })
+    }
 
     const equipRemove = (eq: string) => {
-        // if (index !== -1) {
-        //     tmp.splice(index, 1)
-        //     setEquip(tmp)
-        // }
+        const tmp = [...equipment]
+        const index = tmp.indexOf(eq)
+        if (index !== -1) {
+            tmp.splice(index, 1)
+            setEquipment(tmp)
+        }
     }
 
     return (
         <Container className="justify-content-center">
             <Row className="justify-content-center">
                 <Col sm={9}>
-                    <Input label="Name" placeholder="mr. Man" onChange={changeName} value={name} disabled={dm} />
+                    <Input label="Name" placeholder="mr. Man" value={sheet.name} disabled />
                 </Col>
                 <Col sm={3}>
                     <Input
@@ -117,14 +136,14 @@ const CharacterSheet = ({ currsheet, dm, submitForm, playername }: CharaSheetPro
                             <Input
                                 label="HP"
                                 placeholder="0"
-                                value={sheetRef.current.life.current.toString()}
+                                value={life.current.toString()}
                                 onChange={changeLife}
                                 disabled={dm}
                             />
                             <Input
                                 label="Max HP"
                                 placeholder="100"
-                                value={sheetRef.current.life.max.toString()}
+                                value={life.max.toString()}
                                 onChange={changeMaxLife}
                                 disabled={!submitForm}
                             />
@@ -132,14 +151,14 @@ const CharacterSheet = ({ currsheet, dm, submitForm, playername }: CharaSheetPro
                         <Col>
                             <Input
                                 label="Mana"
-                                value={sheetRef.current.mana.current.toString()}
+                                value={mana.current.toString()}
                                 placeholder="0"
                                 onChange={changeMana}
                                 disabled={dm}
                             />
                             <Input
                                 label="Max Mana"
-                                value={sheetRef.current.mana.max.toString()}
+                                value={mana.max.toString()}
                                 placeholder="100"
                                 onChange={changeMaxMana}
                                 disabled={!submitForm}
@@ -148,14 +167,14 @@ const CharacterSheet = ({ currsheet, dm, submitForm, playername }: CharaSheetPro
                         <Col>
                             <Input
                                 label="Shield"
-                                value={sheetRef.current.shield.current.toString()}
+                                value={shield.current.toString()}
                                 placeholder="0"
                                 onChange={changeShield}
                                 disabled={dm}
                             />
                             <Input
                                 label="Max Shield"
-                                value={sheetRef.current.shield.max.toString()}
+                                value={shield.max.toString()}
                                 placeholder="100"
                                 onChange={changeMaxShield}
                                 disabled={!submitForm}
@@ -176,8 +195,8 @@ const CharacterSheet = ({ currsheet, dm, submitForm, playername }: CharaSheetPro
                                 />
                             )}
                             <div className={`${styles.arrayCols}`}>
-                                {sheetRef.current.abilities.length !== 0 ? (
-                                    sheetRef.current.abilities.map((ability: string, key: number) => {
+                                {abilities.length !== 0 ? (
+                                    abilities.map((ability: string, key: number) => {
                                         return dm ? (
                                             <Input
                                                 key={key}
@@ -216,8 +235,8 @@ const CharacterSheet = ({ currsheet, dm, submitForm, playername }: CharaSheetPro
                                 />
                             )}
                             <div className={`${styles.arrayCols}`}>
-                                {sheetRef.current.equipment.length !== 0 ? (
-                                    sheetRef.current.equipment.map((eq: string, key: number) => {
+                                {equipment.length !== 0 ? (
+                                    equipment.map((eq: string, key: number) => {
                                         return dm ? (
                                             <Input
                                                 key={key}
@@ -247,14 +266,14 @@ const CharacterSheet = ({ currsheet, dm, submitForm, playername }: CharaSheetPro
                     <Row className="justify-content-center">
                         <img
                             className={styles.imageurl}
-                            src={sheetRef.current.imageurl ? sheetRef.current.imageurl : CharacterPicturePlaceholder}
+                            src={sheet.imageurl ? sheet.imageurl : CharacterPicturePlaceholder}
                         />
                         {dm ? null : (
                             <Input
                                 className={styles.margin}
                                 label="Image URL"
                                 placeholder={imgURLPlaceholder}
-                                value={sheetRef.current.imageurl}
+                                value={sheet.imageurl}
                                 onChange={changeImg}
                                 disabled={dm}
                             />
@@ -267,7 +286,7 @@ const CharacterSheet = ({ currsheet, dm, submitForm, playername }: CharaSheetPro
                             </Button>
                         )}
                         {submitForm ? (
-                            <Button onClick={() => submitForm(sheet)}>
+                            <Button onClick={() => submitForm(generateSheet())}>
                                 <p>Enter Room</p>
                             </Button>
                         ) : null}

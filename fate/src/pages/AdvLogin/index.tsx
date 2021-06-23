@@ -32,7 +32,26 @@ const AdventureLoginScreen = ({ history }: AdventureLoginScreenProps) => {
     playernameRef.current = playername
     const handleSubmit = () => {
         if (roomNumber === '' || username === '' || playername === '') {
-            NotificationManager.error('Error Occured', 2000)
+            let message = ''
+            if (username === '') {
+                message = 'Username must be filled'
+            }
+            if (playername === '') {
+                if (message === '') {
+                    message = 'Playername must be filled'
+                } else {
+                    message = 'Empty fields must be filled'
+                }
+            }
+            if (roomNumber === '') {
+                if (message === '') {
+                    message = 'Room number must be filled'
+                } else {
+                    message = 'Empty fields must be filled'
+                }
+            }
+
+            NotificationManager.error('Error Occured', message)
             return
         }
 
@@ -110,7 +129,7 @@ const AdventureLoginScreen = ({ history }: AdventureLoginScreenProps) => {
                 </Col>
             </Row>
 
-            <Modal show={show} onHide={handleClose} dialogClassName={styles.modalContainer}>
+            <Modal show={showRef.current} onHide={handleClose} dialogClassName={styles.modalContainer}>
                 <Modal.Header closeButton closeLabel="" className={styles.modalHeader}>
                     <Modal.Title>Character Info</Modal.Title>
                 </Modal.Header>

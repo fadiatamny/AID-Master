@@ -6,6 +6,12 @@ import { SocketEvents } from '../models/SocketEvents.model'
 import EventsManager from './EventsManager'
 const endpoint = 'http://localhost:5069'
 
+export interface SocketError {
+    where: string
+    message: string
+    error: any
+}
+
 export default class SocketManager {
     private static _instance: SocketManager
 
