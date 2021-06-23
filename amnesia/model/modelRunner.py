@@ -64,9 +64,11 @@ class ModelRunner():
                 dataFrame[category] = [1]
             dataFrame['TEXT'] = data['text'][index]
             allData = pd.concat([allData, dataFrame], ignore_index=True)
-        oldData = pd.read_csv(self.dataPath)
+        oldData = pd.read_csv(os.path.join(
+            dataPath, Path(f'./data.{self.datasetConfig["type"]}')))
         allData = pd.concat([oldData, allData], ignore_index=True)
-        allData.to_csv(self.dataPath)
+        allData.to_csv(os.path.join(
+            dataPath, Path(f'./data.{self.datasetConfig["type"]}')))
 
     def _loadModels(self) -> None:
         self.fastTextModels = ModelUtils.loadFasttextModels(self.fastTextPath)
@@ -87,7 +89,7 @@ class ModelRunner():
             raise ModelException(
                 'runner:load_ft_model', 'error occured not load model, Not enough .bin files in directory')
 
-    def _verifyFastText(self, path: str):
+    def _verifyKNN(self, path: str):
         fCount: int = 0
         dir = os.scandir(path)
         if not dir:
