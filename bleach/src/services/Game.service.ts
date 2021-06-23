@@ -118,7 +118,6 @@ export default class GameService {
         }
 
         const player = session.getPlayer(playerId)
-        console.log('checking', player)
         if (!player) {
             this._socket.emit(SocketEvents.NEW_PLAYER, playerId)
             return
