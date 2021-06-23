@@ -65,7 +65,7 @@ class ModelBuilder():
 
     @staticmethod
     # read the data file and creat the fasttext
-    def createFastText(filePath: str, savePath: str = 'bin/newModels/fasttext', hashbase: str = '', time: int = 5400, debug: bool = False) -> None:
+    def createFastText(filePath: str, savePath: str = 'bin/newModels/fasttext', hashbase: str = '', time: int = 7000, debug: bool = False) -> None:
         try:
 
             raw_data = ModelBuilder._readRawData(filePath)
@@ -88,15 +88,16 @@ class ModelBuilder():
         resDataFrame = pd.DataFrame(columns=['exmp', 'Percision', 'Recall'])
 
         try:
-            for i in range(5):
+            for i in range(6):
                 fastmodule = fasttext.train_supervised(
                     input=f'training_data{hashbase}.txt',
                     autotuneValidationFile=f'testing_data{hashbase}.txt', autotunePredictions=10,
                     autotuneDuration=time, autotuneModelSize='1000M')
 
-                restest = fastmodule.test(f'testing_data{hashbase}.txt', time)
+                restest = fastmodule.test(f'testing_data{hashbase}.txt', 10)
                 resDataFrame = resDataFrame.append(
                     {'exmp': restest[0], 'Percision': restest[1], 'Recall': restest[2]}, ignore_index=True)
+                print(resDataFrame)
                 fastmodule.save_model(
                     f'build/fasttextmodel_{hashbase}_{i}.bin')
         except Exception as e:
