@@ -19,8 +19,7 @@ const AdvLoginScreen = (props: any) => {
     const uid = localStorage.getItem('userId')
     const [show, setShow] = useState(false)
     const handleClose = () => setShow(false)
-    const handleShow = () => setShow(true)
-    const sheet = {}
+    const handleModalShow = () => setShow(true)
 
     const handleSubmit = () => {
         eventsManager.on(SocketEvents.ROOM_JOINED, 'home-screen', (obj: any) => {
@@ -35,16 +34,7 @@ const AdvLoginScreen = (props: any) => {
 
         eventsManager.on(SocketEvents.NEW_PLAYER, 'home-screen', (obj: any) => {
             if (obj.id !== uid) return
-            // means you are a new player and have to create stuff
-            handleShow()
-
-            // after we handle the form of creating his character sheet and all we send the following
-            // eventsManager.trigger(SocketEvents.NEW_PLAYER_REGISTER, {
-            //     roomId: roomNumber,
-            //     data: { type: 'player', id: uid, username: username, playername: playername }
-            // })
-
-            //after you trigger that yo uwait for the join room event
+            handleModalShow()
         })
         eventsManager.trigger(SocketEvents.JOIN_ROOM, {
             id: roomNumber,
@@ -111,7 +101,6 @@ const AdvLoginScreen = (props: any) => {
                 </Modal.Header>
                 <Modal.Body>
                     <CharacterSheet handleSubmitForm={newPlayerSubmit} />
-
                 </Modal.Body>
             </Modal>
         </>

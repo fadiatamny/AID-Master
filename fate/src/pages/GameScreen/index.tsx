@@ -5,9 +5,8 @@ import { useEffect, useState, useRef } from 'react'
 import { SocketEvents } from '../../models/SocketEvents.model'
 import EventsManager from '../../services/EventsManager'
 import { generate } from '../../services/ScenarioGuide'
-// import CharacterSheet from './CharacterSheets/CharacterSheet'
 import { Col, Container, Row } from 'react-bootstrap'
-import { CharacterSheet as CH } from '../../models/CharacterSheet.model'
+import { CharacterSheet as ICharacterSheet } from '../../models/CharacterSheet.model'
 import Button from '../../components/Button/Button'
 import CharacterSheets from './CharacterSheets'
 import { PlayerType } from '../../models/Player.model'
@@ -18,27 +17,6 @@ type MessageType = {
     messageText: string | string[]
     myMessage: boolean
 }
-const mocksheet = {
-    name: 'Kyrren',
-    abilities: ['born alive'],
-    equipment: ['sword'],
-    level: 2,
-    life: { current: 54, max: 100 },
-    mana: { current: 70, max: 70 },
-    shield: { current: 24, max: 30 },
-    imageurl: 'https://images.theconversation.com/files/366179/original/file-20201028-15-1g9o7at.jpg'
-}
-
-const mocksheet2 = {
-    name: 'Smittens',
-    abilities: ['born alive'],
-    equipment: ['sword'],
-    level: 2,
-    life: { current: 54, max: 100 },
-    mana: { current: 70, max: 70 },
-    shield: { current: 24, max: 30 },
-    imageurl: 'https://static3.bigstockphoto.com/4/4/2/large1500/244707958.jpg'
-}
 
 const GameScreen = () => {
     const eventsManager = EventsManager.instance
@@ -47,9 +25,9 @@ const GameScreen = () => {
     const playertype = sessionStorage.getItem('type')
     const playername = sessionStorage.getItem('playername')
     const roomid = sessionStorage.getItem('rid')
-    const [sheets, setSheets] = useState<CH[]>([])
-    const sheetRef = useRef<CH[]>(sheets) 
-    const [showsheet, setShowsheet] = useState(true)
+    const [sheets, setSheets] = useState<ICharacterSheet[]>([])
+    const sheetRef = useRef<ICharacterSheet[]>(sheets)
+    const [showsheet, setShowsheet] = useState(false)
 
     const generateMessages = () => {
         const messagesObj: { [key: string]: { playername: string; messages: MessageType[] } } = {
@@ -185,7 +163,6 @@ const GameScreen = () => {
             setSheets([obj.characterSheet])
         }
 
-        
         messagesCopy['All'].messages.push({
             username: 'AID Master',
             playername: 'System',
@@ -194,7 +171,6 @@ const GameScreen = () => {
         })
 
         setMessages(messagesCopy)
-        
     }
 
     const toggleSheets = () => {
@@ -230,30 +206,17 @@ const GameScreen = () => {
         <>
             <Header />
             <Container fluid>
-                <Row>
-                    <Col sm={showsheet ? { span: 4 } : { span: 1 }}>
-                        {showsheet ? (
-                            sheets.length === 0 ? (
-                                <Row>
-                                    <Col>
-                                        <Button onClick={toggleSheets}>
-                                            <p>No Sheets</p>
-                                        </Button>
-                                    </Col>
-                                </Row>
-                            ) : (
-                                <CharacterSheets sheets={sheets} toggleSheets={toggleSheets} type={playertype} />
-                            )
-                        ) : (
-                            <Row>
-                                <Col>
-                                    <Button onClick={toggleSheets}>
-                                        <p>Show Sheets</p>
-                                    </Button>
-                                </Col>
-                            </Row>
-                        )}
+                <Row className={styles.controls}>
+                    <Col>
+                        <Button onClick={toggleSheets}>{showsheet ? <p>Hide Sheets</p> : <p>Show Sheets</p>}</Button>
                     </Col>
+                </Row>
+                <Row>
+                    {showsheet ? (
+                        <Col sm={{ span: 4 }} className="animated fadeIn">
+                            <CharacterSheets sheets={sheets} type={playertype} />
+                        </Col>
+                    ) : null}
                     <Col>
                         <Chat
                             messages={messages}

@@ -1,21 +1,18 @@
-import React, { useState, useRef } from 'react'
+import { useState, useRef } from 'react'
 import styles from './styles.module.css'
 import { Col, Row, Container } from 'react-bootstrap'
 import Button from '../../../../components/Button/Button'
-import { CharacterSheet as CH } from '../../../../models/CharacterSheet.model'
+import { CharacterSheet as ICharacterSheet } from '../../../../models/CharacterSheet.model'
 import Input from '../../../../components/Input/Input'
-import CHPplaceholder from '../../../../assets/images/characterPicPlaceholder.png'
+import CharacterPicturePlaceholder from '../../../../assets/images/characterPicPlaceholder.png'
 
 export interface CharaSheetProps {
-    toggleSheets: any
-    currsheet: CH
+    currsheet: ICharacterSheet
     dm: boolean
 }
 
-const CharacterSheet = ({ toggleSheets, currsheet, dm }: CharaSheetProps) => {
-    const [sheet, setSheet] = useState<CH>(currsheet)
-    const sheetRef = useRef<CH>()
-
+const CharacterSheet = ({ currsheet, dm }: CharaSheetProps) => {
+    const [sheet, setSheet] = useState<ICharacterSheet>(currsheet)
     const imgURLPlaceholder = 'http://www.imagesharing.com/imageid/yourimage.png'
     const [name, setName] = useState(sheet?.name ?? 'Character Name')
     const [abilities, setAbilities] = useState<string[]>(sheet?.abilities ?? [])
@@ -107,7 +104,7 @@ const CharacterSheet = ({ toggleSheets, currsheet, dm }: CharaSheetProps) => {
     }
 
     return (
-        <Container className={`justify-content-center ${styles.container}`}>
+        <Container className="justify-content-center">
             <Row className="justify-content-center">
                 <Col sm={9}>
                     <Input label="Name" placeholder="mr. Man" onChange={changeName} value={name} disabled={dm} />
@@ -206,7 +203,7 @@ const CharacterSheet = ({ toggleSheets, currsheet, dm }: CharaSheetProps) => {
                                     onChange={equipChange}
                                     disabled={dm}
                                 />
-                            )}{' '}
+                            )}
                             <div className={`${styles.arrayCols}`}>
                                 {equip.length !== 0 ? (
                                     equip.map((eq: string, key: number) => {
@@ -237,7 +234,7 @@ const CharacterSheet = ({ toggleSheets, currsheet, dm }: CharaSheetProps) => {
                         </Col>
                     </Row>
                     <Row className="justify-content-center">
-                        <img className={styles.imageurl} src={imgurl ? imgurl : CHPplaceholder} />
+                        <img className={styles.imageurl} src={imgurl ? imgurl : CharacterPicturePlaceholder} />
                         <Input
                             label="Image URL"
                             placeholder={imgURLPlaceholder}
@@ -252,10 +249,6 @@ const CharacterSheet = ({ toggleSheets, currsheet, dm }: CharaSheetProps) => {
                                 <p>Save Edits</p>
                             </Button>
                         )}
-
-                        <Button onClick={toggleSheets}>
-                            <p>Hide Sheet</p>
-                        </Button>
                     </Row>
                 </Col>
             </Row>

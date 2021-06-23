@@ -11,8 +11,12 @@
     background-color: #2f313a;
 }
 
-.text{
+.text {
     color: white;
     text-align: center;
     margin: 0;
+}
+
+.controls {
+    margin-bottom: 0.5vh;
 }

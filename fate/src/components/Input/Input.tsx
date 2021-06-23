@@ -12,7 +12,7 @@ export interface InputProps {
     onSubmit?: () => void
     submitLabel?: string
     submitOnEnter?: boolean
-    disabled?: boolean,
+    disabled?: boolean
     key?: number
 }
 

@@ -7,61 +7,21 @@
     background-color: #2f313a;
 }
 
-.text{
+.text {
     color: white;
 }
 
-.imageurl{
+.imageurl {
     max-height: 22vh;
     width: auto;
     height: auto;
 }
 
-.arrayCols{
+.arrayCols {
     height: 18vh;
     overflow-y: scroll;
 }
 
-h3{
+h3 {
     font-size: medium;
 }
-
-.pagination > li > a
-{
-    background-color:#2f313a;
-    color: #ff6768;
-    border-color: #ff6768;
-}
-
-.pagination > li > a:focus,
-.pagination > li > a:hover,
-.pagination > li > span:focus,
-.pagination > li > span:hover{
-    box-shadow: none !important;
-    outline: none !important;
-    background-color: #ffa3a4 !important;
-    color: #2f313a !important;
-    border-color: #2f313a !important;
-}
-
-.page-item.active .page-link{
-    box-shadow: none !important;
-    outline: none !important;
-    background-color: #ffa3a4 !important;
-    color: #2f313a !important;
-    border-color: #2f313a !important;
-}
-
-.activepage > span{
-    box-shadow: none !important;
-    outline: none !important;
-    background-color: #ff6768 !important;
-    border-color: #ff6768 !important;
-    color: #2f313a !important;
-}
-
-.pagination > .active > a:hover{
-    background-color: #ff6768;
-    color: #2f313a;
-}
-

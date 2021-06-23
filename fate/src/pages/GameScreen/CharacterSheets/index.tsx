@@ -1,16 +1,16 @@
-import React, { useState } from 'react'
-import { Pagination } from 'react-bootstrap'
+import { useState } from 'react'
+import styles from './styles.module.css'
+import { Row, Container, Pagination } from 'react-bootstrap'
 import { CharacterSheet as CH } from '../../../models/CharacterSheet.model'
 import CharacterSheet from './CharacterSheet'
-import styles from './CharacterSheet/styles.module.css'
+import Divider from '../../../components/Divider'
 
 export interface CharaSheetsProps {
     sheets: CH[]
-    toggleSheets: any
     type: string | null
 }
 
-const CharacterSheets = ({ sheets, toggleSheets, type }: CharaSheetsProps) => {
+const CharacterSheets = ({ sheets, type }: CharaSheetsProps) => {
     const dm = type === 'dm' ? true : false
     const [active, setActive] = useState<number>(1)
     const items: any[] = []
@@ -18,7 +18,6 @@ const CharacterSheets = ({ sheets, toggleSheets, type }: CharaSheetsProps) => {
     const clickPagination = (item: number) => {
         setActive(item)
     }
-
     sheets.map((sheet: CH, key: number) =>
         items.push(
             <Pagination.Item
@@ -34,12 +33,23 @@ const CharacterSheets = ({ sheets, toggleSheets, type }: CharaSheetsProps) => {
     )
 
     return (
-        <>
-            <Pagination className={styles.pagination}>{items}</Pagination>
-            {sheets.map((sheet: CH, key: number) => {
-                if (key === active) return <CharacterSheet currsheet={sheet} toggleSheets={toggleSheets} dm={dm} />
-            })}
-        </>
+        <Container className={`justify-content-center ${styles.container}`}>
+            {sheets.length ? (
+                <>
+                    <Row>
+                        {sheets.length > 1 ? <Pagination className={styles.pagination}>{items}</Pagination> : <></>}
+                    </Row>
+                    <Row className="justify-content-center">
+                        {sheets.length > 1 ? <Divider style={{ width: '80%' }} /> : <></>}
+                    </Row>
+                    <Row>
+                        <CharacterSheet currsheet={sheets[0]} dm={dm} />
+                    </Row>
+                </>
+            ) : (
+                <p className={styles.empty}>No Character Sheets Availbale</p>
+            )}
+        </Container>
     )
 }
 

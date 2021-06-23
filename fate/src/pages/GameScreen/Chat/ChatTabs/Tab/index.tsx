@@ -14,6 +14,7 @@ const Tab = ({ username, charactername, isActive }: TabProps) => {
             }
             return s
         }
+        return ''
     }
     return (
         <div className={`${styles.container} ${isActive ? styles.selected : ''}`}>
