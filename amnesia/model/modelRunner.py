@@ -44,11 +44,11 @@ def timed(func):
 class ModelRunner():
     def __init__(self, fastText: str, knn: str, fastTextCount: int, dataPath: str) -> None:
         self.categories = ModelUtils.fetchDatasetHeaders()
-        datasetConfig = ModelUtils.fetchDatasetConfig()
+        self.datasetConfig = ModelUtils.fetchDatasetConfig()
 
         if not os.path.isdir(dataPath):
             raise ModelException('runner:init', 'folder for data does not exist')
-        if not os.path.isfile(os.path.join(dataPath, Path(f'./data.{datasetConfig["type"]}'))):
+        if not os.path.isfile(os.path.join(dataPath, Path(f'./data.{self.datasetConfig["type"]}'))):
             raise ModelException('runner:init', 'the file data does not exist in the datapath')
 
         self.fastTextPath = fastText
@@ -57,7 +57,7 @@ class ModelRunner():
         self.dataPath = dataPath
 
         self.forDf = pd.read_csv(os.path.join(
-            dataPath, Path(f'./data.{datasetConfig["type"]}')))
+            dataPath, Path(f'./data.{self.datasetConfig["type"]}')))
         self.fastTextModels = None
         self._loadModels()
 
