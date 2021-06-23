@@ -1,3 +1,4 @@
+import './styles.css'
 import styles from './styles.module.css'
 import AdvCircle from '../../assets/images/CircleAdventurer.png'
 import { useState, useRef } from 'react'
@@ -9,9 +10,14 @@ import { Col, Row, Modal } from 'react-bootstrap'
 import { PlayerType } from '../../models/Player.model'
 import CharacterSheet from '../../components/CharacterSheet'
 import { CharacterSheet as ICharacterSheet } from '../../models/CharacterSheet.model'
-import './styles.css'
+import { NotificationManager } from 'react-notifications'
+import { History } from 'history'
 
-const AdvLoginScreen = (props: any) => {
+interface AdventureLoginScreenProps {
+    history: History
+}
+
+const AdventureLoginScreen = ({ history }: AdventureLoginScreenProps) => {
     const [roomNumber, setRoomNumber] = useState('')
     const [username, setUsername] = useState('')
     const [playername, setPlayername] = useState('')
@@ -26,6 +32,7 @@ const AdvLoginScreen = (props: any) => {
     playernameRef.current = playername
     const handleSubmit = () => {
         if (roomNumber === '' || username === '' || playername === '') {
+            NotificationManager.error('Error Occured', 2000)
             return
         }
 
@@ -36,7 +43,7 @@ const AdvLoginScreen = (props: any) => {
             sessionStorage.setItem('type', obj.type)
             sessionStorage.setItem('playerlist', JSON.stringify(obj.playerlist))
             sessionStorage.setItem('sheet', JSON.stringify(obj.CharacterSheet))
-            props.history.push(`/game`)
+            history.push(`/game`)
         })
 
         eventsManager.on(SocketEvents.NEW_PLAYER, 'home-screen', (obj: any) => {
@@ -115,4 +122,4 @@ const AdvLoginScreen = (props: any) => {
     )
 }
 
-export default AdvLoginScreen
+export default AdventureLoginScreen

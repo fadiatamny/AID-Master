@@ -4,14 +4,14 @@ import 'react-notifications/lib/notifications.css'
 import './App.css'
 import GameScreen from './pages/GameScreen'
 import StartingScreen from './pages/HomePage'
-import AdvLoginScreen from './pages/AdvLogin'
+import AdventureLoginScreen from './pages/AdvLogin'
 import Feedback from './pages/Feedback'
 import DMLoginScreen from './pages/DMLogin'
 import SocketManager from './services/SocketManager'
 import EventsManager from './services/EventsManager'
 import { SocketEvents } from './models/SocketEvents.model'
 import { v4 as uuid } from 'uuid'
-import { NotificationContainer } from 'react-notifications'
+import { NotificationContainer, NotificationManager } from 'react-notifications'
 import MetaTags from 'react-meta-tags'
 
 export default function App() {
@@ -24,6 +24,7 @@ export default function App() {
     })
     eventsManager.on(SocketEvents.ERROR, 'app', (e: unknown) => {
         console.error('Error Occured: ', e)
+        NotificationManager.error('Error Occured', 2000)
     })
 
     if (!localStorage.getItem('userId')) {
@@ -44,7 +45,7 @@ export default function App() {
             <Router>
                 <Route path="/" exact component={StartingScreen} />
                 <Route path="/game" component={GameScreen} />
-                <Route path="/AdventurerLogin" component={AdvLoginScreen} />
+                <Route path="/AdventurerLogin" component={AdventureLoginScreen} />
                 <Route path="/DMLogin" component={DMLoginScreen} />
                 <Route path="/feedback" component={Feedback} />
             </Router>

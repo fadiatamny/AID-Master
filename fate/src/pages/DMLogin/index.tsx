@@ -7,8 +7,13 @@ import EventsManager from '../../services/EventsManager'
 import { SocketEvents } from '../../models/SocketEvents.model'
 import Clickable from '../../components/Clickable'
 import { Row, Col } from 'react-bootstrap'
+import { History } from 'history'
 
-const DMLoginScreen = (props: any) => {
+interface DMLoginScreenProps {
+    history: History
+}
+
+const DMLoginScreen = ({ history }: DMLoginScreenProps) => {
     const [username, setUsername] = useState('Game Master')
     const [playername, setPlayername] = useState('DM')
     const eventsManager = EventsManager.instance
@@ -21,7 +26,7 @@ const DMLoginScreen = (props: any) => {
             sessionStorage.setItem('username', `${username}`)
             sessionStorage.setItem('type', 'dm')
             sessionStorage.setItem('playerlist', JSON.stringify([{ id: uid, username, playername }]))
-            props.history.push(`/game`)
+            history.push(`/game`)
         })
         eventsManager.trigger(SocketEvents.CREATE_ROOM, {
             id: uid,
