@@ -50,7 +50,7 @@ class ModelRunner():
         self.categories = ModelUtils.fetchDatasetHeaders()
         datasetConfig = ModelUtils.fetchDatasetConfig()
 
-        if not os.path.isfolder(dataPath):
+        if not os.path.isdir(dataPath):
             raise ModelException('runner:init', 'folder for data does not exist')
         if not os.path.isfile(os.path.join(dataPath, Path(f'./data.{datasetConfig["type"]}'))):
             raise ModelException('runner:init', 'the file data does not exist in the datapath')
