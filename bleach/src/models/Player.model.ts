@@ -9,6 +9,7 @@ export interface IPlayer {
     type: PlayerType
     id: string
     username: string
+    playername: string
     characterSheet?: CharacterSheet
 }
 
@@ -16,18 +17,20 @@ export interface PlayerDump {
     type: PlayerType
     id: string
     username: string
+    playername: string
     characterSheet: CharacterSheet
 }
 
 export class Player implements IPlayer {
     public static fromDump(dump: PlayerDump) {
-        return new Player(dump.type, dump.id, dump.username, dump.characterSheet)
+        return new Player(dump.type, dump.id, dump.username, dump.playername, dump.characterSheet)
     }
 
     constructor(
         private _type: PlayerType,
         private _id: string,
         private _username: string,
+        private _playername: string,
         private _characterSheet?: CharacterSheet
     ) { }
 
@@ -43,6 +46,10 @@ export class Player implements IPlayer {
         return this._username
     }
 
+    public get playername() {
+        return this._playername
+    }
+
     public get characterSheet() {
         return this._characterSheet
     }
@@ -51,6 +58,7 @@ export class Player implements IPlayer {
         return {
             id: this.id,
             username: this.username,
+            playername: this.playername,
             type: this.type,
             characterSheet: this.characterSheet
         }

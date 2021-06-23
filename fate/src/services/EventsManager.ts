@@ -1,13 +1,15 @@
+import { SocketEvents } from '../models/SocketEvents.model'
+
 interface Action {
     component: string
     handler: Function
 }
 
 class Event {
-    public type: EventType
+    public type: string
     public actions: Action[]
 
-    constructor(type: EventType) {
+    constructor(type: string) {
         this.type = type
         this.actions = []
     }
@@ -44,7 +46,7 @@ export default class EventsManager {
 
     private _events: Record<string, Event> = {}
 
-    public on(type: EventType, component: string, handler: Function) {
+    public on(type: string, component: string, handler: Function) {
         if (!this._events[type]) {
             this._events[type] = new Event(type)
         }
@@ -52,7 +54,7 @@ export default class EventsManager {
         this._events[type].add(component, handler)
     }
 
-    public off(type: EventType, component: string) {
+    public off(type: string, component: string) {
         if (!this._events[type]) {
             return
         }
@@ -60,7 +62,7 @@ export default class EventsManager {
         this._events[type].remove(component)
     }
 
-    public trigger(type: EventType, event: unknown) {
+    public trigger(type: string, event: unknown) {
         if (!this._events[type]) {
             return
         }
@@ -68,12 +70,8 @@ export default class EventsManager {
     }
 }
 
-export type EventType = PlatformEvent | SocketEvent
-
-export enum SocketEvent {
-    CONNECTED = 'connected',
-    MESSAGE = 'message',
+export enum PlatformEvent {
     CONNECT = 'connect'
 }
 
-export enum PlatformEvent {}
+export const EventType = { ...PlatformEvent, ...SocketEvents }

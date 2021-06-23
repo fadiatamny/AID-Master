@@ -37,6 +37,15 @@ module.exports = {
         '@typescript-eslint/explicit-module-boundary-types': 'off',
         'react/react-in-jsx-scope': 'off',
         '@typescript-eslint/ban-ts-comment': 'off',
-        '@typescript-eslint/ban-types': 'off'
+        '@typescript-eslint/ban-types': 'off',
+        '@typescript-eslint/no-this-alias': 'off',
+        "@typescript-eslint/no-this-alias": [
+            "error",
+            {
+                allowDestructuring: true, // Allow `const { props, state } = this`; false by default
+                allowedNames: ["self"], // Allow `const self = this`; `[]` by default
+            },
+        ],
+        '@typescript-eslint/no-non-null-assertion': 'off'
     }
 }

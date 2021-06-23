@@ -2,10 +2,11 @@
     margin-top: 0px;
     height: 60px;
     width: 100%;
-    background-color: whitesmoke;
+    background-color: #2f313a;
     display: flex;
     align-content: center;
     justify-content: space-between;
+    margin-bottom: 2vh;
 }
 
 .logo {
@@ -19,7 +20,7 @@
     font-size: 48px;
     font-family: 'Rye', cursive;
     text-decoration: none;
-    color: #773d3d;
+    color: #ff6768;
 }
 
 .title:hover {

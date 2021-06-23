@@ -1,34 +1,62 @@
-import React from 'react'
-import Button from '../../../../components/Button/Button'
+import styles from './styles.module.css'
 import Input from '../../../../components/Input/Input'
 import ChatTitle from './ChatTitle'
 import MessagesList from './MessageList'
-import { MessageProps } from './MessageList/Message'
-import styles from './styles.module.css'
+import React from 'react'
+import EventsManager from '../../../../services/EventsManager'
+import { SocketEvents } from '../../../../models/SocketEvents.model'
 
-export interface ChatWindowProps{
-    data: Array<MessageProps>
-    activeChat: string
+type MessageType = {
+    username: string
+    playername: string
+    messageText: string | string[]
+    myMessage: boolean
 }
 
-const ChatWindow = ({data, activeChat} : ChatWindowProps) => {
+export interface ChatWindowProps {
+    activeChat: string
+    messages: MessageType[]
+    username: string
+    playername: string
+    rid: string
+}
+
+const ChatWindow = ({ activeChat, username, playername, rid, messages }: ChatWindowProps) => {
+    const eventsManager = EventsManager.instance
+    const [message, setMessage] = React.useState('')
+
+    const inputChange = (e: any) => {
+        setMessage(e.target.value)
+    }
+
+    const sendMessage = () => {
+        if (activeChat === 'AID Master') {
+            eventsManager.trigger(SocketEvents.SEND_SCENARIO, { id: rid, username, playername, message })
+            setMessage('')
+        } else {
+            const target = activeChat === 'All' ? undefined : activeChat
+            eventsManager.trigger(SocketEvents.SEND_MESSAGE, { id: rid, username, playername, message, target })
+            setMessage('')
+        }
+    }
     return (
-        <div className="col">
+        <div className="col justify-content-center">
             <div className={`${styles.container}`}>
-                <div className={`row justify-content-center`}>
+                <div className={`row justify-content-center ${styles.inputHolder}`}>
                     <ChatTitle />
                 </div>
-                <div className="row justify-content-center" style={{ height: '85%' }}>
-                    <MessagesList data={data} activeChat={activeChat} />
+                <div className={`row justify-content-center ${styles.messageList} `}>
+                    <MessagesList messages={messages} activeChat={activeChat} />
                 </div>
                 <div className={`row align-item-end justify-content-center ${styles.inputHolder}`}>
                     <Input
                         placeholder="Enter text here..."
                         id="chatResponse"
                         className={styles.input}
-                        onSubmit={() => {
-                            console.log('lol')
-                        }}
+                        onChange={inputChange}
+                        onSubmit={sendMessage}
+                        submitOnEnter={true}
+                        value={message}
                         submitLabel=">"
                     />
                 </div>

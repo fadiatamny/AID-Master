@@ -17,17 +17,18 @@ const ChatTabs = ({ users, general, switchActive }: ChatTabsProps) => {
             <div className={`${styles.container}`}>
                 {general.map((user, i) => (
                     <Clickable key={i} onClick={() => switchActive(user.username)}>
-                        <Tab username={user.username} charactername={user.playerName} isActive={user.isActive} />
+                        <Tab username={user.username} charactername={user.playername} isActive={user.isActive} />
                     </Clickable>
                 ))}
-                <Divider />
-                {users.map((user, i) => (
+                <Divider style={{ width: '80%' }} />
+                {users?.map((user, i) => (
                     <Clickable key={i} onClick={() => switchActive(user.username)}>
-                        <Tab username={user.username} charactername={user.playerName} isActive={user.isActive} />
+                        <Tab username={user.username} charactername={user.playername} isActive={user.isActive} />
                     </Clickable>
                 ))}
             </div>
         </div>
+        // <div>hi</div>
     )
 }
 

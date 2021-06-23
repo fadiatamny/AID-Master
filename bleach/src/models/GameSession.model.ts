@@ -25,8 +25,7 @@ export class GameSession implements IGameSession {
     private _currentPlayerCount: number
     private _playersLeft: string[]
 
-    public static fromDump(session: GameDump, onGameEnd?: Function) {
-        const dm = Player.fromDump(session.dm)
+    public static fromDump(dm: Player, session: GameDump, onGameEnd?: Function) {
         const game = new GameSession(dm, onGameEnd)
         game._scenarios = [Object.assign({}, session.lastScenario)]
         game._playerList = session.playerList.map((p) => Player.fromDump(p))

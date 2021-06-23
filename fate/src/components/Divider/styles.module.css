@@ -7,6 +7,5 @@
 }
 
 .divider{
-    width: 80%;
-    border-bottom: 1px solid #442724;
+    border-bottom: 2px groove #ff6768;
 }

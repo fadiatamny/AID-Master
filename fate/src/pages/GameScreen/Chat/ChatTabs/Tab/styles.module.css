@@ -4,27 +4,30 @@
     margin-left: 0.5vh;
     margin-right: 0.5vh;
     transition: background-color 0.5s ease;
-    border-radius: 15px !important;
+    border-radius: 15px;
+    color: #ff6768;
 }
 
 .container:hover {
-    background-color: #ff949466 !important;
+    color: cornsilk !important;
+    background-color: #ff6768;
 }
 
-.selected{
-    background-color: #ff949466;
+.selected {
+    color: cornsilk;
+    background-color: #ff6768;
 }
-.username {
-    font-size: 1.5vw;
+.charactername {
+    font-size: 1vw;
     font-weight: 600;
     margin-left: 5%;
     margin-top: 0;
     margin-bottom: 0;
 }
 
-.charactername {
-    font-size: 1vw;
-    color: sienna;
+.username {
+    font-size: 0.75vw;
+    color: #ffa3a4;
     margin-left: 10%;
     margin-top: 0;
     margin-bottom: 0;

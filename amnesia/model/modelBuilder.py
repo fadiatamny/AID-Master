@@ -6,22 +6,27 @@ import joblib
 import os
 import sys
 import requests
-import datetime
 import texthero as hero
 import logging
+from .modelException import ModelException
+from .modelUtils import ModelUtils
+import shutil
+from datetime import datetime
 
+prefix = os.path.dirname(os.path.realpath(__file__))
 
+if not os.path.isdir(f'{prefix}/logs'):
+    os.mkdir(f'{prefix}/logs')
 logger = logging.getLogger(__name__)
-logger.setLevel("DEBUG")
-handler = logging.FileHandler("Runner_Model.log")
-formatter = "%(asctime)s %(levelname)s -- %(message)s"
+logger.setLevel('DEBUG')
+handler = logging.FileHandler(f'{prefix}/logs/logs_builder_{datetime.now().date()}.log')
+formatter = '%(asctime)s %(levelname)s -- %(message)s'
 handler.setFormatter(logging.Formatter(formatter))
 logger.addHandler(handler)
 
-
 class ModelBuilder():
     @staticmethod
-    def _cleanText(data) -> None:
+    def _formatText(data) -> None:
         headlist = list(data.columns.values)
         del headlist[0]
         # convert the 0/1 vector to label that fit fasttext
@@ -36,26 +41,15 @@ class ModelBuilder():
         return data
 
     @staticmethod
-    # testing the model accuracy
-    def _testModel(model, hash: str) -> None:
-        if not os.path.isdir('logs'):
-            os.mkdir('logs')
-        date = datetime.datetime.now()
-        # proforming the auto test accuracy test in fasttext model
-        testRes = model.test(f'./testing_data{hash}.txt', 10)
-        allResFIle = open(
-            f'./logs/test_{date.day}_{date.month}_{date.year}.txt', 'a')
-        # saving the result for future analysis
-        allResFIle.write(
-            '\n#########################################################\n')
-        allResFIle.write(f'Time Stamp: {date}\n')
-        allResFIle.write(f'HASH = {hash}\n')
-        allResFIle.write(f'Number of Examples = {testRes[0]}\n')
-        allResFIle.write(f'Percision = {round(testRes[1] * 100, 3)}%\n')
-        allResFIle.write(f'Recall = {round(testRes[2] * 100, 3)}%\n')
-        allResFIle.write(
-            '#########################################################\n')
-        allResFIle.close()
+    def _readRawData(filePath: str):
+        type = filePath.split('.')[1]
+        if type == 'csv':
+            return pd.read_csv(filePath)
+        elif type == 'xls' or type == 'xlsx':
+            return pd.read_excel(filePath)
+        else:
+            raise Exception(
+                'unable to read the dataset file, format not supported')
 
     @staticmethod
     # removing unnecessary file in the end of the process
@@ -71,58 +65,53 @@ class ModelBuilder():
 
     @staticmethod
     # read the data file and creat the fasttext
-    def createFastText(filePath: str, hashbase: str = '', debug: bool = False) -> None:
+    def createFastText(filePath: str, savePath: str = 'bin/newModels/fasttext', hashbase: str = '', time: int = 7000, debug: bool = False) -> None:
         try:
-            raw_data = pd.read_excel(filePath)
-        except:
-            logger.critical(
-                "unable to read the data file trying diffrent format")
-            try:
-                raw_data = pd.read_csv(filePath)
-            except:
-                logger.critical(
-                    f'unable to read the data file try agian. the file path is {filePath} ')
 
-        cleandata = ModelBuilder._cleanText(raw_data)
-
-        # removing validate for now until we have mode data. split is 80 - 20
+            raw_data = ModelBuilder._readRawData(filePath)
+        except Exception as e:
+            raise ModelException('builder', str(e))
+        cleandata = ModelBuilder._formatText(raw_data)
+        # removing validate for now until we have more data. split is 80 - 20
         train, test = np.split(cleandata.sample(
             frac=1), [int(.8*len(cleandata))])
 
-        # np.savetxt(f'./validate_data{hash}.txt', validate.values, fmt='%s')
         try:
+            # np.savetxt(f'./validate_data{hash}.txt', validate.values, fmt='%s')
             np.savetxt(f'testing_data{hashbase}.txt', test.values, fmt='%s')
             np.savetxt(f'training_data{hashbase}.txt', train.values, fmt='%s')
-        except:
-            logger.critical(
-                "unable to save the testing and training data files")
-            exit
+        except Exception as e:
+            raise ModelException(
+                'builder', f'unable to save the testing and training data files. {str(e)}')
 
-        # creating the 5 base models and performing auto tune for 10 labels and 1h (3600s)
+        # creating the 5 base models and performing auto tune for 10 labels and 1.5h (5400s) and limiting the file size to 1G
         resDataFrame = pd.DataFrame(columns=['exmp', 'Percision', 'Recall'])
+
         try:
-            for i in range(5):
+            for i in range(6):
                 fastmodule = fasttext.train_supervised(
                     input=f'training_data{hashbase}.txt',
                     autotuneValidationFile=f'testing_data{hashbase}.txt', autotunePredictions=10,
-                    autotuneDuration=120, autotuneModelSize='1500M')
+                    autotuneDuration=time, autotuneModelSize='1000M')
 
                 restest = fastmodule.test(f'testing_data{hashbase}.txt', 10)
                 resDataFrame = resDataFrame.append(
                     {'exmp': restest[0], 'Percision': restest[1], 'Recall': restest[2]}, ignore_index=True)
-                fastmodule.save_model(f'build/fasttextmodel{i}.bin')
-        except:
-            logger.critical(f'unable to creat models stop at {i}')
-        finally:
+                print(resDataFrame)
+                fastmodule.save_model(
+                    f'build/fasttextmodel_{hashbase}_{i}.bin')
+        except Exception as e:
             for i in os.scandir('build'):
                 os.remove(i.path)
-            exit
+            raise ModelException('builder', f'unable to create models. {str(e)}')
 
         # save the bast 3 fasttext models
         indexlist = resDataFrame.nlargest(3, 'Percision').index
         for i in indexlist:
-            os.rename(f'build/fasttextmodel{i}.bin',
-                      f'finModel/fasttextmodel{i}.bin')
+            logger.debug(
+                f'Moving to {savePath}/fasttextmodel_{hashbase}_{i}.bin')
+            shutil.move(f'build/fasttextmodel_{hashbase}_{i}.bin',
+                        f'{savePath}/fasttextmodel_{hashbase}_{i}.bin')
         for i in os.scandir('build'):
             os.remove(i.path)
 
@@ -131,108 +120,160 @@ class ModelBuilder():
         # saving the model
 
         ModelBuilder.cleanFiles(hash)
-        print('Generated FastText Model Successfully')
+        logger.debug('Generated FastText Model Successfully')
 
     @staticmethod
-    def createKNN(filePath: str, k: int, hash: str = '') -> None:
+    def createKNN(filePath: str, savePath: str = 'bin/newModels/knn', k: int = 10, hash: str = '') -> None:
         try:
-            raw_data = pd.read_excel(filePath)
-        except:
-            logger.critical("unable to read the file, testing diffrent foramt")
-            try:
-                raw_data = pd.read_csv(filePath)
-            except:
-                logger.critical(
-                    f'unable to read the data file. the file path is {filePath}')
-                print("unable to read file try agian")
-                exit
+            raw_data = ModelBuilder._readRawData(filePath)
+        except Exception as e:
+            raise ModelException('builder', str(e))
 
         # preparing the data for the KNN by removing the TEXT
         knnData = raw_data.drop(['TEXT'], axis=1)
         knn = NearestNeighbors(n_neighbors=k, algorithm='auto').fit(knnData)
         # saving the model
-        joblib.dump(knn, f'./finModel/knnmodel{hash}.pkl')
-        print('Generated KNN Model Successfully')
+        joblib.dump(knn, f'{savePath}/knnmodel_{hash}.pkl')
+        logger.debug('Generated KNN Model Successfully')
 
     @staticmethod
-    def createModels(self, filePath: str, k: int = 3, hash: str = '', debug: bool = False) -> None:
+    def createModels(filePath: str, savePath: str = 'bin/newModels', time: int = 5400, k: int = 3, hash: str = '', debug: bool = False) -> None:
+        cwd = os.getcwd()
+        cwdcat = cwd.partition('model')
+        os.chdir(f'{cwdcat[0]}/model/')
         try:
-            ModelBuilder.createFastText(filePath, hash, debug)
-            ModelBuilder.createKNN(filePath, k, hash)
-        except:
-            logger.critical("unable to create the models")
+            ModelBuilder.createFastText(
+                filePath=filePath, hashbase=hash, debug=debug, savePath=f'{savePath}/fasttext', time=time)
+            ModelBuilder.createKNN(
+                filePath=filePath, k=k, hash=hash, savePath=f'{savePath}/knn')
+            logger.debug('Generated Models Successfully')
+        except Exception as e:
+            logger.critical(str(e))
+            for file in os.scandir('build'):
+                os.remove(file.path)
+            for file in os.scandir('bin/newModels/fasttext'):
+                os.remove(file.path)
+            for file in os.scandir('bin/newModels/knn'):
+                os.remove(file.path)
+            raise ModelException('Builder', "unable to create the models")
+
         finally:
-            self.cleanFiles(hash)
-            for i in os.scandir('build'):
-                os.remove(i.path)
-            for i in os.scandir('finModel'):
-                os.remove(i.path)
-            exit
-        print('Generated Models Successfully')
+            ModelBuilder.cleanFiles(hash)
+            os.chdir(cwd)
 
 
 if __name__ == '__main__':
+    cwd = os.getcwd()
+    cwdcat = cwd.partition('model')
+    os.chdir(f'{cwdcat[0]}/model/')
     if sys.argv[1] == '-h' or sys.argv[1] == '-help':
         print(
-            'Please follow format of modelBuilder.py [datasheet] [k-neighbors? = 3] [hash? = ""]')
+            'Please follow format of modelBuilder.py [datasheet] [save_path] [k-neighbors? = 10] [hash? = ""]')
         print('[datasheet] = the data sheet to build models based on')
         print('[k-neighbors] = k neighbors. default = 3')
+        print('[Time] = build time default 5400 seconds')
         print('[hash] = hash to attach to model names. default = ""')
         print('[DEBUGGING] = prints test results after generation')
         sys.exit()
 
     if len(sys.argv) < 2:
-        print(
-            'Please follow format of modelBuilder.py [datasheet] -k [k-neighbors? = 3] -h [hash? = ""] -d')
+        logger.error(
+            'Please follow format of modelBuilder.py [datasheet] -s [save_path] -t [Time] -k [k-neighbors? = 3] -h [hash? = ""] -d')
         sys.exit()
-    try:
-        if not os.path.isdir('data'):
-            os.mkdir('data')
-    except:
-        logger.critical("unable to create the data folder")
+
+    if not os.path.isdir('dataset'):
+        os.mkdir('dataset')
 
     if not os.path.isfile(sys.argv[1]):
         # fetch n download it
-        try:
-            url = 'https://cdn.discordapp.com/attachments/703993474927820811/823254393041190922/text_dnd_big.xls'
-            r = requests.get(url, allow_redirects=True)
-            open('./data/data.xls', 'wb').write(r.content)
-            print('Successfully downloaded data')
-        except:
-            logger.critical("unable to download data")
-    try:
-        if not os.path.isdir('build'):
-            os.mkdir('build')
+        path = sys.argv[1].split('/')
+        filename = path[len(path) - 1].split('.')[0]
+        datasetConfig = ModelUtils.fetchDatasetConfig()
+        r = requests.get(datasetConfig['url'], allow_redirects=True)
+        with open(f'./dataset/{filename}.{datasetConfig["type"]}', 'wb') as f:
+            f.write(r.content)
+        logger.debug('Successfully downloaded data')
 
-        if not os.path.isdir('finModel'):
-            os.mkdir('finModel')
-    except:
-        logger.critical("unable to create the needed folders")
+    if not os.path.isdir('build'):
+        os.mkdir('build')
 
-    k: int = 3
+    if not os.path.isdir('bin'):
+        os.mkdir('bin')
+
+    if not os.path.isdir('bin/currentModels'):
+        os.mkdir('bin/currentModels')
+
+    if not os.path.isdir('bin/currentModels/fasttext'):
+        os.mkdir('bin/currentModels/fasttext')
+
+    if not os.path.isdir('bin/currentModels/knn'):
+        os.mkdir('bin/currentModels/knn')
+
+    if not os.path.isdir('bin/oldModels'):
+        os.mkdir('bin/oldModels')
+
+    if not os.path.isdir('bin/oldModels/fasttext'):
+        os.mkdir('bin/oldModels/fasttext')
+
+    if not os.path.isdir('bin/oldModels/knn'):
+        os.mkdir('bin/oldModels/knn')
+
+    if not os.path.isdir('bin/newModels'):
+        os.mkdir('bin/newModels')
+
+    if not os.path.isdir('bin/newModels/fasttext'):
+        os.mkdir('bin/newModels/fasttext')
+
+    if not os.path.isdir('bin/newModels/knn'):
+        os.mkdir('bin/newModels/knn')
+
+    if not os.path.isdir('bin/newModels/injectModels'):
+        os.mkdir('bin/newModels/injectModels')
+
+    if not os.path.isdir('bin/newModels/injectModels/fasttext'):
+        os.mkdir('bin/newModels/injectModels/fasttext')
+
+    if not os.path.isdir('bin/newModels/injectModels/knn'):
+        os.mkdir('bin/newModels/injectModels/knn')
+
+    k: int = 10
+    s: str = ''
     h: str = ''
     d: bool = False
+    t: int = 5400
 
     for index, item in enumerate(sys.argv, 0):
+        if item == '-s' and index + 1 < len(sys.argv):
+            s = f'{sys.argv[index + 1]}'
         if item == '-h' and index + 1 < len(sys.argv):
-            h = f'_{sys.argv[index + 1]}'
+            h = f'{sys.argv[index + 1]}'
         if item == '-k' and index + 1 < len(sys.argv):
             k = int(sys.argv[index + 1])
         if item == '-d':
             d = True
+        if item == '-t' and index + 1 < len(sys.argv):
+            t = int(sys.argv[index + 1])
 
     try:
         ModelBuilder.cleanFiles(h)
         ModelBuilder.createModels(
             filePath=sys.argv[1],
+            savePath=s,
             k=k,
             hash=h,
-            debug=d
+            debug=d,
+            time=t
         )
+        os.chdir(cwd)
 
         # add http call to server to change model based on name and hash.
+    except ModelException as e:
+        logger.critical(str(e))
+        print('Please check -h for help.')
     except Exception as e:
+        logger.critical('Stack:', str(e))
+        print('Please check -h for help.')
+    finally:
         ModelBuilder.cleanFiles(h)
-        print('Error has occured please check -h for help.')
-        print('Stack;')
-        print(e)
+
+#  python modelBuilder.py dataset/data.csv -s bin/newModels -k 10 -h 1234 -t 10

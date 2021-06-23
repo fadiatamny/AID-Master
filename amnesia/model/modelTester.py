@@ -1,58 +1,42 @@
-#from itertools import Predicate
-import fasttext
-import datetime
 import pandas as pd
 import numpy as np
 import os
 import sys
-import requests
 import texthero as hero
 import logging
-from collections import Counter
+from .modelException import ModelException
+from .modelUtils import ModelUtils
+from datetime import datetime
 
+prefix = os.path.dirname(os.path.realpath(__file__))
+
+if not os.path.isdir(f'{prefix}/logs'):
+    os.mkdir(f'{prefix}/logs')
 logger = logging.getLogger(__name__)
-logger.setLevel("DEBUG")
-handler = logging.FileHandler("Tester_Model.log")
-formatter = "%(asctime)s %(levelname)s -- %(message)s"
+logger.setLevel('DEBUG')
+handler = logging.FileHandler(f'{prefix}/logs/logs_tester_{datetime.now().date()}.log')
+formatter = '%(asctime)s %(levelname)s -- %(message)s'
 handler.setFormatter(logging.Formatter(formatter))
 logger.addHandler(handler)
 
 
+
 class ModelTester:
-
     @staticmethod
-    def loadFasttextModels(path: str) -> list:
-        modelsFasttext = []
-        try:
-            for j in os.scandir(path):
-                if os.path.splitext(j)[1] == '.bin':
-                    modelsFasttext.append(
-                        fasttext.load_model(f'{os.path.abspath(j)}'))
-        except:
-            logger(f'unable to load the 3 FastText models')
-        return modelsFasttext
-
-    @staticmethod
-    def pred(text: str, models: list)-> list:
-        resF = []
-        for i in range(3):
-            resF.append(models[i].predict(text, k=10))
-        allres = (tuple(list(resF[0][0])+list(resF[1][0])+list(resF[2][0])))
-        finres = [key for key in Counter(
-            allres).keys() if Counter(allres)[key] > 1]
-        return finres
-
-    @staticmethod
-    def fastTextTest() -> None:
+    def fastTextTest(dataPath: str, fastTextPath: str, numberModels: int):
+        cwd = os.getcwd()
+        cwdcat = cwd.partition('model')
+        os.chdir(f'{cwdcat[0]}/model/')
         fleg = 0
         tempDataframe = pd.DataFrame()
-        data = pd.read_excel("./data/data.xls")
+        data = pd.read_csv(dataPath)
         finalres = np.zeros([data.index.size])
         categorieslist = list(data.columns)
+
         data["TEXT"] = hero.clean(data["TEXT"])
-        models = ModelTester.loadFasttextModels()
+        models = ModelUtils.loadFasttextModels(path=fastTextPath,numModels = numberModels)
         for i in data.index:
-            predicateres = ModelTester.pred(data["TEXT"][i], models)
+            predicateres = ModelUtils.fastPredict(data["TEXT"][i], models)
             for label in categorieslist:
                 tempDataframe[label] = [0]
             for i in range(len(predicateres)):
@@ -69,12 +53,43 @@ class ModelTester:
             for j in categorieslist:
                 if compareres[j]["self"][i] == 1 and compareres[j]["self"][i] == compareres[j]["other"][i]:
                     finalres[i] = finalres[i]+1
-        print(finalres.size)
         finalres = finalres/10
         finalres = ((np.sum(finalres))/(data.index.size))*100
         logger.debug(f'the accuracy of the model is {finalres}')
+        os.chdir(cwd)
+        return finalres
 
 
 if __name__ == '__main__':
-    test = ModelTester()
-    test.fastTextTest(path)
+    if sys.argv[1] == '-h' or sys.argv[1] == '-help':
+        print(
+            'Please follow format of modelBuilder.py -d [dataSet] -m [modelsPath] -n [numbersModels]')
+        print('[dataSet] = the data sheet to build models based on')
+        print('[modelsPath] = the path for the fastText models you want to test')
+        print('[numbersModels] = the number of models you want to test')
+        sys.exit()
+
+    if len(sys.argv) < 2:
+        logger.error('Please follow format of modelBuilder.py -d [dataSet] -m [modelsPath] -n [numbersModels]')
+        sys.exit()
+
+    dataSet: str = ''
+    modelsPath: str = ''
+    numbersModels: int = 3
+
+    for index, item in enumerate(sys.argv, 0):
+        if item == '-d' and index + 1 < len(sys.argv):
+            dataSet = f'{sys.argv[index + 1]}'
+        if item == '-m' and index + 1 < len(sys.argv):
+            modelsPath = f'{sys.argv[index + 1]}'
+        if item == '-n' and index + 1 < len(sys.argv):
+            numbersModels = int(sys.argv[index + 1])
+
+    try:
+        ModelTester.fastTextTest(dataPath=dataSet,fastTextPath=modelsPath,numberModels=numbersModels)
+    except ModelException as e:
+        print('Please check -h for help.')
+        logger.critical(str(e))
+    except Exception as e:
+        print('Please check -h for help.')
+        logger.critical('Stack:', str(e))
