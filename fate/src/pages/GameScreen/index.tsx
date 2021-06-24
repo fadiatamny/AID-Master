@@ -124,31 +124,23 @@ const GameScreen = ({ history }: GameScreenProps) => {
 
     const handleScenarioGuide = (obj: any) => {
         const message = generate(obj.organized)
-        let prettyText = ''
-        Object.keys(obj.organized).map((key: string) => {
-            const no = obj.organized[key]
-            prettyText = prettyText + `${key}‏‏‎ ‎‎‎‎‎‎‎‎‎‎‎‎`
-            no.map((key: Object) => {
-                for (const [k, v] of Object.entries(key)) {
-                    prettyText = prettyText + `${k} : ${v * 100} %    ‏‏‎‎`
-                }
-            })
-        })
+        // let prettyText = ''
+        // Object.keys(obj.organized).map((key: string) => {
+        //     const no = obj.organized[key]
+        //     prettyText = prettyText + `${key}‏‏‎ ‎‎‎‎‎‎‎‎‎‎‎‎`
+        //     no.map((key: Object) => {
+        //         for (const [k, v] of Object.entries(key)) {
+        //             prettyText = prettyText + `${k} : ${v * 100} %    ‏‏‎‎`
+        //         }
+        //     })
+        // })
         const messagesCopy = Object.assign({}, messagesRef.current)
-        messagesCopy['AID Master'].messages.push(
-            {
-                username: 'AID Master',
-                playername: 'Help',
-                messageText: message,
-                myMessage: false
-            },
-            {
-                username: 'AID Master',
-                playername: 'Help',
-                messageText: prettyText,
-                myMessage: false
-            }
-        )
+        messagesCopy['AID Master'].messages.push({
+            username: 'AID Master',
+            playername: 'Help',
+            messageText: [message, obj.organized],
+            myMessage: false
+        })
         setMessages(messagesCopy)
     }
 
