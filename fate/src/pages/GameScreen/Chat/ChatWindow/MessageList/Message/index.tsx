@@ -11,6 +11,7 @@ export interface MessageProps {
 
 const Message = ({ username, playername, messageText, myMessage }: MessageProps) => {
     const flipComponent = () => {
+        // in place 0 is message in 1 is the organized json
         return null
     }
     return (
@@ -27,7 +28,7 @@ const Message = ({ username, playername, messageText, myMessage }: MessageProps)
                         // insert here the flip component make sure its with a button and swaps bettwen this view
                         // and the npm package view.
                     }
-                    {messageText}
+                    {messageText[0]}
                 </Card.Text>
             </Card.Body>
         </Card>
