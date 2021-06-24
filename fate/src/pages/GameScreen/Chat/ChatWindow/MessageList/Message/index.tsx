@@ -18,6 +18,16 @@ const Message = ({ username, playername, messageText, myMessage }: MessageProps)
     beautifyRef.current = beautify
 
     const flipComponent = () => {
+        const obj: any = {}
+        for (const [key, value] of Object.entries(messageText[1])) {
+            obj[key] = {}
+            for (const val of value as any) {
+                for (const [k, v] of Object.entries(val)) {
+                    obj[key][k] = v
+                }
+            }
+        }
+
         const jsonViewerStyle = { minWidth: '18vw', borderRadius: '5px', padding: '1vh 1vw' }
         return (
             <>
@@ -29,7 +39,7 @@ const Message = ({ username, playername, messageText, myMessage }: MessageProps)
                 ) : (
                     <ReactJson
                         style={jsonViewerStyle}
-                        src={messageText[1]}
+                        src={obj}
                         theme={'ocean'}
                         iconStyle={'square'}
                         collapsed={1}

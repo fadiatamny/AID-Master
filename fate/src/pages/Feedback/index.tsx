@@ -64,7 +64,11 @@ const Feedback = ({ history }: FeedbackProps) => {
 
     const generateScenarioList = () => {
         const scenariosList: any = []
-        for (let i = currPageRef.current - 1; i < scenariosPerPage && i < scenariosRef.current.length; i++) {
+        for (
+            let i = (currPageRef.current - 1) * scenariosPerPage, count = 0;
+            count < scenariosPerPage && i < scenariosRef.current.length;
+            i++, count++
+        ) {
             const s = scenariosRef.current[i]
             scenariosList.push(
                 <Clickable
