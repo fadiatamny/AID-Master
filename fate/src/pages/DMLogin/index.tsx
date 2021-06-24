@@ -23,7 +23,10 @@ const DMLoginScreen = ({ history }: DMLoginScreenProps) => {
 
     const handleSubmit = () => {
         if (playername === 'DM' || username === 'Game Master') {
-            NotificationManager.warn('You are not unique!', 'you choose to go with the default names for your player.')
+            NotificationManager.warning(
+                'You are not unique!',
+                'you choose to go with the default names for your player.'
+            )
         }
         eventsManager.on(SocketEvents.ROOM_CREATED, 'home-screen', ({ id }: any) => {
             sessionStorage.setItem('rid', `${id}`)

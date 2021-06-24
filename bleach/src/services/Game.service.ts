@@ -100,7 +100,7 @@ export default class GameService {
             username: p.username,
             playername: p.playername
         }))
-        this.io.sockets.in(roomId).emit(SocketEvents.ROOM_JOINED, player.username, player.type, playerList)
+        this.io.sockets.in(roomId).emit(SocketEvents.ROOM_JOINED, player.toJson(), playerList)
         this.io.sockets.in(roomId).emit(SocketEvents.PLAYER_JOINED, player.toJson())
     }
 

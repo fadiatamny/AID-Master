@@ -199,11 +199,7 @@ const GameScreen = ({ history }: GameScreenProps) => {
             navToHome()
         }
         eventsManager.on(SocketEvents.GAME_ENDED, 'game-component', () => {
-            if (dm) {
-                navToFeedback()
-            } else {
-                navToHome()
-            }
+            navToHome()
         })
         eventsManager.on(SocketEvents.CHARACTER_SHEET_UPDATED, 'game-component', (obj: any) =>
             handleCharacterSheetUpdated(obj)

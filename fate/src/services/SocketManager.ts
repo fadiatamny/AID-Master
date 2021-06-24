@@ -164,8 +164,8 @@ export default class SocketManager {
         this._eventsManager.trigger(SocketEvents.PLAYER_DATA, player)
     }
 
-    private _roomJoined(username: string, type: string, playerlist: Partial<PlayerDump>[]) {
-        this._eventsManager.trigger(SocketEvents.ROOM_JOINED, { username, type, playerlist })
+    private _roomJoined(player: PlayerDump, playerlist: Partial<PlayerDump>[]) {
+        this._eventsManager.trigger(SocketEvents.ROOM_JOINED, { player, playerlist })
     }
 
     private _message(username: string, message: string, playername: string, target: string) {

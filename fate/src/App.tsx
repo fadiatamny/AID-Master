@@ -11,7 +11,7 @@ import SocketManager, { SocketError } from './services/SocketManager'
 import EventsManager from './services/EventsManager'
 import { SocketEvents } from './models/SocketEvents.model'
 import { v4 as uuid } from 'uuid'
-import { NotificationContainer, NotificationManager } from 'react-notifications'
+import { NotificationContainer } from 'react-notifications'
 
 export default function App() {
     const eventsManager = EventsManager.instance
@@ -23,7 +23,6 @@ export default function App() {
     })
     eventsManager.on(SocketEvents.ERROR, 'app', (e: SocketError) => {
         console.error('Error Occured: ', e)
-        NotificationManager.error('Error Occured', e.message)
     })
 
     if (!localStorage.getItem('userId')) {
