@@ -198,7 +198,10 @@ const GameScreen = ({ history }: GameScreenProps) => {
         if (!uid || !roomid || !username) {
             navToHome()
         }
-        eventsManager.on(SocketEvents.GAME_ENDED, 'game-component', () => {
+        eventsManager.on(SocketEvents.GAME_ENDED, 'game-component', ({ userId }: { userId: string }) => {
+            if (userId === uid) {
+                return
+            }
             navToHome()
         })
         eventsManager.on(SocketEvents.CHARACTER_SHEET_UPDATED, 'game-component', (obj: any) =>
@@ -222,7 +225,7 @@ const GameScreen = ({ history }: GameScreenProps) => {
                 })
             }
             if (dm) {
-                eventsManager.trigger(SocketEvents.END_GAME, { roomId: sessionStorage.getItem('rid') })
+                eventsManager.trigger(SocketEvents.END_GAME, { roomId: sessionStorage.getItem('rid'), userId: uid })
             }
             eventsManager.off(SocketEvents.MESSAGE, 'game-component')
             eventsManager.off(SocketEvents.CONNECTED, 'game-screen')

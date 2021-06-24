@@ -53,7 +53,6 @@ const Feedback = ({ history }: FeedbackProps) => {
     }
 
     const handleScenarioSelection = (scenario: Scenario) => {
-        debugger
         let curr = [...selectedScenariosRef.current]
         if (curr.includes(scenario)) {
             curr = curr.filter((s) => !isEqual(s, scenario))
@@ -65,7 +64,7 @@ const Feedback = ({ history }: FeedbackProps) => {
 
     const generateScenarioList = () => {
         const scenariosList: any = []
-        for (let i = currPageRef.current; i < scenariosPerPage && i < scenariosRef.current.length; i++) {
+        for (let i = currPageRef.current - 1; i < scenariosPerPage && i < scenariosRef.current.length; i++) {
             const s = scenariosRef.current[i]
             scenariosList.push(
                 <Clickable
