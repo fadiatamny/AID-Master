@@ -1,5 +1,6 @@
 import Card from 'react-bootstrap/Card'
 import styles from './styles.module.css'
+import ReactJson from 'react-json-view'
 
 export interface MessageProps {
     username: string
