@@ -12,7 +12,6 @@ import EventsManager from './services/EventsManager'
 import { SocketEvents } from './models/SocketEvents.model'
 import { v4 as uuid } from 'uuid'
 import { NotificationContainer, NotificationManager } from 'react-notifications'
-import MetaTags from 'react-meta-tags'
 
 export default function App() {
     const eventsManager = EventsManager.instance
@@ -33,15 +32,6 @@ export default function App() {
 
     return (
         <div className="App">
-            <MetaTags>
-                <title>AID Master</title>
-                <meta charSet="utf-8" />
-                <meta
-                    name="viewport"
-                    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
-                />
-            </MetaTags>
-
             <Router>
                 <Route path="/" exact component={StartingScreen} />
                 <Route path="/game" component={GameScreen} />
