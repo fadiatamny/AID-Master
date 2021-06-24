@@ -6,6 +6,7 @@ import Header from '../../components/Header'
 import Clickable from '../../components/Clickable'
 import { useEffect } from 'react'
 import { History } from 'history'
+import SocketManager from '../../services/SocketManager'
 
 interface HomePageProps {
     history: History
@@ -21,6 +22,7 @@ const HomaPage = ({ history }: HomePageProps) => {
     }
 
     useEffect(() => {
+        SocketManager.newInstance()
         sessionStorage.removeItem('rid')
         sessionStorage.removeItem('playername')
         sessionStorage.removeItem('username')

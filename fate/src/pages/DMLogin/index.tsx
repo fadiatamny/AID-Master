@@ -10,6 +10,7 @@ import { Row, Col } from 'react-bootstrap'
 import { History } from 'history'
 import { PlayerType } from '../../models/Player.model'
 import { NotificationManager } from 'react-notifications'
+import Button from '../../components/Button'
 
 interface DMLoginScreenProps {
     history: History
@@ -23,7 +24,10 @@ const DMLoginScreen = ({ history }: DMLoginScreenProps) => {
 
     const handleSubmit = () => {
         if (playername === 'DM' || username === 'Game Master') {
-            NotificationManager.warn('You are not unique!', 'you choose to go with the default names for your player.')
+            NotificationManager.warning(
+                'You are not unique!',
+                'you choose to go with the default names for your player.'
+            )
         }
         eventsManager.on(SocketEvents.ROOM_CREATED, 'home-screen', ({ id }: any) => {
             sessionStorage.setItem('rid', `${id}`)
@@ -70,10 +74,11 @@ const DMLoginScreen = ({ history }: DMLoginScreenProps) => {
                         placeholder="DM"
                         onChange={handleNameChange}
                     />
-
-                    <Clickable onClick={handleSubmit}>
-                        <p className={styles.submit}>Create Game</p>
-                    </Clickable>
+                    <div className={styles.submit}>
+                        <Button onClick={handleSubmit} fullWidth={true}>
+                            Create Game
+                        </Button>
+                    </div>
                 </Col>
             </Row>
         </>

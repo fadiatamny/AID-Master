@@ -53,7 +53,6 @@ const Feedback = ({ history }: FeedbackProps) => {
     }
 
     const handleScenarioSelection = (scenario: Scenario) => {
-        debugger
         let curr = [...selectedScenariosRef.current]
         if (curr.includes(scenario)) {
             curr = curr.filter((s) => !isEqual(s, scenario))
@@ -65,7 +64,11 @@ const Feedback = ({ history }: FeedbackProps) => {
 
     const generateScenarioList = () => {
         const scenariosList: any = []
-        for (let i = currPageRef.current; i < scenariosPerPage && i < scenariosRef.current.length; i++) {
+        for (
+            let i = (currPageRef.current - 1) * scenariosPerPage, count = 0;
+            count < scenariosPerPage && i < scenariosRef.current.length;
+            i++, count++
+        ) {
             const s = scenariosRef.current[i]
             scenariosList.push(
                 <Clickable
@@ -97,9 +100,9 @@ const Feedback = ({ history }: FeedbackProps) => {
     }
 
     useEffect(() => {
-        if (!roomId) {
-            history.push(`/`)
-        }
+        // if (!roomId) {
+        //     history.push(`/`)
+        // }
         eventsManager.on(SocketEvents.SCENARIO_LIST, 'feedback-component', (obj: { scenarios: Scenario[] }) =>
             handleScenarios(obj)
         )
@@ -218,11 +221,18 @@ const Feedback = ({ history }: FeedbackProps) => {
                     ) : null}
                 </Row>
                 <Row className="justify-content-center">
-                    <Col xs={{ order: 'first' }}>
+                    <Col xs={{ order: 'first', span: 2 }}>
                         <Button onClick={sendFeedback}>
                             <p>Send Feedback</p>
                         </Button>
                     </Col>
+                    <Col />
+                    <Col />
+                    <Col />
+                    <Col />
+                    <Col />
+                    <Col />
+                    <Col />
                     <Col xs={{ order: 'last' }}>
                         <Row className="justify-content-end">
                             <Button onClick={skipFeedback}>

@@ -92,9 +92,10 @@ export class GameSession implements IGameSession {
 
     public playerLeft(pId: string) {
         this._playersLeft.push(pId)
-        if (this._activeDmId === pId) {
-            this._activeDmId = this._playerList.find((p) => !this._playersLeft.includes(p.id))?.id ?? this._originalDmId
-        }
+        // disabled due to bug
+        // if (this._activeDmId === pId) {
+        //     this._activeDmId = this._playerList.find((p) => !this._playersLeft.includes(p.id))?.id ?? this._originalDmId
+        // }
         --this._currentPlayerCount
         if (this.playerCount <= 0 && this._onGameEnd) {
             this._onGameEnd()

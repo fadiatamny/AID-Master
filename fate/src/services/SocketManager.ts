@@ -23,6 +23,11 @@ export default class SocketManager {
         return SocketManager._instance
     }
 
+    public static newInstance() {
+        SocketManager._instance = new SocketManager()
+        return SocketManager._instance
+    }
+
     private _socket: Socket
     private _eventsManager: EventsManager
     constructor() {
@@ -121,8 +126,8 @@ export default class SocketManager {
         this._socket.emit(SocketEvents.NEW_PLAYER_REGISTER, roomId, data)
     }
 
-    private _endGame({ roomId }: { roomId: string }) {
-        this._socket.emit(SocketEvents.END_GAME, roomId)
+    private _endGame({ roomId, userId }: { roomId: string; userId: string }) {
+        this._socket.emit(SocketEvents.END_GAME, roomId, userId)
     }
 
     private _feedback({ roomId, score, scenarios }: { roomId: string; score: number; scenarios: Scenario[] }) {
@@ -164,8 +169,8 @@ export default class SocketManager {
         this._eventsManager.trigger(SocketEvents.PLAYER_DATA, player)
     }
 
-    private _roomJoined(username: string, type: string, playerlist: Partial<PlayerDump>[]) {
-        this._eventsManager.trigger(SocketEvents.ROOM_JOINED, { username, type, playerlist })
+    private _roomJoined(player: PlayerDump, playerlist: Partial<PlayerDump>[]) {
+        this._eventsManager.trigger(SocketEvents.ROOM_JOINED, { player, playerlist })
     }
 
     private _message(username: string, message: string, playername: string, target: string) {
@@ -196,8 +201,8 @@ export default class SocketManager {
         this._eventsManager.trigger(SocketEvents.NEW_PLAYER, { id: playerId })
     }
 
-    private _gameEnded() {
-        this._eventsManager.trigger(SocketEvents.GAME_ENDED, {})
+    private _gameEnded(userId: string) {
+        this._eventsManager.trigger(SocketEvents.GAME_ENDED, { userId })
     }
 
     private _scenarioList(scenarios: Scenario[]) {

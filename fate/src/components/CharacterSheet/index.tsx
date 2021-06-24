@@ -39,7 +39,7 @@ const CharacterSheet = ({ currsheet, dm, submitForm, playername }: CharaSheetPro
     const [mana, setMana] = useState(sheet.mana)
     const [shield, setShield] = useState(sheet.shield)
     const [imageurl, setImageurl] = useState(sheet.imageurl)
-    const imgURLPlaceholder = 'http://www.imagesharing.com/imageid/yourimage.png'
+    const imgURLPlaceholder = 'https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png'
 
     const generateSheet = (): ICharacterSheet => {
         return {
@@ -269,16 +269,13 @@ const CharacterSheet = ({ currsheet, dm, submitForm, playername }: CharaSheetPro
                         </Col>
                     </Row>
                     <Row className="justify-content-center">
-                        <img
-                            className={styles.imageurl}
-                            src={sheet.imageurl ? sheet.imageurl : CharacterPicturePlaceholder}
-                        />
+                        <img className={styles.imageurl} src={imageurl ? imageurl : imgURLPlaceholder} />
                         {dm ? null : (
                             <Input
                                 className={styles.margin}
                                 label="Image URL"
-                                placeholder={imgURLPlaceholder}
-                                value={sheet.imageurl}
+                                placeholder={''}
+                                value={imageurl}
                                 onChange={changeImg}
                                 disabled={dm}
                             />
