@@ -97,9 +97,9 @@ const Feedback = ({ history }: FeedbackProps) => {
     }
 
     useEffect(() => {
-        // if (!roomId) {
-        //     history.push(`/`)
-        // }
+        if (!roomId) {
+            history.push(`/`)
+        }
         eventsManager.on(SocketEvents.SCENARIO_LIST, 'feedback-component', (obj: { scenarios: Scenario[] }) =>
             handleScenarios(obj)
         )
