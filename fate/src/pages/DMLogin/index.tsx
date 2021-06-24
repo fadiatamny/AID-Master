@@ -9,6 +9,7 @@ import Clickable from '../../components/Clickable'
 import { Row, Col } from 'react-bootstrap'
 import { History } from 'history'
 import { PlayerType } from '../../models/Player.model'
+import { NotificationManager } from 'react-notifications'
 
 interface DMLoginScreenProps {
     history: History
@@ -21,6 +22,9 @@ const DMLoginScreen = ({ history }: DMLoginScreenProps) => {
     const uid = localStorage.getItem('userId')
 
     const handleSubmit = () => {
+        if (playername === 'DM' || username === 'Game Master') {
+            NotificationManager.warn('You are not unique!', 'you choose to go with the default names for your player.')
+        }
         eventsManager.on(SocketEvents.ROOM_CREATED, 'home-screen', ({ id }: any) => {
             sessionStorage.setItem('rid', `${id}`)
             sessionStorage.setItem('playername', `${playername}`)
@@ -56,14 +60,14 @@ const DMLoginScreen = ({ history }: DMLoginScreenProps) => {
                         id="DMUsername"
                         className={styles.RoomCode}
                         label="Character Name"
-                        placeholder="Dungeon Master"
+                        placeholder="Game Master"
                         onChange={handleUsernameChange}
                     />
                     <Input
                         id="DMName"
                         className={styles.RoomCode}
                         label="Your Name"
-                        placeholder="Kyra Warner"
+                        placeholder="DM"
                         onChange={handleNameChange}
                     />
 
