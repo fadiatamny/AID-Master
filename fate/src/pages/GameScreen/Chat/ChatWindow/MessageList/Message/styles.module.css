@@ -1,19 +1,25 @@
-.mymessage{
+.mymessage {
     color: #ff6768;
     background-color: #43454d;
 }
-.otherMessage{
-    color: #ff6768
+.otherMessage {
+    color: #ff6768;
 }
 
-.title{
+.title {
     font-size: 14px;
 }
 
-.subtitle{
+.subtitle {
     font-size: 12px;
 }
 
-.content{
+.content {
     font-size: 13px;
+}
+
+.swapButton {
+    position: absolute;
+    top: 1vh;
+    right: 1vw;
 }
