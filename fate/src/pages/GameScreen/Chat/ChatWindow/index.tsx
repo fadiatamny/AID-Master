@@ -1,10 +1,11 @@
 import styles from './styles.module.css'
-import Input from '../../../../components/Input/Input'
+import Input from '../../../../components/Input'
 import ChatTitle from './ChatTitle'
 import MessagesList from './MessageList'
 import React from 'react'
 import EventsManager from '../../../../services/EventsManager'
 import { SocketEvents } from '../../../../models/SocketEvents.model'
+import { Col, Row, Container } from 'react-bootstrap'
 
 type MessageType = {
     username: string
@@ -40,15 +41,15 @@ const ChatWindow = ({ activeChat, username, playername, rid, messages }: ChatWin
         }
     }
     return (
-        <div className="col justify-content-center">
-            <div className={`${styles.container}`}>
-                <div className={`row justify-content-center ${styles.inputHolder}`}>
+        <Col className="justify-content-center">
+            <Container className={`${styles.container}`}>
+                <Row className={`justify-content-center ${styles.inputHolder}`}>
                     <ChatTitle />
-                </div>
-                <div className={`row justify-content-center ${styles.messageList} `}>
+                </Row>
+                <Row className={`justify-content-center ${styles.messageList} `}>
                     <MessagesList messages={messages} activeChat={activeChat} />
-                </div>
-                <div className={`row align-item-end justify-content-center ${styles.inputHolder}`}>
+                </Row>
+                <Row className={`align-item-end justify-content-center ${styles.inputHolder}`}>
                     <Input
                         placeholder="Enter text here..."
                         id="chatResponse"
@@ -59,9 +60,9 @@ const ChatWindow = ({ activeChat, username, playername, rid, messages }: ChatWin
                         value={message}
                         submitLabel=">"
                     />
-                </div>
-            </div>
-        </div>
+                </Row>
+            </Container>
+        </Col>
     )
 }
 

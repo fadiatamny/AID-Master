@@ -1,13 +1,20 @@
-import styles from '../StartingPages.module.css'
-import DMCircle from '../../../assets/images/CircleDM.png'
+import styles from './styles.module.css'
+import DMCircle from '../../assets/images/CircleDM.png'
 import { useState } from 'react'
-import Header from '../../../components/Header/Header'
-import Input from '../../../components/Input/Input'
-import EventsManager from '../../../services/EventsManager'
-import { SocketEvents } from '../../../models/SocketEvents.model'
-import Clickable from '../../../components/Clickable/Clickable'
+import Header from '../../components/Header'
+import Input from '../../components/Input'
+import EventsManager from '../../services/EventsManager'
+import { SocketEvents } from '../../models/SocketEvents.model'
+import Clickable from '../../components/Clickable'
+import { Row, Col } from 'react-bootstrap'
+import { History } from 'history'
+import { PlayerType } from '../../models/Player.model'
 
-const DMLoginScreen = (props: any) => {
+interface DMLoginScreenProps {
+    history: History
+}
+
+const DMLoginScreen = ({ history }: DMLoginScreenProps) => {
     const [username, setUsername] = useState('Game Master')
     const [playername, setPlayername] = useState('DM')
     const eventsManager = EventsManager.instance
@@ -18,9 +25,9 @@ const DMLoginScreen = (props: any) => {
             sessionStorage.setItem('rid', `${id}`)
             sessionStorage.setItem('playername', `${playername}`)
             sessionStorage.setItem('username', `${username}`)
-            sessionStorage.setItem('type', 'dm')
+            sessionStorage.setItem('type', PlayerType.DM)
             sessionStorage.setItem('playerlist', JSON.stringify([{ id: uid, username, playername }]))
-            props.history.push(`/game`)
+            history.push(`/game`)
         })
         eventsManager.trigger(SocketEvents.CREATE_ROOM, {
             id: uid,
@@ -38,13 +45,13 @@ const DMLoginScreen = (props: any) => {
     }
 
     return (
-        <div>
+        <>
             <Header />
-            <div className={`row ${styles.container}`}>
-                <div className="col">
+            <Row className={` ${styles.container}`}>
+                <Col>
                     <img src={DMCircle} className={styles.roundImage} />
-                </div>
-                <div className="col">
+                </Col>
+                <Col>
                     <Input
                         id="DMUsername"
                         className={styles.RoomCode}
@@ -63,9 +70,9 @@ const DMLoginScreen = (props: any) => {
                     <Clickable onClick={handleSubmit}>
                         <p className={styles.submit}>Create Game</p>
                     </Clickable>
-                </div>
-            </div>
-        </div>
+                </Col>
+            </Row>
+        </>
     )
 }
 

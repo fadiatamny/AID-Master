@@ -1,5 +1,5 @@
-import Button from '../Button/Button'
-import styles from './Input.module.css'
+import Button from '../Button'
+import styles from './styles.module.css'
 
 export interface InputProps {
     label?: string
@@ -12,7 +12,7 @@ export interface InputProps {
     onSubmit?: () => void
     submitLabel?: string
     submitOnEnter?: boolean
-    disabled?: boolean,
+    disabled?: boolean
     key?: number
 }
 

@@ -6,6 +6,7 @@ import ScenarioUtils from '../utils/Scenario.utils'
 import { Player, PlayerDump, PlayerType } from '../models/Player.model'
 import { SocketEvents } from '../models/SocketEvents.model'
 import { Scenario } from '../models/Scenario.model'
+import { CharacterSheet } from '../models/CharacterSheet.model'
 
 const AVERAGE_SCORE = process.env.AVERAGE_SCORE || 5
 
@@ -34,7 +35,8 @@ export default class GameService {
             [SocketEvents.NEW_PLAYER_REGISTER]: this._newPlayerRegister.bind(this),
             [SocketEvents.END_GAME]: this._endGame.bind(this),
             [SocketEvents.FEEDBACK]: this._feedback.bind(this),
-            [SocketEvents.REQUEST_SCENARIOS]: this._requestScenarios.bind(this)
+            [SocketEvents.REQUEST_SCENARIOS]: this._requestScenarios.bind(this),
+            [SocketEvents.UPDATE_CHARACTER_SHEET]: this._updateCharacterSheet.bind(this)
         }
 
         Object.entries(onsHandler).forEach(([key, value]) => this._socket.on(key, value))
@@ -143,8 +145,12 @@ export default class GameService {
         }
 
         const player = Player.fromDump(data)
-        session.addPlayer(player)
-        this._socketJoin(roomId, session, player)
+        try {
+            session.addPlayer(player)
+            this._socketJoin(roomId, session, player)
+        } catch (e) {
+            this._sendError('newPlayerJoin', 'There was an issue, please try again', 'player already exists')
+        }
     }
 
     private _sendMessage(roomId: string, username: string, playername: string, message: string, target?: string) {
@@ -191,7 +197,7 @@ export default class GameService {
     }
 
     private _leaveRoom(roomId: string, playerId: string, username: string) {
-        if (!roomId || !playerId || !username) {
+        if (!roomId || !playerId) {
             this._sendError('leaveRoom', 'There was an issue, please try again', 'Missing Variables')
             return
         }
@@ -228,6 +234,7 @@ export default class GameService {
             this._sendError('feedback', 'There was an issue, please try again', 'Missing Variables')
             return
         }
+
         if (!this._roomExists(roomId)) {
             this._sendError('feedback', 'There was an issue, please try again', 'Room doesnt exist')
             return
@@ -250,8 +257,6 @@ export default class GameService {
             console.log(e.stack)
             this._sendError('feedback', 'There was an issue', e.message)
         })
-
-        //have to end game here
     }
 
     private _requestScenarios(roomId: string) {
@@ -259,6 +264,7 @@ export default class GameService {
             this._sendError('feedback', 'There was an issue, please try again', 'Missing Variables')
             return
         }
+
         if (!this._roomExists(roomId)) {
             this._sendError('feedback', 'There was an issue, please try again', 'Room doesnt exist')
             return
@@ -266,5 +272,25 @@ export default class GameService {
 
         const session = this.getGame(roomId)
         this.io.sockets.in(roomId).emit(SocketEvents.SCENARIO_LIST, session.scenarios)
+    }
+
+    private _updateCharacterSheet(roomId: string, userId: string, sheet: CharacterSheet) {
+        if (!roomId) {
+            this._sendError('feedback', 'There was an issue, please try again', 'Missing Variables')
+            return
+        }
+
+        if (!this._roomExists(roomId)) {
+            this._sendError('feedback', 'There was an issue, please try again', 'Room doesnt exist')
+            return
+        }
+
+        const session = this.getGame(roomId)
+        try {
+            session.updatePlayerSheet(userId, sheet)
+            this.io.sockets.in(roomId).emit(SocketEvents.CHARACTER_SHEET_UPDATED, userId, sheet)
+        } catch (e) {
+            this._sendError('updateCharacterSheet', 'There was an issue, please try again', 'player doesnt exist')
+        }
     }
 }

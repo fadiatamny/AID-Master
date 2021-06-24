@@ -1,0 +1,83 @@
+.modalHeader,
+.modalBody {
+    color: #bbbbbb;
+    background-color: #2f313a;
+    border: none;
+}
+
+.modalHeader {
+    border-bottom: 2px groove #ff6768;
+}
+
+.modalHeader > button,
+.modalHeader > button:disabled {
+    height: 40px;
+    min-width: 40px;
+    background-color: transparent;
+    border-color: #ff6768;
+    color: #ff6768;
+}
+
+.modalHeader > button:hover {
+    background-color: #191b25;
+    color: #ffa3a4;
+    border-color: #ff6768;
+}
+
+.modalHeader > button:focus,
+.modalHeader > button:active {
+    box-shadow: none !important;
+    outline: none !important;
+    border-color: #ff6768;
+    background-color: #191b25;
+    color: #ffa3a4;
+}
+
+.modalBody {
+    padding: 2vh 2vh;
+}
+
+.container {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    margin: 0 auto;
+    height: 90vh;
+    flex-wrap: wrap;
+}
+
+.roundImage {
+    width: 25vw;
+    opacity: 0.4;
+    transition: opacity 0.3s ease;
+}
+
+.roundImage:hover {
+    opacity: 0.8;
+}
+
+.logo {
+    width: 30vw;
+}
+
+.RoomCode {
+    width: 60vw;
+}
+
+.backButton {
+    flex-basis: 100vw;
+    text-align: center;
+}
+
+.textarea {
+    flex-basis: 70%;
+}
+
+.submit {
+    background-color: #2f313a;
+    height: 40px;
+    margin: 0 auto;
+    text-align: center;
+    color: #ff6768;
+    border-radius: 5px;
+}

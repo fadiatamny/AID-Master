@@ -1,0 +1,9 @@
+.modal-dialog {
+    display: grid;
+    place-items: center;
+    max-width: none;
+}
+
+.modal-content {
+    width: 35vw;
+}

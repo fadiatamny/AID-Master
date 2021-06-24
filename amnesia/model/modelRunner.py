@@ -43,20 +43,21 @@ def timed(func):
 
 class ModelRunner():
     def __init__(self, fastText: str, knn: str, fastTextCount: int, dataPath: str) -> None:
+        self.categories = ModelUtils.fetchDatasetHeaders()
+        self.datasetConfig = ModelUtils.fetchDatasetConfig()
+
+        if not os.path.isdir(dataPath):
+            raise ModelException('runner:init', 'folder for data does not exist')
+        if not os.path.isfile(os.path.join(dataPath, Path(f'./data.{self.datasetConfig["type"]}'))):
+            raise ModelException('runner:init', 'the file data does not exist in the datapath')
+
         self.fastTextPath = fastText
         self.fastTextCount = fastTextCount
         self.knnPath = knn
         self.dataPath = dataPath
-        self.categories = ModelUtils.fetchDatasetHeaders()
-        datasetConfig = ModelUtils.fetchDatasetConfig()
-
-        if not os.path.isdir(dataPath):
-            raise ModelException('runner:init', 'folder for data does not exist')
-        if not os.path.isfile(os.path.join(dataPath, Path(f'./data.{datasetConfig["type"]}'))):
-            raise ModelException('runner:init', 'the file data does not exist in the datapath')
 
         self.forDf = pd.read_csv(os.path.join(
-            dataPath, Path(f'./data.{datasetConfig["type"]}')))
+            dataPath, Path(f'./data.{self.datasetConfig["type"]}')))
         self.fastTextModels = None
         self._loadModels()
 
@@ -71,10 +72,10 @@ class ModelRunner():
             dataFrame['TEXT'] = data['text'][index]
             allData = pd.concat([allData, dataFrame], ignore_index=True)
         oldData = pd.read_csv(os.path.join(
-            dataPath, Path(f'./data.{self.datasetConfig["type"]}')))
+            self.dataPath, Path(f'./data.{self.datasetConfig["type"]}')))
         allData = pd.concat([oldData, allData], ignore_index=True)
         allData.to_csv(os.path.join(
-            dataPath, Path(f'./data.{self.datasetConfig["type"]}')))
+            self.dataPath, Path(f'./data.{self.datasetConfig["type"]}')))
 
     def _loadModels(self) -> None:
         self.fastTextModels = ModelUtils.loadFasttextModels(self.fastTextPath)

@@ -1,4 +1,4 @@
-import styles from './User.module.css'
+import styles from './styles.module.css'
 export interface UserProps {
     username: string
     playername: string

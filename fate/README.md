@@ -4,3 +4,5 @@ This service is repsonsible for the front-end website of the project, where peop
 The service was written in React.TS
 
 Documentation will be available soon.
+
+### Version 0.26.13

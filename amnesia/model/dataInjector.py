@@ -80,7 +80,10 @@ class DataInjector():
                 os.remove(file.path)
 
     @staticmethod
-    def inject(dataPath: str, saveModelsPath: str, hash: str,numOfModels:int, modelsPath: str, numberCrawler: int, oldPath: str):
+    def inject(dataPath: str, saveModelsPath: str, hash: str,numOfModels:int, modelsPath: str, numberCrawler: int, oldPath: str):    
+        cwd = os.getcwd()
+        cwdcat = cwd.partition('model')
+        os.chdir(f'{cwdcat[0]}/model/')
         models = ModelUtils.loadFasttextModels(f'{modelsPath}/fasttext')
         currentAccuracy = ModelTester.fastTextTest(
            dataPath=dataPath,fastTextPath=f'{modelsPath}/fasttext',numberModels=numOfModels)
