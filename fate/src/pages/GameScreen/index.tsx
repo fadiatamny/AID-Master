@@ -11,6 +11,7 @@ import Button from '../../components/Button'
 import CharacterSheets from './CharacterSheets'
 import { PlayerDump, PlayerType } from '../../models/Player.model'
 import { History } from 'history'
+import { checkDevice, SupportedDevices } from '../../utils'
 
 interface GameScreenProps {
     history: History
@@ -23,11 +24,15 @@ type MessageType = {
     myMessage: boolean
 }
 
+let goingFeedback = false
+
 const GameScreen = ({ history }: GameScreenProps) => {
+    const isDesktop = checkDevice(SupportedDevices.DESKTOP)
     const eventsManager = EventsManager.instance
     const uid = localStorage.getItem('userId')
     const username = sessionStorage.getItem('username')
     const playertype = sessionStorage.getItem('type')
+    const dm = playertype === PlayerType.DM
     const playername = sessionStorage.getItem('playername')
     const roomid = sessionStorage.getItem('rid')
     const [sheets, setSheets] = useState<ICharacterSheet[]>([])
@@ -40,7 +45,7 @@ const GameScreen = ({ history }: GameScreenProps) => {
             ['All']: {
                 playername: 'Game Chat',
                 messages:
-                    playertype === 'dm'
+                    dm
                         ? [
                               {
                                   username: 'AID Master',
@@ -161,7 +166,7 @@ const GameScreen = ({ history }: GameScreenProps) => {
                     messages: []
                 }
             }
-            if (playertype === PlayerType.DM) {
+            if (dm) {
                 const sheetsCopy = [...sheetsRef.current]
                 sheetsCopy.push(obj.characterSheet)
                 setSheets(sheetsCopy)
@@ -187,7 +192,9 @@ const GameScreen = ({ history }: GameScreenProps) => {
     const navToHome = () => {
         history.push(`/`)
     }
+
     const navToFeedback = () => {
+        goingFeedback = true
         history.push(`/feedback`)
     }
 
@@ -196,7 +203,7 @@ const GameScreen = ({ history }: GameScreenProps) => {
             navToHome()
         }
         eventsManager.on(SocketEvents.GAME_ENDED, 'game-component', () => {
-            if (playertype === PlayerType.DM) {
+            if (dm) {
                 navToFeedback()
             } else {
                 navToHome()
@@ -204,7 +211,7 @@ const GameScreen = ({ history }: GameScreenProps) => {
         })
         eventsManager.on(SocketEvents.MESSAGE, 'game-component', (obj: any) => handleMessages(obj))
         eventsManager.on(SocketEvents.PLAYER_JOINED, 'game-component', (obj: any) => handlePlayerJoined(obj))
-        if (sessionStorage.getItem('type') === 'dm') {
+        if (sessionStorage.getItem('type') === PlayerType.DM) {
             eventsManager.on(SocketEvents.SCENARIO, 'game-componment', (obj: any) => handleScenario(obj))
             eventsManager.on(SocketEvents.SCENARIO_GUIDE, 'game-componment', (obj: any) => handleScenarioGuide(obj))
         }
@@ -212,12 +219,14 @@ const GameScreen = ({ history }: GameScreenProps) => {
 
     useEffect(
         () => () => {
-            eventsManager.trigger(SocketEvents.LEAVE_ROOM, {
-                id: sessionStorage.getItem('rid'),
-                userId: localStorage.getItem('userId'),
-                username: sessionStorage.getItem('username')
-            })
-            if (playertype === PlayerType.DM) {
+            if (!goingFeedback) {
+                eventsManager.trigger(SocketEvents.LEAVE_ROOM, {
+                    id: sessionStorage.getItem('rid'),
+                    userId: localStorage.getItem('userId'),
+                    username: sessionStorage.getItem('username')
+                })
+            }
+            if (dm) {
                 eventsManager.trigger(SocketEvents.END_GAME, { roomId: sessionStorage.getItem('rid') })
             }
             eventsManager.off(SocketEvents.MESSAGE, 'game-component')
@@ -231,15 +240,19 @@ const GameScreen = ({ history }: GameScreenProps) => {
 
     return (
         <>
-            <Header endGameButton={true} onEndSubmit={navToFeedback} />
+            <Header endGameButton={dm ? 'End Session' : 'Leave Session'} onEndSubmit={dm ? navToFeedback : navToHome} />
             <Container fluid>
-                <Row className={styles.controls}>
-                    <Col>
-                        <Button onClick={toggleSheets}>{showsheet ? <p>Hide Sheets</p> : <p>Show Sheets</p>}</Button>
-                    </Col>
-                </Row>
+                {isDesktop ? (
+                    <Row className={styles.controls}>
+                        <Col>
+                            <Button onClick={toggleSheets}>
+                                {showsheet ? <p>Hide Sheets</p> : <p>Show Sheets</p>}
+                            </Button>
+                        </Col>
+                    </Row>
+                ) : null}
                 <Row>
-                    {showsheet ? (
+                    {showsheet && isDesktop ? (
                         <Col sm={{ span: 4 }} className="animated fadeIn">
                             <CharacterSheets sheets={sheetsRef.current} type={playertype} />
                         </Col>

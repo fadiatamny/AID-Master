@@ -232,6 +232,7 @@ export default class GameService {
             this._sendError('feedback', 'There was an issue, please try again', 'Missing Variables')
             return
         }
+
         if (!this._roomExists(roomId)) {
             this._sendError('feedback', 'There was an issue, please try again', 'Room doesnt exist')
             return
@@ -261,6 +262,7 @@ export default class GameService {
             this._sendError('feedback', 'There was an issue, please try again', 'Missing Variables')
             return
         }
+
         if (!this._roomExists(roomId)) {
             this._sendError('feedback', 'There was an issue, please try again', 'Room doesnt exist')
             return

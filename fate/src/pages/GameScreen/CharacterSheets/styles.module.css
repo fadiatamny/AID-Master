@@ -47,3 +47,13 @@
     border-radius: 15px;
     background-color: #2f313a;
 }
+
+.pagination{
+    display: grid;
+    place-items: center;
+}
+
+.paginationItem {
+    margin-left: 1vw;
+    margin-right: 1vw;
+}

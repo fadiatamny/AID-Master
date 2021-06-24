@@ -8,6 +8,7 @@ import { SocketEvents } from '../../models/SocketEvents.model'
 import Clickable from '../../components/Clickable'
 import { Row, Col } from 'react-bootstrap'
 import { History } from 'history'
+import { PlayerType } from '../../models/Player.model'
 
 interface DMLoginScreenProps {
     history: History
@@ -24,7 +25,7 @@ const DMLoginScreen = ({ history }: DMLoginScreenProps) => {
             sessionStorage.setItem('rid', `${id}`)
             sessionStorage.setItem('playername', `${playername}`)
             sessionStorage.setItem('username', `${username}`)
-            sessionStorage.setItem('type', 'dm')
+            sessionStorage.setItem('type', PlayerType.DM)
             sessionStorage.setItem('playerlist', JSON.stringify([{ id: uid, username, playername }]))
             history.push(`/game`)
         })

@@ -3,6 +3,7 @@ import React from 'react'
 import ChatTabs from './ChatTabs'
 import ChatWindow from './ChatWindow'
 import { Col, Row } from 'react-bootstrap'
+import { PlayerType } from '../../../models/Player.model'
 
 type MessageType = {
     username: string
@@ -30,7 +31,7 @@ const Chat = ({ messages, username, playername, type, rid }: ChatProps) => {
                 isActive: activeChat === 'All'
             }
         ]
-        if (type === 'dm') {
+        if (type === PlayerType.DM) {
             generalTabs.push({
                 username: 'AID Master',
                 playername: 'Help',

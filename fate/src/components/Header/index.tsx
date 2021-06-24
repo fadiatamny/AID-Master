@@ -4,7 +4,7 @@ import Button from '../Button'
 import { Link } from 'react-router-dom'
 
 interface HeaderProps {
-    endGameButton?: boolean
+    endGameButton?: string
     onEndSubmit?: () => void
 }
 
@@ -15,7 +15,9 @@ const Header = ({ endGameButton, onEndSubmit }: HeaderProps) => {
             <Link to="/" className={styles.title}>
                 AI Dungeon Master
             </Link>
-            <div className={styles.settings}>{endGameButton ? <Button onClick={onEndSubmit}></Button> : null}</div>
+            <div className={styles.settings}>
+                {endGameButton ? <Button onClick={onEndSubmit}>{endGameButton}</Button> : null}
+            </div>
         </div>
     )
 }
