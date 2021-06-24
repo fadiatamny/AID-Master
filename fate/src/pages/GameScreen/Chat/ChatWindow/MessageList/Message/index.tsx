@@ -9,6 +9,9 @@ export interface MessageProps {
 }
 
 const Message = ({ username, playername, messageText, myMessage }: MessageProps) => {
+    const flipComponent = () => {
+        return null
+    }
     return (
         <Card className={myMessage ? styles.mymessage : ''}>
             <Card.Body>
@@ -18,7 +21,13 @@ const Message = ({ username, playername, messageText, myMessage }: MessageProps)
                 >
                     {username}
                 </Card.Subtitle>
-                <Card.Text className={styles.content}>{messageText}</Card.Text>
+                <Card.Text className={styles.content}>
+                    {
+                        // insert here the flip component make sure its with a button and swaps bettwen this view
+                        // and the npm package view.
+                    }
+                    {messageText}
+                </Card.Text>
             </Card.Body>
         </Card>
     )
