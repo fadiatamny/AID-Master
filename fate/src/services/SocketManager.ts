@@ -1,10 +1,17 @@
 import io, { Socket } from 'socket.io-client'
+import { CharacterSheet } from '../models/CharacterSheet.model'
 import { GameDump } from '../models/GameSession.model'
 import { PlayerType, IPlayer, PlayerDump } from '../models/Player.model'
 import { Scenario } from '../models/Scenario.model'
 import { SocketEvents } from '../models/SocketEvents.model'
 import EventsManager from './EventsManager'
 const endpoint = 'http://localhost:5069'
+
+export interface SocketError {
+    where: string
+    message: string
+    error: any
+}
 
 export default class SocketManager {
     private static _instance: SocketManager
@@ -30,7 +37,8 @@ export default class SocketManager {
             [SocketEvents.NEW_PLAYER_REGISTER]: this._newPlayerRegister.bind(this),
             [SocketEvents.END_GAME]: this._endGame.bind(this),
             [SocketEvents.FEEDBACK]: this._feedback.bind(this),
-            [SocketEvents.REQUEST_SCENARIOS]: this._requestScenarios.bind(this)
+            [SocketEvents.REQUEST_SCENARIOS]: this._requestScenarios.bind(this),
+            [SocketEvents.UPDATE_CHARACTER_SHEET]: this._updateCharacterSheet.bind(this)
         }
 
         const onsHandler = {
@@ -47,7 +55,8 @@ export default class SocketManager {
             [SocketEvents.PLAYER_JOINED]: this._playerJoined.bind(this),
             [SocketEvents.NEW_PLAYER]: this._newPlayer.bind(this),
             [SocketEvents.GAME_ENDED]: this._gameEnded.bind(this),
-            [SocketEvents.SCENARIO_LIST]: this._scenarioList.bind(this)
+            [SocketEvents.SCENARIO_LIST]: this._scenarioList.bind(this),
+            [SocketEvents.CHARACTER_SHEET_UPDATED]: this._characterSheetUpdated.bind(this)
         }
 
         Object.entries(emitsHandler).forEach(([key, value]) =>
@@ -124,6 +133,18 @@ export default class SocketManager {
         this._socket.emit(SocketEvents.REQUEST_SCENARIOS, roomId)
     }
 
+    private _updateCharacterSheet({
+        roomId,
+        userId,
+        sheet
+    }: {
+        roomId: string
+        userId: string
+        sheet: CharacterSheet
+    }) {
+        this._socket.emit(SocketEvents.UPDATE_CHARACTER_SHEET, roomId, userId, sheet)
+    }
+
     //#endregion
 
     //#region ons
@@ -171,7 +192,7 @@ export default class SocketManager {
         this._eventsManager.trigger(SocketEvents.PLAYER_JOINED, player)
     }
 
-    private _newPlayer(playerId: PlayerDump) {
+    private _newPlayer(playerId: string) {
         this._eventsManager.trigger(SocketEvents.NEW_PLAYER, { id: playerId })
     }
 
@@ -181,6 +202,10 @@ export default class SocketManager {
 
     private _scenarioList(scenarios: Scenario[]) {
         this._eventsManager.trigger(SocketEvents.SCENARIO_LIST, { scenarios })
+    }
+
+    private _characterSheetUpdated(userId: string, sheet: CharacterSheet) {
+        this._eventsManager.trigger(SocketEvents.CHARACTER_SHEET_UPDATED, { userId, sheet })
     }
 
     //#endregion

@@ -1,0 +1,23 @@
+.text {
+    color: #bbbbbb;
+}
+
+.imageurl {
+    max-height: 18vh;
+    width: auto;
+    height: auto;
+}
+
+.arrayCols {
+    height: 18vh;
+    overflow-y: scroll;
+}
+
+h3 {
+    font-size: medium;
+}
+
+.margin {
+    margin-top: 1vh;
+    margin-bottom: 1vh;
+}

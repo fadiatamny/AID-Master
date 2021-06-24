@@ -1,4 +1,5 @@
 import React from 'react'
+import { Col, Row } from 'react-bootstrap'
 import Message, { MessageProps } from './Message'
 import styles from './styles.module.css'
 
@@ -9,13 +10,13 @@ export interface MessagesListProps {
 
 const MessagesList = ({ messages, activeChat }: MessagesListProps) => {
     return (
-        <div className={`col-11 ${styles.container}`}>
+        <Col sm={11} className={`${styles.container}`}>
             {messages.map((message, i) => {
                 if (activeChat == 'All')
                     return (
-                        <div
+                        <Row
                             key={i}
-                            className={`row ${message.myMessage ? 'justify-content-end' : 'justify-content-start'}`}
+                            className={`${message.myMessage ? 'justify-content-end' : 'justify-content-start'}`}
                         >
                             <div className={`${styles.messageContainer} `}>
                                 <Message
@@ -25,13 +26,13 @@ const MessagesList = ({ messages, activeChat }: MessagesListProps) => {
                                     myMessage={message.myMessage}
                                 />
                             </div>
-                        </div>
+                        </Row>
                     )
                 else if (activeChat == message.username || message.myMessage)
                     return (
-                        <div
+                        <Row
                             key={i}
-                            className={`row ${message.myMessage ? 'justify-content-end' : 'justify-content-start'}`}
+                            className={`${message.myMessage ? 'justify-content-end' : 'justify-content-start'}`}
                         >
                             <div className={`${styles.messageContainer} `}>
                                 <Message
@@ -41,10 +42,10 @@ const MessagesList = ({ messages, activeChat }: MessagesListProps) => {
                                     myMessage={message.myMessage}
                                 />
                             </div>
-                        </div>
+                        </Row>
                     )
             })}
-        </div>
+        </Col>
     )
 }
 

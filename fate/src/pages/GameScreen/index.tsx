@@ -1,12 +1,21 @@
 import styles from './styles.module.css'
-import Header from '../../components/Header/Header'
+import Header from '../../components/Header'
 import Chat from './Chat'
 import { useEffect, useState, useRef } from 'react'
 import { SocketEvents } from '../../models/SocketEvents.model'
 import EventsManager from '../../services/EventsManager'
 import { generate } from '../../services/ScenarioGuide'
-import CharacterSheet from './CharacterSheet'
-import { Col, Row } from 'react-bootstrap'
+import { Col, Container, Row } from 'react-bootstrap'
+import { CharacterSheet, CharacterSheet as ICharacterSheet } from '../../models/CharacterSheet.model'
+import Button from '../../components/Button'
+import CharacterSheets from './CharacterSheets'
+import { PlayerDump, PlayerType } from '../../models/Player.model'
+import { History } from 'history'
+import { checkDevice, SupportedDevices } from '../../utils'
+
+interface GameScreenProps {
+    history: History
+}
 
 type MessageType = {
     username: string
@@ -15,35 +24,42 @@ type MessageType = {
     myMessage: boolean
 }
 
-const GameScreen = () => {
+let goingFeedback = false
+
+const GameScreen = ({ history }: GameScreenProps) => {
+    const isDesktop = checkDevice(SupportedDevices.DESKTOP)
     const eventsManager = EventsManager.instance
     const uid = localStorage.getItem('userId')
     const username = sessionStorage.getItem('username')
     const playertype = sessionStorage.getItem('type')
+    const dm = playertype === PlayerType.DM
     const playername = sessionStorage.getItem('playername')
     const roomid = sessionStorage.getItem('rid')
+    const [sheets, setSheets] = useState<ICharacterSheet[]>([])
+    const sheetsRef = useRef<ICharacterSheet[]>(sheets)
+    sheetsRef.current = sheets
+    const [showsheet, setShowsheet] = useState(false)
 
     const generateMessages = () => {
         const messagesObj: { [key: string]: { playername: string; messages: MessageType[] } } = {
             ['All']: {
                 playername: 'Game Chat',
-                messages:
-                    playertype === 'dm'
-                        ? [
-                              {
-                                  username: 'AID Master',
-                                  playername: 'Help',
-                                  messageText: `Welcome to the AID Master Game chat ${username}`,
-                                  myMessage: false
-                              },
-                              {
-                                  username: 'AID Master',
-                                  playername: 'Help',
-                                  messageText: `Invite other player using code\t${roomid}`,
-                                  myMessage: false
-                              }
-                          ]
-                        : []
+                messages: dm
+                    ? [
+                          {
+                              username: 'AID Master',
+                              playername: 'Help',
+                              messageText: `Welcome to the AID Master Game chat ${username}`,
+                              myMessage: false
+                          },
+                          {
+                              username: 'AID Master',
+                              playername: 'Help',
+                              messageText: `Invite other player using code\t${roomid}`,
+                              myMessage: false
+                          }
+                      ]
+                    : []
             },
             ['AID Master']: {
                 playername: 'Help',
@@ -68,7 +84,7 @@ const GameScreen = () => {
         generateMessages()
     )
 
-    const messagesRef = useRef<{ [key: string]: { playername: string; messages: MessageType[] } }>()
+    const messagesRef = useRef<{ [key: string]: { playername: string; messages: MessageType[] } }>(messages)
     messagesRef.current = messages
 
     const handleMessages = (obj: any) => {
@@ -136,11 +152,12 @@ const GameScreen = () => {
         setMessages(messagesCopy)
     }
 
-    const handlePlayerJoined = (obj: any) => {
+    const handlePlayerJoined = (obj: PlayerDump) => {
         const messagesCopy = Object.assign({}, messagesRef.current)
         if (obj.id !== uid) {
-            const playerlist = sessionStorage.getItem('playerlist') ?? '[]'
-            sessionStorage.setItem('playerlist', JSON.stringify([...JSON.parse(playerlist), obj]))
+            let playerlist: PlayerDump[] = JSON.parse(sessionStorage.getItem('playerlist') ?? '[]')
+            playerlist = playerlist.filter((p: PlayerDump) => p.id !== obj.id)
+            sessionStorage.setItem('playerlist', JSON.stringify([...playerlist, obj]))
 
             if (!messagesCopy[obj.username]) {
                 messagesCopy[obj.username] = {
@@ -148,7 +165,15 @@ const GameScreen = () => {
                     messages: []
                 }
             }
+            if (dm) {
+                const sheetsCopy = [...sheetsRef.current]
+                sheetsCopy.push(obj.characterSheet)
+                setSheets(sheetsCopy)
+            }
+        } else {
+            setSheets([obj.characterSheet])
         }
+
         messagesCopy['All'].messages.push({
             username: 'AID Master',
             playername: 'System',
@@ -159,11 +184,51 @@ const GameScreen = () => {
         setMessages(messagesCopy)
     }
 
+    const handleCharacterSheetUpdated = ({ userId, sheet }: { userId: string; sheet: CharacterSheet }) => {
+        if (uid === userId) {
+            setSheets([sheet])
+        } else if (dm) {
+            const playerlist: PlayerDump[] = JSON.parse(sessionStorage.getItem('playerlist') ?? '[]')
+            const player = playerlist.find((p: PlayerDump) => p.id === userId)
+            if (player) {
+                const playerSheet = sheetsRef.current.find((s) => s.name === player?.playername)
+                Object.assign(playerSheet, sheet)
+                player.characterSheet = sheet
+                sessionStorage.setItem('playerlist', JSON.stringify(playerlist))
+            }
+        }
+    }
+
+    const toggleSheets = () => {
+        setShowsheet(!showsheet)
+    }
+
+    const navToHome = () => {
+        history.push(`/`)
+    }
+
+    const navToFeedback = () => {
+        goingFeedback = true
+        history.push(`/feedback`)
+    }
+
     useEffect(() => {
-        //check state
+        if (!uid || !roomid || !username) {
+            navToHome()
+        }
+        eventsManager.on(SocketEvents.GAME_ENDED, 'game-component', () => {
+            if (dm) {
+                navToFeedback()
+            } else {
+                navToHome()
+            }
+        })
+        eventsManager.on(SocketEvents.CHARACTER_SHEET_UPDATED, 'game-component', (obj: any) =>
+            handleCharacterSheetUpdated(obj)
+        )
         eventsManager.on(SocketEvents.MESSAGE, 'game-component', (obj: any) => handleMessages(obj))
         eventsManager.on(SocketEvents.PLAYER_JOINED, 'game-component', (obj: any) => handlePlayerJoined(obj))
-        if (sessionStorage.getItem('type') === 'dm') {
+        if (sessionStorage.getItem('type') === PlayerType.DM) {
             eventsManager.on(SocketEvents.SCENARIO, 'game-componment', (obj: any) => handleScenario(obj))
             eventsManager.on(SocketEvents.SCENARIO_GUIDE, 'game-componment', (obj: any) => handleScenarioGuide(obj))
         }
@@ -171,37 +236,56 @@ const GameScreen = () => {
 
     useEffect(
         () => () => {
-            eventsManager.trigger(SocketEvents.LEAVE_ROOM, {
-                id: sessionStorage.getItem('rid'),
-                userId: localStorage.getItem('userId'),
-                username: sessionStorage.getItem('username')
-            })
+            if (!goingFeedback) {
+                eventsManager.trigger(SocketEvents.LEAVE_ROOM, {
+                    id: sessionStorage.getItem('rid'),
+                    userId: localStorage.getItem('userId'),
+                    username: sessionStorage.getItem('username')
+                })
+            }
+            if (dm) {
+                eventsManager.trigger(SocketEvents.END_GAME, { roomId: sessionStorage.getItem('rid') })
+            }
             eventsManager.off(SocketEvents.MESSAGE, 'game-component')
             eventsManager.off(SocketEvents.CONNECTED, 'game-screen')
             eventsManager.off(SocketEvents.SCENARIO, 'game-componment')
             eventsManager.off(SocketEvents.SCENARIO_GUIDE, 'game-componment')
+            eventsManager.off(SocketEvents.END_GAME, 'game-componment')
         },
         []
     )
 
     return (
-        <div>
-            <Header />
-            <Row className="justify-content-center">
-                <Col sm={{ order: 1, span: 12 }} md={5}>
-                    <CharacterSheet />
-                </Col>
-                <Col sm={{ order: 2, span: 12 }} md={7}>
-                    <Chat
-                        messages={messages}
-                        rid={roomid!}
-                        username={username!}
-                        playername={playername!}
-                        type={playertype!}
-                    />
-                </Col>
-            </Row>
-        </div>
+        <>
+            <Header endGameButton={dm ? 'End Session' : 'Leave Session'} onEndSubmit={dm ? navToFeedback : navToHome} />
+            <Container fluid>
+                {isDesktop ? (
+                    <Row className={styles.controls}>
+                        <Col>
+                            <Button onClick={toggleSheets}>
+                                {showsheet ? <p>Hide Sheets</p> : <p>Show Sheets</p>}
+                            </Button>
+                        </Col>
+                    </Row>
+                ) : null}
+                <Row>
+                    {showsheet && isDesktop ? (
+                        <Col sm={{ span: 4 }} className="animated fadeIn">
+                            <CharacterSheets sheets={sheetsRef.current} type={playertype} />
+                        </Col>
+                    ) : null}
+                    <Col>
+                        <Chat
+                            messages={messages}
+                            rid={roomid!}
+                            username={username!}
+                            playername={playername!}
+                            type={playertype!}
+                        />
+                    </Col>
+                </Row>
+            </Container>
+        </>
     )
 }
 
