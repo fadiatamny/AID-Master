@@ -1,6 +1,6 @@
 {
   "name": "aid-master",
-  "version": "0.26.13",
+  "version": "0.26.14",
   "private": true,
   "dependencies": {
     "@testing-library/jest-dom": "^5.11.4",
