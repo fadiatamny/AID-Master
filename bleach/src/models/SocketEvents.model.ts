@@ -9,7 +9,8 @@ enum EventsSocketRecieves {
     NEW_PLAYER_REGISTER = 'new_player_register',
     END_GAME = 'end_game',
     FEEDBACK = 'feedback',
-    REQUEST_SCENARIOS = 'request_scenarios'
+    REQUEST_SCENARIOS = 'request_scenarios',
+    UPDATE_CHARACTER_SHEET = 'update_character_sheet'
 }
 
 enum EventsSocketSends {
@@ -26,7 +27,8 @@ enum EventsSocketSends {
     PLAYER_JOINED = 'player_joined',
     NEW_PLAYER = 'new_player',
     GAME_ENDED = 'game_ended',
-    SCENARIO_LIST = 'scenario_list'
+    SCENARIO_LIST = 'scenario_list',
+    CHARACTER_SHEET_UPDATED = 'character_sheet_updated'
 }
 
 export const SocketEvents = { ...EventsSocketSends, ...EventsSocketRecieves }

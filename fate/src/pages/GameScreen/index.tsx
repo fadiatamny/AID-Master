@@ -6,7 +6,7 @@ import { SocketEvents } from '../../models/SocketEvents.model'
 import EventsManager from '../../services/EventsManager'
 import { generate } from '../../services/ScenarioGuide'
 import { Col, Container, Row } from 'react-bootstrap'
-import { CharacterSheet as ICharacterSheet } from '../../models/CharacterSheet.model'
+import { CharacterSheet, CharacterSheet as ICharacterSheet } from '../../models/CharacterSheet.model'
 import Button from '../../components/Button'
 import CharacterSheets from './CharacterSheets'
 import { PlayerDump, PlayerType } from '../../models/Player.model'
@@ -44,23 +44,22 @@ const GameScreen = ({ history }: GameScreenProps) => {
         const messagesObj: { [key: string]: { playername: string; messages: MessageType[] } } = {
             ['All']: {
                 playername: 'Game Chat',
-                messages:
-                    dm
-                        ? [
-                              {
-                                  username: 'AID Master',
-                                  playername: 'Help',
-                                  messageText: `Welcome to the AID Master Game chat ${username}`,
-                                  myMessage: false
-                              },
-                              {
-                                  username: 'AID Master',
-                                  playername: 'Help',
-                                  messageText: `Invite other player using code\t${roomid}`,
-                                  myMessage: false
-                              }
-                          ]
-                        : []
+                messages: dm
+                    ? [
+                          {
+                              username: 'AID Master',
+                              playername: 'Help',
+                              messageText: `Welcome to the AID Master Game chat ${username}`,
+                              myMessage: false
+                          },
+                          {
+                              username: 'AID Master',
+                              playername: 'Help',
+                              messageText: `Invite other player using code\t${roomid}`,
+                              myMessage: false
+                          }
+                      ]
+                    : []
             },
             ['AID Master']: {
                 playername: 'Help',
@@ -185,6 +184,21 @@ const GameScreen = ({ history }: GameScreenProps) => {
         setMessages(messagesCopy)
     }
 
+    const handleCharacterSheetUpdated = ({ userId, sheet }: { userId: string; sheet: CharacterSheet }) => {
+        if (uid === userId) {
+            setSheets([sheet])
+        } else if (dm) {
+            const playerlist: PlayerDump[] = JSON.parse(sessionStorage.getItem('playerlist') ?? '[]')
+            const player = playerlist.find((p: PlayerDump) => p.id === userId)
+            if (player) {
+                const playerSheet = sheetsRef.current.find((s) => s.name === player?.playername)
+                Object.assign(playerSheet, sheet)
+                player.characterSheet = sheet
+                sessionStorage.setItem('playerlist', JSON.stringify(playerlist))
+            }
+        }
+    }
+
     const toggleSheets = () => {
         setShowsheet(!showsheet)
     }
@@ -209,6 +223,9 @@ const GameScreen = ({ history }: GameScreenProps) => {
                 navToHome()
             }
         })
+        eventsManager.on(SocketEvents.CHARACTER_SHEET_UPDATED, 'game-component', (obj: any) =>
+            handleCharacterSheetUpdated(obj)
+        )
         eventsManager.on(SocketEvents.MESSAGE, 'game-component', (obj: any) => handleMessages(obj))
         eventsManager.on(SocketEvents.PLAYER_JOINED, 'game-component', (obj: any) => handlePlayerJoined(obj))
         if (sessionStorage.getItem('type') === PlayerType.DM) {

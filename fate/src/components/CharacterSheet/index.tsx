@@ -5,6 +5,8 @@ import Button from '../Button'
 import { CharacterSheet as ICharacterSheet } from '../../models/CharacterSheet.model'
 import Input from '../Input'
 import CharacterPicturePlaceholder from '../../assets/images/characterPicPlaceholder.png'
+import EventsManager from '../../services/EventsManager'
+import { SocketEvents } from '../../models/SocketEvents.model'
 
 export interface CharaSheetProps {
     currsheet?: ICharacterSheet
@@ -53,8 +55,11 @@ const CharacterSheet = ({ currsheet, dm, submitForm, playername }: CharaSheetPro
     }
 
     const handleSubmit = () => {
-        //Have to notify server of this change. this isnt enough.
-        //maybe up component ? for now i disabled this function.
+        EventsManager.instance.trigger(SocketEvents.UPDATE_CHARACTER_SHEET, {
+            roomId: sessionStorage.getItem('rid'),
+            userId: localStorage.getItem('userId'),
+            sheet: generateSheet()
+        })
     }
 
     const abilityChange = (e: any) => {
@@ -280,7 +285,7 @@ const CharacterSheet = ({ currsheet, dm, submitForm, playername }: CharaSheetPro
                         )}
                     </Row>
                     <Row className="justify-content-center">
-                        {true || dm || submitForm ? null : (
+                        {dm || submitForm ? null : (
                             <Button onClick={handleSubmit}>
                                 <p>Save Edits</p>
                             </Button>

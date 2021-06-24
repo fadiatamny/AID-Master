@@ -1,18 +1,9 @@
-.container {
-    height: 80vh;
-    padding: 2vh 2vh;
-    margin-top: 2vh;
-    margin-bottom: 2vh;
-    border-radius: 15px;
-    background-color: #2f313a;
-}
-
 .text {
     color: #bbbbbb;
 }
 
 .imageurl {
-    max-height: 22vh;
+    max-height: 18vh;
     width: auto;
     height: auto;
 }
