@@ -96,9 +96,9 @@ const Feedback = ({ history }: FeedbackProps) => {
     }
 
     useEffect(() => {
-        if (!roomId) {
-            history.push(`/`)
-        }
+        // if (!roomId) {
+        //     history.push(`/`)
+        // }
         eventsManager.on(SocketEvents.SCENARIO_LIST, 'feedback-component', (obj: { scenarios: Scenario[] }) =>
             handleScenarios(obj)
         )
@@ -217,11 +217,18 @@ const Feedback = ({ history }: FeedbackProps) => {
                     ) : null}
                 </Row>
                 <Row className="justify-content-center">
-                    <Col xs={{ order: 'first' }}>
+                    <Col xs={{ order: 'first', span: 2 }}>
                         <Button onClick={sendFeedback}>
                             <p>Send Feedback</p>
                         </Button>
                     </Col>
+                    <Col />
+                    <Col />
+                    <Col />
+                    <Col />
+                    <Col />
+                    <Col />
+                    <Col />
                     <Col xs={{ order: 'last' }}>
                         <Row className="justify-content-end">
                             <Button onClick={skipFeedback}>

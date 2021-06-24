@@ -62,3 +62,15 @@
     margin-left: 1vw;
     margin-right: 1vw;
 }
+
+.btnFirst {
+    position: absolute;
+    left: 0;
+    width: 5vw;
+}
+.btnLast {
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 5vw;
+}
