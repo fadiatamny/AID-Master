@@ -5,7 +5,7 @@ import { PlayerType, IPlayer, PlayerDump } from '../models/Player.model'
 import { Scenario } from '../models/Scenario.model'
 import { SocketEvents } from '../models/SocketEvents.model'
 import EventsManager from './EventsManager'
-const endpoint = 'https://bleach-dot-aid-master.ew.r.appspot.com'
+const endpoint = process.env.REACT_APP_NOT_BLEACH_ENDPOINT ?? 'https://bleach-dot-aid-master.ew.r.appspot.com'
 
 export interface SocketError {
     where: string
