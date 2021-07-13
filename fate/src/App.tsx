@@ -11,8 +11,7 @@ import SocketManager, { SocketError } from './services/SocketManager'
 import EventsManager from './services/EventsManager'
 import { SocketEvents } from './models/SocketEvents.model'
 import { v4 as uuid } from 'uuid'
-import { NotificationContainer, NotificationManager } from 'react-notifications'
-import MetaTags from 'react-meta-tags'
+import { NotificationContainer } from 'react-notifications'
 
 export default function App() {
     const eventsManager = EventsManager.instance
@@ -24,7 +23,6 @@ export default function App() {
     })
     eventsManager.on(SocketEvents.ERROR, 'app', (e: SocketError) => {
         console.error('Error Occured: ', e)
-        NotificationManager.error('Error Occured', e.message)
     })
 
     if (!localStorage.getItem('userId')) {
@@ -33,15 +31,6 @@ export default function App() {
 
     return (
         <div className="App">
-            <MetaTags>
-                <title>AID Master</title>
-                <meta charSet="utf-8" />
-                <meta
-                    name="viewport"
-                    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
-                />
-            </MetaTags>
-
             <Router>
                 <Route path="/" exact component={StartingScreen} />
                 <Route path="/game" component={GameScreen} />

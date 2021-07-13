@@ -7,7 +7,7 @@ import Input from '../../components/Input'
 import EventsManager from '../../services/EventsManager'
 import { SocketEvents } from '../../models/SocketEvents.model'
 import { Col, Row, Modal } from 'react-bootstrap'
-import { PlayerType } from '../../models/Player.model'
+import { PlayerDump, PlayerType } from '../../models/Player.model'
 import CharacterSheet from '../../components/CharacterSheet'
 import { CharacterSheet as ICharacterSheet } from '../../models/CharacterSheet.model'
 import { NotificationManager } from 'react-notifications'
@@ -55,15 +55,19 @@ const AdventureLoginScreen = ({ history }: AdventureLoginScreenProps) => {
             return
         }
 
-        eventsManager.on(SocketEvents.ROOM_JOINED, 'home-screen', (obj: any) => {
-            sessionStorage.setItem('rid', `${roomNumber}`)
-            sessionStorage.setItem('playername', `${playername}`)
-            sessionStorage.setItem('username', `${username}`)
-            sessionStorage.setItem('type', obj.type)
-            sessionStorage.setItem('playerlist', JSON.stringify(obj.playerlist))
-            sessionStorage.setItem('sheet', JSON.stringify(obj.CharacterSheet))
-            history.push(`/game`)
-        })
+        eventsManager.on(
+            SocketEvents.ROOM_JOINED,
+            'home-screen',
+            ({ player, playerlist }: { player: PlayerDump; playerlist: PlayerDump[] }) => {
+                sessionStorage.setItem('rid', `${roomNumber}`)
+                sessionStorage.setItem('playername', `${player.playername}`)
+                sessionStorage.setItem('username', `${player.username}`)
+                sessionStorage.setItem('type', player.type)
+                sessionStorage.setItem('playerlist', JSON.stringify(playerlist))
+                sessionStorage.setItem('sheet', JSON.stringify(player.characterSheet))
+                history.push(`/game`)
+            }
+        )
 
         eventsManager.on(SocketEvents.NEW_PLAYER, 'home-screen', (obj: any) => {
             if (obj.id !== uid) return

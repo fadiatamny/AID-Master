@@ -4,6 +4,6 @@
 
 |   Codebase            |   Description         |    Version    |
 |   :-------            |   :----------         |   :-------:   |
-| [Fate](./fate)        |   React frontend      |   0.26.13     |
-| [Bleach](./bleach)    |   Game Service        |   0.13.1      |
+| [Fate](./fate)        |   React frontend      |   0.26.16     |
+| [Bleach](./bleach)    |   Game Service        |   0.13.2      |
 | [Amnesia](./amnesia)  |   Prediction model    |   0.18.6      |

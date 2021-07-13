@@ -100,7 +100,7 @@ export default class GameService {
             username: p.username,
             playername: p.playername
         }))
-        this.io.sockets.in(roomId).emit(SocketEvents.ROOM_JOINED, player.username, player.type, playerList)
+        this.io.sockets.in(roomId).emit(SocketEvents.ROOM_JOINED, player.toJson(), playerList)
         this.io.sockets.in(roomId).emit(SocketEvents.PLAYER_JOINED, player.toJson())
     }
 
@@ -125,10 +125,11 @@ export default class GameService {
             return
         }
 
-        if (session.originalDm.id === playerId) {
-            session.activeDm = playerId
-            this._socket.emit(SocketEvents.DM_CHANGED, roomId, playerId)
-        }
+        // disabled due to bug
+        // if (session.originalDm.id === playerId) {
+        //     session.activeDm = playerId
+        //     this._socket.emit(SocketEvents.DM_CHANGED, roomId, playerId)
+        // }
 
         this._socketJoin(roomId, session, player)
     }
@@ -206,6 +207,9 @@ export default class GameService {
             return
         }
         const session = this.getGame(roomId)
+        if (session.activeDm === playerId) {
+            this.io.sockets.in(roomId).emit(SocketEvents.GAME_ENDED, playerId)
+        }
         this.io.sockets.in(roomId).emit(SocketEvents.MESSAGE, 'Server', `${username} has left the game`)
         this.io.sockets.in(roomId).emit(SocketEvents.PLAYER_LEFT, playerId)
         session.playerLeft(playerId)
@@ -216,7 +220,7 @@ export default class GameService {
         this._socket.emit(SocketEvents.ERROR, where, message ?? `There was an issue`, error)
     }
 
-    private _endGame(roomId: string) {
+    private _endGame(roomId: string, userId: string) {
         if (!roomId) {
             this._sendError('endGame', 'There was an issue, please try again', 'Missing Variables')
             return
@@ -226,7 +230,7 @@ export default class GameService {
             return
         }
 
-        this.io.sockets.in(roomId).emit(SocketEvents.GAME_ENDED)
+        this.io.sockets.in(roomId).emit(SocketEvents.GAME_ENDED, userId)
     }
 
     private _feedback(roomId: string, score: number, scenarios: Scenario[]) {

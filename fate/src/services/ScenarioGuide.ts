@@ -1,10 +1,4 @@
 const checkEmpty = (data: any, key: string) => {
-    // const empty = []
-    // // console.log(key, data[key], data)
-    // Object.keys(data[key]).map((k) => {
-    //     if (data[key][k] > 0) empty.push(1)
-    // })
-    // return empty.length === 0
     if (data[key] === undefined) return 0
     else return 1
 }
@@ -64,12 +58,6 @@ export const generate = (data: any) => {
         fm = writeToTextComma(fm, r)
         fm = fm.substr(0, fm.length - 1) + ' among others.'
     }
-
-    // if (checkEmpty(data, 'Weapons')) {
-    //     const w = data.Weapons
-    //     fm = fm + 'Some of the characters are wielding '
-    //     fm = writeToTextComma(fm, w)
-    // }
 
     if (checkEmpty(data, 'Alignment')) {
         const a = data.Alignment

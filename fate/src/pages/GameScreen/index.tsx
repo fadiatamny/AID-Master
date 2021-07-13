@@ -124,31 +124,13 @@ const GameScreen = ({ history }: GameScreenProps) => {
 
     const handleScenarioGuide = (obj: any) => {
         const message = generate(obj.organized)
-        let prettyText = ''
-        Object.keys(obj.organized).map((key: string) => {
-            const no = obj.organized[key]
-            prettyText = prettyText + `${key}‏‏‎ ‎‎‎‎‎‎‎‎‎‎‎‎`
-            no.map((key: Object) => {
-                for (const [k, v] of Object.entries(key)) {
-                    prettyText = prettyText + `${k} : ${v * 100} %    ‏‏‎‎`
-                }
-            })
-        })
         const messagesCopy = Object.assign({}, messagesRef.current)
-        messagesCopy['AID Master'].messages.push(
-            {
-                username: 'AID Master',
-                playername: 'Help',
-                messageText: message,
-                myMessage: false
-            },
-            {
-                username: 'AID Master',
-                playername: 'Help',
-                messageText: prettyText,
-                myMessage: false
-            }
-        )
+        messagesCopy['AID Master'].messages.push({
+            username: 'AID Master',
+            playername: 'Help',
+            messageText: [message, obj.organized],
+            myMessage: false
+        })
         setMessages(messagesCopy)
     }
 
@@ -216,12 +198,11 @@ const GameScreen = ({ history }: GameScreenProps) => {
         if (!uid || !roomid || !username) {
             navToHome()
         }
-        eventsManager.on(SocketEvents.GAME_ENDED, 'game-component', () => {
-            if (dm) {
-                navToFeedback()
-            } else {
-                navToHome()
+        eventsManager.on(SocketEvents.GAME_ENDED, 'game-component', ({ userId }: { userId: string }) => {
+            if (userId === uid) {
+                return
             }
+            navToHome()
         })
         eventsManager.on(SocketEvents.CHARACTER_SHEET_UPDATED, 'game-component', (obj: any) =>
             handleCharacterSheetUpdated(obj)
@@ -244,7 +225,7 @@ const GameScreen = ({ history }: GameScreenProps) => {
                 })
             }
             if (dm) {
-                eventsManager.trigger(SocketEvents.END_GAME, { roomId: sessionStorage.getItem('rid') })
+                eventsManager.trigger(SocketEvents.END_GAME, { roomId: sessionStorage.getItem('rid'), userId: uid })
             }
             eventsManager.off(SocketEvents.MESSAGE, 'game-component')
             eventsManager.off(SocketEvents.CONNECTED, 'game-screen')

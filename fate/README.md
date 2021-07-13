@@ -5,4 +5,4 @@ The service was written in React.TS
 
 Documentation will be available soon.
 
-### Version 0.26.13
+### Version 0.26.16
