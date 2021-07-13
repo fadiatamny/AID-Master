@@ -5,7 +5,15 @@ import os
 from pprint import pprint
 
 app = Flask('AIDMaster')
-cors = CORS(app, origins=[app.config['AMNESIA_URI'], app.config['BLEACH_URI'], app.config['FATE_URI'], 'localhost'])
+
+config = f'{os.path.dirname(os.path.realpath(__file__))}/.config.json'
+if not os.path.isfile(config):
+    print('Error occured while trying to parse the .config.json file')
+    exit()
+
+app.config.from_json(config)
+
+cors = CORS(app, origins=[app.config['AMNESIA_URI'], app.config['BLEACH_URI'], app.config['FATE_URI']])
 app.config['CORS_HEADERS'] = 'Content-Type'
 
 app.register_blueprint(router)
@@ -18,6 +26,4 @@ def index():
 
 
 if __name__ == '__main__':
-    config = f'{os.path.dirname(os.path.realpath(__file__))}/.config.json'
-    app.config.from_json(config)
     app.run()
