@@ -8,10 +8,18 @@ import { ResponseError } from './models/ResponseError.model'
 // Boot express
 const app: Application = express()
 
+const whitelist = [process.env.AMNESIA_URI, process.env.FATE_URI, process.env.BLEACH_URI, 'localhost']
+
 const options: cors.CorsOptions = {
     allowedHeaders: ['Origin', 'X-Requested-With', 'Content-Type', 'Accept', 'X-Access-Token'],
     methods: 'GET,HEAD,OPTIONS,PUT,PATCH,POST,DELETE',
-    origin: process.env.API_URL || 'localhost',
+    origin: (origin, callback) => {
+        if (whitelist.indexOf(origin) !== -1) {
+            callback(null, true)
+        } else {
+            callback(new Error('Not allowed by CORS'))
+        }
+    },
     preflightContinue: false,
     credentials: true
 }

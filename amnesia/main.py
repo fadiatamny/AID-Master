@@ -2,9 +2,10 @@ from api import router
 from flask import Flask
 from flask_cors import CORS, cross_origin
 import os
+from pprint import pprint
 
 app = Flask('AIDMaster')
-cors = CORS(app)
+cors = CORS(app, origins=[app.config['AMNESIA_URI'], app.config['BLEACH_URI'], app.config['FATE_URI'], 'localhost'])
 app.config['CORS_HEADERS'] = 'Content-Type'
 
 app.register_blueprint(router)
