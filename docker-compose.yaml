@@ -25,7 +25,9 @@ services:
         environment:
             NODE_ENV: production
             PORT: 8080
-            AMNESIA_ENDPOINT: http://localhost:5000
+            AMNESIA_URI: http://localhost:5000
+            FATE_URI: http://localhost:80
+            BLEACH_URI: http://localhost:8080
             ENV: production
 
     amnesia:
