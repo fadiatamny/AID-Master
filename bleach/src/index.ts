@@ -24,7 +24,7 @@ const corsOptions: cors.CorsOptions = {
         }
     },
     preflightContinue: false,
-    credentials: false
+    credentials: true
 }
 
 app.use(cors(corsOptions))
