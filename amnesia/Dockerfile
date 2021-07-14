@@ -9,5 +9,7 @@ RUN pip install -r requirements.txt
 
 COPY . /app
 
-CMD [ "python", "./main.py" ]
-# CMD [ "gunicorn", "-b", ":5000", "main:app" ]
+# DEPLOY without GUNICORN
+# CMD [ "python", "./main.py" ]
+# IF deployment with GUNICORN
+CMD [ "gunicorn", "-b", ":5000", "main:app" ]

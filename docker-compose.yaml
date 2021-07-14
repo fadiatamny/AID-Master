@@ -10,7 +10,10 @@ services:
             - "80:80"
         environment:
             NODE_ENV: production
-            REACT_APP_NOT_BLEACH_ENDPOINT: http://localhost:8080
+            REACT_APP_BLEACH_URI: http://localhost:8080
+            REACT_APP_AMNESIA_URI: http://localhost:5000
+            REACT_APP_BLEACH_URI: http://localhost:5069
+            REACT_APP_FATE_URI: http://localhost:80
 
     bleach:
         container_name: bleach
