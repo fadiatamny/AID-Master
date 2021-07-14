@@ -5,7 +5,7 @@ import { PlayerType, IPlayer, PlayerDump } from '../models/Player.model'
 import { Scenario } from '../models/Scenario.model'
 import { SocketEvents } from '../models/SocketEvents.model'
 import EventsManager from './EventsManager'
-const endpoint = 'http://localhost:5069'
+const endpoint = process.env.REACT_APP_BLEACH_URI ?? 'http://localhost:5069'
 
 export interface SocketError {
     where: string

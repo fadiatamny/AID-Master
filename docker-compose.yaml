@@ -1,0 +1,34 @@
+version: "3.0"
+
+services:
+    fate:
+        container_name: fate
+        build:
+            context: ./fate
+            dockerfile: ./Dockerfile
+        ports:
+            - "80:80"
+        environment:
+            NODE_ENV: production
+            REACT_APP_NOT_BLEACH_ENDPOINT: http://localhost:8080
+
+    bleach:
+        container_name: bleach
+        build:
+            context: ./bleach
+            dockerfile: ./Dockerfile
+        ports:
+            - "8080:8080"
+        environment:
+            NODE_ENV: production
+            PORT: 8080
+            AMNESIA_ENDPOINT: http://localhost:5000
+            ENV: production
+
+    amnesia:
+        container_name: amnesia
+        build:
+            context: ./amnesia
+            dockerfile: ./Dockerfile
+        ports:
+            - "5000:5000"
