@@ -8,6 +8,9 @@ services:
             dockerfile: ./Dockerfile
         ports:
             - "80:80"
+        depends_on:
+            - "amnesia"
+            - "bleach"
         environment:
             NODE_ENV: production
             REACT_APP_AMNESIA_URI: http://amnesia:5000
@@ -21,6 +24,8 @@ services:
             dockerfile: ./Dockerfile
         ports:
             - "8080:8080"
+        depends_on:
+            - "amnesia"
         environment:
             NODE_ENV: production
             PORT: 8080
