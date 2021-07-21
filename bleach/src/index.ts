@@ -11,12 +11,12 @@ import GameService from './services/Game.service'
 const port = process.env.PORT || 5069
 app.set('port', port)
 
-const whitelist = [process.env.AMNESIA_URI, process.env.FATE_URI, process.env.BLEACH_URI]
+const whitelist = [process.env.PUBLIC_URI, process.env.AMNESIA_URI, process.env.FATE_URI, process.env.BLEACH_URI, 'http://localhost']
 
 const corsOptions: cors.CorsOptions = {
     allowedHeaders: ['Origin', 'X-Requested-With', 'Content-Type', 'Accept', 'X-Access-Token'],
     methods: 'GET,HEAD,OPTIONS,PUT,PATCH,POST,DELETE',
-    origin: (origin, callback) => {
+    origin: (origin: any, callback: any) => {
         if (whitelist.indexOf(origin) !== -1) {
             callback(null, true)
         } else {

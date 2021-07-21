@@ -1,4 +1,4 @@
-version: "3.0"
+version: "3.5"
 
 services:
     fate:
@@ -10,9 +10,9 @@ services:
             - "80:80"
         environment:
             NODE_ENV: production
-            REACT_APP_AMNESIA_URI: http://localhost:5000
-            REACT_APP_BLEACH_URI: http://localhost:8080
-            REACT_APP_FATE_URI: http://localhost:80
+            REACT_APP_AMNESIA_URI: http://amnesia:5000
+            REACT_APP_BLEACH_URI: http://bleach:8080
+            REACT_APP_FATE_URI: http://fate:80
 
     bleach:
         container_name: bleach
@@ -24,9 +24,9 @@ services:
         environment:
             NODE_ENV: production
             PORT: 8080
-            AMNESIA_URI: http://localhost:5000
-            FATE_URI: http://localhost:80
-            BLEACH_URI: http://localhost:8080
+            AMNESIA_URI: http://amnesia:5000
+            FATE_URI: http://fate:80
+            BLEACH_URI: http://bleach:8080
             ENV: production
 
     amnesia:

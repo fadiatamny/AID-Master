@@ -13,7 +13,7 @@ if not os.path.isfile(config):
 
 app.config.from_json(config)
 
-cors = CORS(app, origins=[app.config['AMNESIA_URI'], app.config['BLEACH_URI'], app.config['FATE_URI']])
+cors = CORS(app, origins=[app.config['PUBLIC_URI'], app.config['AMNESIA_URI'], app.config['BLEACH_URI'], app.config['FATE_URI'], 'http://localhost'])
 app.config['CORS_HEADERS'] = 'Content-Type'
 
 app.register_blueprint(router)
