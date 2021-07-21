@@ -74,3 +74,8 @@
     top: 0;
     width: 5vw;
 }
+
+.downloadBtn {
+    color: #e0c4c4;
+    background-color: #bb6768;
+}

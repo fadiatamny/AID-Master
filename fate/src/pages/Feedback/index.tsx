@@ -94,6 +94,11 @@ const Feedback: React.FC<FeedbackProps> = ({ history }: FeedbackProps) => {
         history.push(`/`)
     }
 
+    const downloadSession = () => {
+        const downloadUrl = `/api/session/${roomId}`
+        window.open(downloadUrl, '_blank')?.focus()
+    }
+
     const handleScenarios = ({ scenarios }: { scenarios: Scenario[] }) => {
         setScenarios(scenarios)
         setMaxPages(Math.ceil(scenarios.length / scenariosPerPage))
@@ -194,8 +199,19 @@ const Feedback: React.FC<FeedbackProps> = ({ history }: FeedbackProps) => {
             <Header />
             <Container fluid className={`justify-content-center ${styles.container}`}>
                 <Row className="justify-content-center">
-                    <h2 className={styles.h2}>We Value Your Feedback!</h2>
-                    <p>Please fill out the following form and help us improve our service</p>
+                    <Col xs={{ order: 'first' }}>
+                        <Row className="justify-content-end">
+                            <h2 className={styles.h2}>We Value Your Feedback!</h2>
+                            <p>Please fill out the following form and help us improve our service</p>
+                        </Row>
+                    </Col>
+                    <Col xs={{ order: 'last', span: 2 }}>
+                        <Row className="justify-content-end">
+                            <Button onClick={downloadSession} className={styles.downloadBtn}>
+                                <p>Download Game Data</p>
+                            </Button>
+                        </Row>
+                    </Col>
                 </Row>
                 <Row className={`justify-content-center ${styles.content}`}>
                     <Row className={styles.score}>
