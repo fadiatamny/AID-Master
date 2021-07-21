@@ -31,4 +31,4 @@ export const checkDevice = (device: SupportedDevices) => {
     }
 }
 
-export const PUBLIC_URI = process.env.REACT_APP_PUBLIC_URI ?? 'http://79.136.30.122:8080'
+export const BLEACH_PUBLIC_URI = process.env.REACT_APP_BLEACH_PUBLIC_URI ?? 'http://79.136.30.122:8080'
