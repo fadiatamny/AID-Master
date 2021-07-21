@@ -10,6 +10,7 @@ import Clickable from '../../components/Clickable'
 import { Scenario } from '../../models/Scenario.model'
 import { History } from 'history'
 import { isEqual } from 'lodash'
+import { PUBLIC_URI } from '../../utils'
 
 interface FeedbackProps {
     history: History
@@ -95,7 +96,7 @@ const Feedback: React.FC<FeedbackProps> = ({ history }: FeedbackProps) => {
     }
 
     const downloadSession = () => {
-        const downloadUrl = `/api/session/${roomId}`
+        const downloadUrl = `${PUBLIC_URI}/api/session/${roomId}`
         window.open(downloadUrl, '_blank')?.focus()
     }
 

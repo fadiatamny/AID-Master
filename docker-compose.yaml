@@ -16,6 +16,7 @@ services:
             REACT_APP_AMNESIA_URI: http://amnesia:5000
             REACT_APP_BLEACH_URI: http://bleach:8080
             REACT_APP_FATE_URI: http://fate:80
+            REACT_APP_PUBLIC_URI: http://79.136.30.122:8080
 
     bleach:
         container_name: bleach
@@ -32,6 +33,7 @@ services:
             AMNESIA_URI: http://amnesia:5000
             FATE_URI: http://fate:80
             BLEACH_URI: http://bleach:8080
+            PUBLIC_URI: http://79.136.30.122:8080
             ENV: production
 
     amnesia:
