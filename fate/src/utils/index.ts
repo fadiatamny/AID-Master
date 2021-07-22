@@ -22,11 +22,13 @@ export enum SupportedDevices {
 }
 
 export const checkDevice = (device: SupportedDevices) => {
-    const {width, height} = getWindowDimensions()
-    switch(device) {
+    const { width, height } = getWindowDimensions()
+    switch (device) {
         case SupportedDevices.DESKTOP:
             return width >= 1024 && height >= 720
         case SupportedDevices.TABLET:
             return width <= 1024 && height <= 720 && width >= 960 && height >= 600
     }
 }
+
+export const BLEACH_PUBLIC_URI = process.env.REACT_APP_BLEACH_PUBLIC_URI ?? 'http://79.136.30.122:8080'

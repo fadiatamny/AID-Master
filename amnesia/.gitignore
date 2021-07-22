@@ -1,5 +1,5 @@
 __pycache__
-.config.json
+*.config.json
 model/build
 model/dataset
 model/tests
