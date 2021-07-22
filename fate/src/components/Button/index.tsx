@@ -4,7 +4,7 @@ import BButton from 'react-bootstrap/Button'
 export interface ButtonProps {
     onClick?: () => void
     children?: JSX.Element | string
-    className?: string
+    className?: string | undefined
     forLabel?: boolean
     disabled?: boolean
     fullWidth?: boolean

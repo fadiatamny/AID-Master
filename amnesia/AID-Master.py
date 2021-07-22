@@ -370,5 +370,5 @@ if __name__ == '__main__':
 # build     -   python AID-Master.py build dataset/data.csv -s bin/newModels -k 10 -h 1234 -t 10
 # inject    -   python AID-Master.py inject -d dataset/data.csv -sm bin/newModels/injectModels -h 9876 -nm 3 -on bin/currentModels/ -o bin/oldModels -n 4 -l 1
 # change    -   python AID-Master.py change -n bin/newModels -c bin/currentModels -o bin/oldModels
-# run       -   python AID-Master.py run -f bin/currentModels/fasttext -fn 3 -k bin/currentModels/knn -d dataset/data.csv
+# run       -   python AID-Master.py run -f model/bin/currentModels/fasttext -fn 3 -k model/bin/currentModels/knn -d model/dataset/
 # test      -   python AID-Master.py test -d dataset/data.csv -m bin/currentModels -n 3

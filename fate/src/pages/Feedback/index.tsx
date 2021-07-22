@@ -10,12 +10,13 @@ import Clickable from '../../components/Clickable'
 import { Scenario } from '../../models/Scenario.model'
 import { History } from 'history'
 import { isEqual } from 'lodash'
+import { BLEACH_PUBLIC_URI } from '../../utils'
 
 interface FeedbackProps {
     history: History
 }
 
-const Feedback = ({ history }: FeedbackProps) => {
+const Feedback: React.FC<FeedbackProps> = ({ history }: FeedbackProps) => {
     const eventsManager = EventsManager.instance
     const roomId = sessionStorage.getItem('rid')
 
@@ -41,7 +42,7 @@ const Feedback = ({ history }: FeedbackProps) => {
         const values: Array<ReactElement> = []
         for (let i = 0; i < 10; ++i) {
             values.push(
-                <Col xs={{ span: 1 }}>
+                <Col key={i} xs={{ span: 1 }}>
                     <Button onClick={() => setScore(i + 1)} className={score === i + 1 ? styles.selectedValue : ''}>
                         <p>{i + 1}</p>
                     </Button>
@@ -94,15 +95,20 @@ const Feedback = ({ history }: FeedbackProps) => {
         history.push(`/`)
     }
 
+    const downloadSession = () => {
+        const downloadUrl = `${BLEACH_PUBLIC_URI}/api/session/${roomId}`
+        window.open(downloadUrl, '_blank')?.focus()
+    }
+
     const handleScenarios = ({ scenarios }: { scenarios: Scenario[] }) => {
         setScenarios(scenarios)
         setMaxPages(Math.ceil(scenarios.length / scenariosPerPage))
     }
 
     useEffect(() => {
-        // if (!roomId) {
-        //     history.push(`/`)
-        // }
+        if (!roomId) {
+            history.push(`/`)
+        }
         eventsManager.on(SocketEvents.SCENARIO_LIST, 'feedback-component', (obj: { scenarios: Scenario[] }) =>
             handleScenarios(obj)
         )
@@ -111,7 +117,7 @@ const Feedback = ({ history }: FeedbackProps) => {
 
     useEffect(
         () => () => {
-            eventsManager.off(SocketEvents.SCENARIO_LIST, 'feedback-componment')
+            eventsManager.off(SocketEvents.SCENARIO_LIST, 'feedback-component')
             eventsManager.trigger(SocketEvents.LEAVE_ROOM, {
                 id: sessionStorage.getItem('rid'),
                 userId: localStorage.getItem('userId'),
@@ -126,7 +132,7 @@ const Feedback = ({ history }: FeedbackProps) => {
 
         if (current - 1 > 2) {
             items.push(
-                <Col xs={{ span: 1 }} className={styles.paginationItem}>
+                <Col key={'dots1'} xs={{ span: 1 }} className={styles.paginationItem}>
                     <Button disabled={true}>{'...'}</Button>
                 </Col>
             )
@@ -134,7 +140,7 @@ const Feedback = ({ history }: FeedbackProps) => {
 
         for (let i = Math.max(current - 1, 1); i <= 3 && i <= max; i++) {
             items.push(
-                <Col xs={{ span: 1 }} className={styles.paginationItem}>
+                <Col key={'currPage'} xs={{ span: 1 }} className={styles.paginationItem}>
                     <Button className={current === i ? styles.selectedValue : ''} onClick={() => setCurrPage(i)}>
                         {i.toString()}
                     </Button>
@@ -144,7 +150,7 @@ const Feedback = ({ history }: FeedbackProps) => {
 
         if (current + 1 < max) {
             items.push(
-                <Col xs={{ span: 1 }} className={styles.paginationItem}>
+                <Col key={'dots2'} xs={{ span: 1 }} className={styles.paginationItem}>
                     <Button disabled={true}>{'...'}</Button>
                 </Col>
             )
@@ -157,10 +163,10 @@ const Feedback = ({ history }: FeedbackProps) => {
         const items: any = []
 
         items.push(
-            <Col xs={{ span: 1 }} className={styles.paginationItem}>
+            <Col key={'firstPage'} xs={{ span: 1 }} className={styles.paginationItem}>
                 <Button onClick={() => setCurrPage(1)}>{'<<'}</Button>
             </Col>,
-            <Col xs={{ span: 1 }} className={styles.paginationItem}>
+            <Col key={'backPage'} xs={{ span: 1 }} className={styles.paginationItem}>
                 <Button onClick={() => setCurrPage(currPageRef.current - 1 < 1 ? 1 : currPageRef.current - 1)}>
                     {'<'}
                 </Button>
@@ -168,7 +174,7 @@ const Feedback = ({ history }: FeedbackProps) => {
         )
         items.push(...generateThreePages(currPageRef.current, maxPagesRef.current))
         items.push(
-            <Col xs={{ span: 1 }} className={styles.paginationItem}>
+            <Col key={'forwardPage'} xs={{ span: 1 }} className={styles.paginationItem}>
                 <Button
                     onClick={() =>
                         setCurrPage(
@@ -181,7 +187,7 @@ const Feedback = ({ history }: FeedbackProps) => {
                     {'>'}
                 </Button>
             </Col>,
-            <Col xs={{ span: 1 }} className={styles.paginationItem}>
+            <Col key={'lastPage'} xs={{ span: 1 }} className={styles.paginationItem}>
                 <Button onClick={() => setCurrPage(maxPagesRef.current)}>{'>>'}</Button>
             </Col>
         )
@@ -194,8 +200,19 @@ const Feedback = ({ history }: FeedbackProps) => {
             <Header />
             <Container fluid className={`justify-content-center ${styles.container}`}>
                 <Row className="justify-content-center">
-                    <h2 className={styles.h2}>We Value Your Feedback!</h2>
-                    <p>Please fill out the following form and help us improve our service</p>
+                    <Col xs={{ order: 'first' }}>
+                        <Row className="justify-content-end">
+                            <h2 className={styles.h2}>We Value Your Feedback!</h2>
+                            <p>Please fill out the following form and help us improve our service</p>
+                        </Row>
+                    </Col>
+                    <Col xs={{ order: 'last', span: 2 }}>
+                        <Row className="justify-content-end">
+                            <Button onClick={downloadSession} className={styles.downloadBtn}>
+                                <p>Download Game Data</p>
+                            </Button>
+                        </Row>
+                    </Col>
                 </Row>
                 <Row className={`justify-content-center ${styles.content}`}>
                     <Row className={styles.score}>
@@ -229,7 +246,7 @@ const Feedback = ({ history }: FeedbackProps) => {
                     <Col />
                     <Col />
                     <Col />
-                    <Col />
+                    <Col /> {/* This is needed for ordering */}
                     <Col />
                     <Col />
                     <Col />

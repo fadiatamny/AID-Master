@@ -1,0 +1,45 @@
+version: "3.5"
+
+services:
+    fate:
+        container_name: fate
+        build:
+            context: ./fate
+            dockerfile: ./Dockerfile
+        ports:
+            - "80:80"
+        depends_on:
+            - "amnesia"
+            - "bleach"
+        environment:
+            NODE_ENV: production
+            REACT_APP_AMNESIA_URI: http://amnesia:5000
+            REACT_APP_BLEACH_URI: http://bleach:8080
+            REACT_APP_FATE_URI: http://fate:80
+            REACT_APP_BLEACH_PUBLIC_URI: http://79.136.30.122:8080
+
+    bleach:
+        container_name: bleach
+        build:
+            context: ./bleach
+            dockerfile: ./Dockerfile
+        ports:
+            - "8080:8080"
+        depends_on:
+            - "amnesia"
+        environment:
+            NODE_ENV: production
+            PORT: 8080
+            AMNESIA_URI: http://amnesia:5000
+            FATE_URI: http://fate:80
+            BLEACH_URI: http://bleach:8080
+            PUBLIC_URI: http://79.136.30.122
+            ENV: production
+
+    amnesia:
+        container_name: amnesia
+        build:
+            context: ./amnesia
+            dockerfile: ./Dockerfile
+        ports:
+            - "5000:5000"
