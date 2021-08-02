@@ -18,11 +18,11 @@ if not os.path.isdir(f'{prefix}/logs'):
     os.mkdir(f'{prefix}/logs')
 logger = logging.getLogger(__name__)
 logger.setLevel('DEBUG')
-handler = logging.FileHandler(f'{prefix}/logs/logs_injector_{datetime.now().date()}.log')
+handler = logging.FileHandler(
+    f'{prefix}/logs/logs_injector_{datetime.now().date()}.log')
 formatter = '%(asctime)s %(levelname)s -- %(message)s'
 handler.setFormatter(logging.Formatter(formatter))
 logger.addHandler(handler)
-
 
 
 class DataInjector():
@@ -35,6 +35,11 @@ class DataInjector():
         ]
         crawler = Crawler(urls, numberCrawler)
         return crawler.crawl()
+
+    @staticmethod
+    def _calc_percentage(number: float, percentage: float):
+        percentage_res = (percentage/100)*number
+        return percentage_res
 
     @staticmethod
     def preProcess(crawledData: list, models, headers):
@@ -80,13 +85,13 @@ class DataInjector():
                 os.remove(file.path)
 
     @staticmethod
-    def inject(dataPath: str, saveModelsPath: str, hash: str,numOfModels:int, modelsPath: str, numberCrawler: int, oldPath: str):    
+    def inject(dataPath: str, saveModelsPath: str, hash: str, numOfModels: int, modelsPath: str, numberCrawler: int, oldPath: str):
         cwd = os.getcwd()
         cwdcat = cwd.partition('model')
         os.chdir(f'{cwdcat[0]}/model/')
         models = ModelUtils.loadFasttextModels(f'{modelsPath}/fasttext')
         currentAccuracy = ModelTester.fastTextTest(
-           dataPath=dataPath,fastTextPath=f'{modelsPath}/fasttext',numberModels=numOfModels)
+            dataPath=dataPath, fastTextPath=f'{modelsPath}/fasttext', numberModels=numOfModels)
         dirPath = os.path.dirname(f'{dataPath}')
         headers = ModelUtils.fetchDatasetHeaders()
         crawledData = DataInjector.fetchCrawledData(numberCrawler)
@@ -101,8 +106,8 @@ class DataInjector():
         ModelBuilder.createKNN(
             f'{dirPath}/injectedData/injectedData_{hash}.csv', f'{saveModelsPath}/knn', 10, f'{hash}')
         accuracy = ModelTester.fastTextTest(
-           dataPath=f'{dirPath}/injectedData/injectedData_{hash}.csv',fastTextPath=f'{saveModelsPath}/fasttext',numberModels=numOfModels)
-        if accuracy > currentAccuracy:
+            dataPath=f'{dirPath}/injectedData/injectedData_{hash}.csv', fastTextPath=f'{saveModelsPath}/fasttext', numberModels=numOfModels)
+        if accuracy > (currentAccuracy-DataInjector._calc_percentage(currentAccuracy, 5)):
             changer = ModelChanger(
                 newPath=saveModelsPath, currentPath=modelsPath, oldPath=oldPath)
             changer.modelsMoving()
@@ -113,10 +118,10 @@ class DataInjector():
         os.chdir(cwd)
 
     @staticmethod
-    def injectionLoop(dataPath: str, saveModelsPath: str, hash: str, modelsPath: str, numberCrawler: int, oldPath: str, loopCount: int = 1,numOfModels:int = 3):
+    def injectionLoop(dataPath: str, saveModelsPath: str, hash: str, modelsPath: str, numberCrawler: int, oldPath: str, loopCount: int = 1, numOfModels: int = 3):
         for i in range(loopCount):
             DataInjector.inject(dataPath=dataPath, saveModelsPath=saveModelsPath, hash=hash,
-                                modelsPath=modelsPath, numberCrawler=numberCrawler, oldPath=oldPath,numOfModels=numOfModels)
+                                modelsPath=modelsPath, numberCrawler=numberCrawler, oldPath=oldPath, numOfModels=numOfModels)
 
 
 if __name__ == '__main__':
@@ -145,7 +150,7 @@ if __name__ == '__main__':
     originalmodels: str = ''
     loop: int = 1
     oldModels: str = ''
-    numOfModels: int = 3 
+    numOfModels: int = 3
 
     for index, item in enumerate(sys.argv, 0):
         if item == '-d' and index + 1 < len(sys.argv):
@@ -174,7 +179,7 @@ if __name__ == '__main__':
 
     try:
         DataInjector.injectionLoop(dataPath=data, saveModelsPath=save, hash=hash,
-                                   modelsPath=originalmodels, numberCrawler=crawlerRounds, oldPath=oldModels,numOfModels=numOfModels)
+                                   modelsPath=originalmodels, numberCrawler=crawlerRounds, oldPath=oldModels, numOfModels=numOfModels)
         # add http call to server to change model based on name and hash.
     except ModelException as e:
         print('Please check -h for help.')
