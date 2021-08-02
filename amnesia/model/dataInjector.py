@@ -26,6 +26,8 @@ logger.addHandler(handler)
 
 
 class DataInjector():
+
+    #fetching scenarios from the internet
     @staticmethod
     def fetchCrawledData(numberCrawler):
         urls = [
@@ -41,6 +43,7 @@ class DataInjector():
         percentage_res = (percentage/100)*number
         return percentage_res
 
+#pre processing the data to get better result and fiting the data structure to fasttext and knn builder
     @staticmethod
     def preProcess(crawledData: list, models, headers):
         predictions = []
@@ -61,11 +64,12 @@ class DataInjector():
 
         return resFrame
 
+#moving the finished fasttext and knn modles to the right location
     @staticmethod
     def _movingData(dataPath: str):
         if len(os.listdir(f'{dataPath}/injectedData/')) != 1:
             raise ModelException(
-                'dataInjector', 'no data in the folder or more thare one file')
+                'dataInjector', 'no data in the folder or more there one file')
         for file in (os.listdir(dataPath)):
             if file.endswith('csv'):
                 os.remove(f'{dataPath}/{file}')
@@ -74,7 +78,8 @@ class DataInjector():
             if file.endswith('csv'):
                 shutil.move(f'{dataPath}/injectedData/{file}',
                             f'{dataPath}/{file}')
-
+                            
+    # clean residual file after the injector finish
     @staticmethod
     def _cleanFiles(dataPath: str, modelsPath: str):
         if len(os.listdir(f'{dataPath}/injectedData/')) > 0:
