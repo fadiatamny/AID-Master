@@ -29,7 +29,7 @@ class ModelChanger():
         newmodels = len(glob.glob1(self.newPath, f'*{hash}*.bin'))
         currentmodels = len(glob.glob1(self.currentPath, f'*{hash}*.bin'))
         return newmodels, currentmodels
-
+#moving file to the correct locthin
     def _moveingFiles(self, originPath: str, destPath: str, hash: str, numofmodels: list) -> None:
         for i in numofmodels:
             shutil.move(f'{originPath}/fasttext/fasttextmodel_{hash}_{i}',

@@ -126,7 +126,7 @@ class ModelBuilder():
 
         ModelBuilder.cleanFiles(hash)
         logger.debug('Generated FastText Model Successfully')
-
+    #create the KNN model 
     @staticmethod
     def createKNN(filePath: str, savePath: str = 'bin/newModels/knn', k: int = 10, hash: str = '') -> None:
         try:
@@ -140,7 +140,7 @@ class ModelBuilder():
         # saving the model
         joblib.dump(knn, f'{savePath}/knnmodel_{hash}.pkl')
         logger.debug('Generated KNN Model Successfully')
-
+    
     @staticmethod
     def createModels(filePath: str, savePath: str = 'bin/newModels', time: int = 5400, k: int = 3, hash: str = '', debug: bool = False) -> None:
         cwd = os.getcwd()
