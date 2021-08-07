@@ -51,6 +51,8 @@ class ModelChanger():
         hash = ''
 
         files = os.listdir(f'{filePath}/fasttext')
+        print(files)
+        input('1')
         for file in files:
             if file.endswith(fileEnd):
                 hash = file.split('_')[1]
