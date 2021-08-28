@@ -1,12 +1,12 @@
 {
     "ENV": "production",
     "DEBUG": false,
-    "SECRET_KEY": "somerandomkey",
     "FASTTEXT_MODEL_PATH": "", 
     "KNN_MODEL_PATH":"", 
     "FASTTEXT_MODEL_COUNT": 0, 
     "DATASET_PATH": "",
     "AMNESIA_URI": "",
     "BLEACH_URI": "",
-    "FATE_URI": ""
+    "FATE_URI": "",
+    "PUBLIC_URI": ""
 }
