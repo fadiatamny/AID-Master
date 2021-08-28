@@ -1,7 +1,6 @@
 import io, { Socket } from 'socket.io-client'
 import { CharacterSheet } from '../models/CharacterSheet.model'
-import { GameDump } from '../models/GameSession.model'
-import { PlayerType, IPlayer, PlayerDump } from '../models/Player.model'
+import { PlayerDump } from '../models/Player.model'
 import { Scenario } from '../models/Scenario.model'
 import { SocketEvents } from '../models/SocketEvents.model'
 import EventsManager from './EventsManager'

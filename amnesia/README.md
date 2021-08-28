@@ -8,4 +8,4 @@ Documentation will be available soon.
 ## How to install
 run ```pip install -r requirements.txt```
 
-### Version 0.19.0
+### Version 0.19.1
