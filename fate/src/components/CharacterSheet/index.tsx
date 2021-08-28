@@ -4,7 +4,6 @@ import { Col, Row, Container } from 'react-bootstrap'
 import Button from '../Button'
 import { CharacterSheet as ICharacterSheet } from '../../models/CharacterSheet.model'
 import Input from '../Input'
-import CharacterPicturePlaceholder from '../../assets/images/characterPicPlaceholder.png'
 import EventsManager from '../../services/EventsManager'
 import { SocketEvents } from '../../models/SocketEvents.model'
 
