@@ -7,7 +7,7 @@ import { ResponseError } from './models/ResponseError.model'
 // Boot express
 const app: Application = express()
 
-if (process.env.ENV === 'production') {
+if (process.env.NODE_ENV === 'production') {
     const loggerFile = winston.createLogger({
         transports: [
             new winston.transports.File({
