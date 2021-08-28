@@ -41,6 +41,7 @@ def timed(func):
     return wrapper
 
 
+
 class ModelRunner():
     def __init__(self, fastText: str, knn: str, fastTextCount: int, dataPath: str) -> None:
         self.categories = ModelUtils.fetchDatasetHeaders()
@@ -115,6 +116,8 @@ class ModelRunner():
         if knn:
             self._verifyKNN(knn)
 
+
+
     def changeInstance(self, fastText='', knn='') -> None:
         self._checkPaths(fastText, knn)
 
@@ -126,7 +129,7 @@ class ModelRunner():
         # have to handle if changing failed to return to old state
         self._loadModels()
 
-# creat the Series to divid with frame
+# create the Series to divide with frame
     def _creatDiv(self, raw_frame: DataFrame) -> DataFrame:
         categorieslist = list(raw_frame.columns)
         n = len(categorieslist)
@@ -145,13 +148,13 @@ class ModelRunner():
         res = res.divide(div)
         return res
 
-    # normolize the % of the payload
+    # normalize the % of the payload
     def _normalize(self, textObj: Series) -> Series:
         for key in textObj.keys():
             textObj[key] = round(textObj[key], 2)
         return textObj
 
-    # clean the reciving text
+    # clean the receiving text
     def _cleanText(self, text) -> str:
         textSeries = Series([text])
         textSeries = hero.clean(textSeries)

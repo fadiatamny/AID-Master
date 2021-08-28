@@ -12,6 +12,8 @@ from .modelException import ModelException
 from .modelUtils import ModelUtils
 import shutil
 from datetime import datetime
+from sklearn.model_selection import train_test_split
+import random as rad
 
 prefix = os.path.dirname(os.path.realpath(__file__))
 
@@ -73,28 +75,30 @@ class ModelBuilder():
             raise ModelException('builder', str(e))
         cleandata = ModelBuilder._formatText(raw_data)
         # removing validate for now until we have more data. split is 80 - 20
-        train, test = np.split(cleandata.sample(
-            frac=1), [int(.8*len(cleandata))])
+        for i in range(6):
+            print(i)
+            train, test = train_test_split(cleandata, test_size=0.2, random_state=rad.randrange(999))
 
-        try:
-            # np.savetxt(f'./validate_data{hash}.txt', validate.values, fmt='%s')
-            np.savetxt(f'testing_data{hashbase}.txt', test.values, fmt='%s')
-            np.savetxt(f'training_data{hashbase}.txt', train.values, fmt='%s')
-        except Exception as e:
-            raise ModelException(
-                'builder', f'unable to save the testing and training data files. {str(e)}')
+            try:
+                # np.savetxt(f'./validate_data{hash}.txt', validate.values, fmt='%s')
+                np.savetxt(f'testing_data{hashbase}_{i}.txt', test.values, fmt='%s')
+                np.savetxt(f'training_data{hashbase}_{i}.txt', train.values, fmt='%s')
+            except Exception as e:
+                raise ModelException(
+                    'builder', f'unable to save the testing and training data files. {str(e)}')
 
         # creating the 5 base models and performing auto tune for 10 labels and 1.5h (5400s) and limiting the file size to 1G
+        
         resDataFrame = pd.DataFrame(columns=['exmp', 'Percision', 'Recall'])
 
         try:
             for i in range(6):
                 fastmodule = fasttext.train_supervised(
-                    input=f'training_data{hashbase}.txt',
-                    autotuneValidationFile=f'testing_data{hashbase}.txt', autotunePredictions=10,
+                    input=f'training_data{hashbase}_{i}.txt',
+                    autotuneValidationFile=f'testing_data{hashbase}_{i}.txt', autotunePredictions=10,
                     autotuneDuration=time, autotuneModelSize='1000M')
 
-                restest = fastmodule.test(f'testing_data{hashbase}.txt', 10)
+                restest = fastmodule.test(f'testing_data{hashbase}_{i}.txt', 10)
                 resDataFrame = resDataFrame.append(
                     {'exmp': restest[0], 'Percision': restest[1], 'Recall': restest[2]}, ignore_index=True)
                 print(resDataFrame)
@@ -106,6 +110,7 @@ class ModelBuilder():
             raise ModelException('builder', f'unable to create models. {str(e)}')
 
         # save the bast 3 fasttext models
+        input("her")
         indexlist = resDataFrame.nlargest(3, 'Percision').index
         for i in indexlist:
             logger.debug(
@@ -121,7 +126,7 @@ class ModelBuilder():
 
         ModelBuilder.cleanFiles(hash)
         logger.debug('Generated FastText Model Successfully')
-
+    #create the KNN model 
     @staticmethod
     def createKNN(filePath: str, savePath: str = 'bin/newModels/knn', k: int = 10, hash: str = '') -> None:
         try:
@@ -135,7 +140,7 @@ class ModelBuilder():
         # saving the model
         joblib.dump(knn, f'{savePath}/knnmodel_{hash}.pkl')
         logger.debug('Generated KNN Model Successfully')
-
+    
     @staticmethod
     def createModels(filePath: str, savePath: str = 'bin/newModels', time: int = 5400, k: int = 3, hash: str = '', debug: bool = False) -> None:
         cwd = os.getcwd()
